@@ -98,6 +98,14 @@
             <version>9.3.0</version>
         </dependency>
 
+        <!-- AWS & Cloud -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+            <version>2.40.4</version>
+            <scope>compile</scope>
+        </dependency>
+
         <!-- Utilities & Helpers -->
         <dependency>
             <groupId>org.projectlombok</groupId>
