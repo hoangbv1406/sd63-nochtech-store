@@ -19,6 +19,13 @@ jwt:
   expiration-refresh-token: 5184000     #60 days = 60 * 24 * 60 * 60
   secretKey: dev@123
 
+aws:
+  s3:
+    bucket: s
+    region: s
+    access: s
+    secret: s
+
 vnpay:
   pay-url: "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"
   return-url: "http://localhost:4200/payments/payment-callback"
