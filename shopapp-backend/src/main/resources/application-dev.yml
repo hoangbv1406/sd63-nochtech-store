@@ -18,3 +18,10 @@ jwt:
   expiration: 2592000                   #30 days = 30 * 24 * 60 * 60
   expiration-refresh-token: 5184000     #60 days = 60 * 24 * 60 * 60
   secretKey: dev@123
+
+vnpay:
+  pay-url: "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"
+  return-url: "http://localhost:4200/payments/payment-callback"
+  tmn-code: "JRCZKGXA"
+  secret-key: "ILT6QKSLORNGWAIK7HOJ1PM24B3BEM0Q"
+  api-url: "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction"
