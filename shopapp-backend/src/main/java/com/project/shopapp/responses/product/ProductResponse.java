@@ -41,6 +41,9 @@ public class ProductResponse extends BaseResponse {
     @JsonProperty("category_id")
     private Long categoryId;
 
+    @JsonProperty("category_name")
+    private String categoryName;
+
     @JsonProperty("product_images")
     private List<ProductImage> productImages = new ArrayList<>();
 
@@ -61,7 +64,8 @@ public class ProductResponse extends BaseResponse {
                 .comments(comments.stream().map(CommentResponse::fromComment).toList())
                 .favorites(favorites.stream().map(FavoriteResponse::fromFavorite).toList())
                 .description(product.getDescription())
-                .categoryId(product.getCategory().getId())
+                .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
+                .categoryName(product.getCategory() != null ? product.getCategory().getName() : "")
                 .productImages(product.getProductImages())
                 .totalPages(0)
                 .build();

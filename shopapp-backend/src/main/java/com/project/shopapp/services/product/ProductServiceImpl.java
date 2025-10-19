@@ -4,16 +4,12 @@ import com.project.shopapp.dtos.ProductDTO;
 import com.project.shopapp.dtos.ProductImageDTO;
 import com.project.shopapp.exceptions.DataNotFoundException;
 import com.project.shopapp.exceptions.InvalidParamException;
-import com.project.shopapp.models.Favorite;
-import com.project.shopapp.models.Product;
-import com.project.shopapp.models.ProductImage;
-import com.project.shopapp.models.User;
-import com.project.shopapp.repositories.FavoriteRepository;
-import com.project.shopapp.repositories.ProductImageRepository;
-import com.project.shopapp.repositories.ProductRepository;
-import com.project.shopapp.repositories.UserRepository;
+import com.project.shopapp.models.*;
+import com.project.shopapp.repositories.*;
 import com.project.shopapp.responses.product.ProductResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,10 +23,17 @@ public class ProductServiceImpl implements ProductService {
     private final ProductImageRepository productImageRepository;
     private final UserRepository userRepository;
     private final FavoriteRepository favoriteRepository;
+    private final CategoryRepository categoryRepository;
 
     @Override
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public Page<ProductResponse> getAllProducts(String keyword, Long categoryId, Pageable pageable) {
+        Page<Product> productsPage = productRepository.searchProducts(categoryId, keyword, pageable);
+        return productsPage.map(ProductResponse::fromProduct);
+    }
+
+    @Override
+    public List<Product> findProductsByIds(List<Long> productIds) {
+        return productRepository.findProductsByIds(productIds);
     }
 
     @Override
@@ -39,18 +42,22 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product createProduct(ProductDTO productDTO) {
+    public Product createProduct(ProductDTO productDTO) throws DataNotFoundException {
+        Category existingCategory = categoryRepository.findById(productDTO.getCategoryId()).orElseThrow(
+                () -> new DataNotFoundException("Cannot find category with id: " + productDTO.getCategoryId())
+        );
         Product newProduct = Product.builder()
                 .name(productDTO.getName())
                 .price(productDTO.getPrice())
                 .thumbnail(productDTO.getThumbnail())
                 .description(productDTO.getDescription())
+                .category(existingCategory)
                 .build();
         return productRepository.save(newProduct);
     }
 
     @Override
-    public Product updateProduct(long id, ProductDTO productDTO) {
+    public Product updateProduct(long id, ProductDTO productDTO) throws DataNotFoundException {
         Product existingProduct = getProductById(id);
         if (existingProduct != null) {
             if (productDTO.getName() != null && !productDTO.getName().isEmpty()) {
@@ -64,6 +71,12 @@ public class ProductServiceImpl implements ProductService {
             }
             if (productDTO.getThumbnail() != null && !productDTO.getThumbnail().isEmpty()) {
                 existingProduct.setThumbnail(productDTO.getThumbnail());
+            }
+            if (productDTO.getCategoryId() > 0) {
+                Category newCategory = categoryRepository.findById(productDTO.getCategoryId()).orElseThrow(
+                        () -> new DataNotFoundException("Category not found")
+                );
+                existingProduct.setCategory(newCategory);
             }
             return productRepository.save(existingProduct);
         }
