@@ -8,6 +8,8 @@ import com.project.shopapp.repositories.*;
 import com.project.shopapp.responses.order.OrderResponse;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -41,6 +43,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order createOrder(OrderDTO orderDTO) throws Exception {
+        if (orderDTO == null) {
+            throw new IllegalArgumentException("OrderDTO is required");
+        }
+        if (orderDTO.getUserId() == null) {
+            throw new DataNotFoundException("UserId is required in orderDTO");
+        }
         User user = userRepository.findById(orderDTO.getUserId()).orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + orderDTO.getUserId()));
         modelMapper.typeMap(OrderDTO.class, Order.class).addMappings(mapper -> mapper.skip(Order::setId));
         Order order = new Order();
@@ -48,6 +56,7 @@ public class OrderServiceImpl implements OrderService {
         order.setUser(user);
         order.setOrderDate(LocalDateTime.now());
         order.setStatus(OrderStatus.PENDING);
+
         LocalDate shippingDate = orderDTO.getShippingDate() == null ? LocalDate.now() : orderDTO.getShippingDate();
         if (shippingDate.isBefore(LocalDate.now())) {
             throw new DataNotFoundException("Date must be at least today !");
@@ -55,27 +64,35 @@ public class OrderServiceImpl implements OrderService {
         order.setShippingDate(shippingDate);
         order.setActive(true);
         order.setTotalMoney(orderDTO.getTotalMoney());
+
         if (orderDTO.getVnpTxnRef() != null) {
             order.setVnpTxnRef(orderDTO.getVnpTxnRef());
         }
+
         if (orderDTO.getShippingAddress() == null) {
             order.setShippingAddress(orderDTO.getAddress());
         }
+
+        if (orderDTO.getCartItems() == null || orderDTO.getCartItems().isEmpty()) {
+            throw new IllegalArgumentException("Cart items cannot be empty");
+        }
+
         List<OrderDetail> orderDetails = new ArrayList<>();
         for (CartItemDTO cartItemDTO : orderDTO.getCartItems()) {
             OrderDetail orderDetail = new OrderDetail();
-            orderDetail.setOrder(order);
             Long productId = cartItemDTO.getProductId();
             int quantity = cartItemDTO.getQuantity();
             Product product = productRepository.findById(productId).orElseThrow(() -> new DataNotFoundException("Product not found with id: " + productId));
             orderDetail.setProduct(product);
             orderDetail.setNumberOfProducts(quantity);
             orderDetail.setPrice(product.getPrice());
+            orderDetail.setOrder(order);
+            order.getOrderDetails().add(orderDetail);
             orderDetails.add(orderDetail);
         }
 
         String couponCode = orderDTO.getCouponCode();
-        if (!couponCode.isEmpty()) {
+        if (couponCode != null && !couponCode.trim().isEmpty()) {
             Coupon coupon = couponRepository.findByCode(couponCode).orElseThrow(() -> new IllegalArgumentException("Coupon not found"));
             if (!coupon.isActive()) {
                 throw new IllegalArgumentException("Coupon is not active");
@@ -84,9 +101,8 @@ public class OrderServiceImpl implements OrderService {
         } else {
             order.setCoupon(null);
         }
-        orderDetailRepository.saveAll(orderDetails);
-        orderRepository.save(order);
-        return order;
+        Order savedOrder = orderRepository.save(order);
+        return savedOrder;
     }
 
     @Override
@@ -176,6 +192,11 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderResponse> findByUserId(Long userId) {
         List<Order> orders = orderRepository.findByUserId(userId);
         return orders.stream().map(order -> OrderResponse.fromOrder(order)).toList();
+    }
+
+    @Override
+    public Page<Order> getOrdersByKeyword(String keyword, Pageable pageable) {
+        return orderRepository.findByKeyword(keyword, pageable);
     }
 
 }

@@ -6,10 +6,14 @@ import com.project.shopapp.models.Order;
 import com.project.shopapp.models.OrderStatus;
 import com.project.shopapp.models.User;
 import com.project.shopapp.responses.ResponseObject;
+import com.project.shopapp.responses.order.OrderListResponse;
 import com.project.shopapp.responses.order.OrderResponse;
 import com.project.shopapp.services.orders.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -148,6 +152,27 @@ public class OrderController {
                 .message("Orders for user retrieved successfully. userId = " + userId)
                 .data(orderResponses)
                 .status(HttpStatus.OK)
+                .build()
+        );
+    }
+
+    @GetMapping("/get-orders-by-keyword")
+    public ResponseEntity<ResponseObject> getOrdersByKeyword(
+            @RequestParam(defaultValue = "", required = false) String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+        PageRequest pageRequest = PageRequest.of(page, limit, Sort.by("id").ascending());
+        Page<OrderResponse> orderPage = orderService.getOrdersByKeyword(keyword, pageRequest).map(OrderResponse::fromOrder);
+        OrderListResponse response = OrderListResponse.builder()
+                .orders(orderPage.getContent())
+                .totalPages(orderPage.getTotalPages())
+                .currentPage(page)
+                .build();
+        return ResponseEntity.ok().body(ResponseObject.builder()
+                .message("Get orders successfully")
+                .status(HttpStatus.OK)
+                .data(response)
                 .build()
         );
     }
