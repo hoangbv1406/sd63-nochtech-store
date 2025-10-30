@@ -1,2 +1,11 @@
 // File: header.component.scss
 @use '../../../styles.scss' as *;
+
+.navbar {
+    background-color: rgba(0, 0, 0, 0);
+    height: 70px;
+}
+
+.navbar .container .navbar-nav .nav-link {
+    color: rgb(173, 178, 203);
+}
