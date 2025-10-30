@@ -6,6 +6,7 @@ import { AuthCallbackComponent } from './components/auth-callback/auth-callback.
 import { RegisterComponent } from './components/register/register.component';
 import { DetailProductComponent } from './components/product-detail/product.detail.component';
 import { OrderComponent } from './components/order/order.component';
+import { OrderDetailComponent } from './components/order-detail/order.detail.component';
 
 export const routes: Routes = [
     { path: '', component: HomeComponent },
@@ -14,5 +15,6 @@ export const routes: Routes = [
     { path: 'auth/facebook/callback', component: AuthCallbackComponent },
     { path: 'register', component: RegisterComponent },
     { path: 'products/:id', component: DetailProductComponent },
-    { path: 'orders', component: OrderComponent }
+    { path: 'orders', component: OrderComponent },
+    { path: 'orders/:id', component: OrderDetailComponent },
 ];
