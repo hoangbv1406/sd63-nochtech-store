@@ -1,2 +1,52 @@
 // File: home.component.scss
 @use '../../../styles.scss' as *;
+
+.intro-section {
+    text-align: center;
+    color: black;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px;
+}
+
+.search-box .search-input {
+    width: 300px;
+    margin-right: 10px;
+    padding: 3px;
+}
+
+.search-box .product-category {
+    width: 200px;
+    padding: 3px;
+}
+
+.search-box .btn-primary {
+    background-color: rgb(127, 68, 255);
+    border-color: rgb(127, 68, 255);
+    margin-left: 10px;
+    padding: 3px 4px;
+}
+
+.product-item {
+    width: 15rem;
+    border-radius: 20px;
+    margin: 20px;
+}
+
+.product-item .product-image {
+    height: auto;
+    border-radius: 19px 19px 0 0;
+}
+
+.product-item .card-body {
+    padding: 20px 10px 20px 10px;
+    color: black;
+}
+
+.pagination .page-item .page-link {
+    padding: 5px;
+}

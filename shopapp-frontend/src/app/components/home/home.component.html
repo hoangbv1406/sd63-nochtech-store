@@ -1,46 +1,53 @@
 <!-- File: home.component.html -->
 <app-header></app-header>
 <main class="container-fluid">
-    <h1>Đây là trang Home</h1>
-
-    <!-- SlideShow -->
-    <div id="carouselExampleIndicators" class="carousel slide">
-        <div class="carousel-indicators">
-            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0"></button>
-            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></button>
-            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"></button>
-        </div>
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <img src="https://surl.li/mnlcbm" class="d-block w-100" alt="...">
-            </div>
-            <div class="carousel-item">
-                <img src="https://surl.li/mnlcbm" class="d-block w-100" alt="...">
-            </div>
-            <div class="carousel-item">
-                <img src="https://surl.li/mnlcbm" class="d-block w-100" alt="...">
-            </div>
-        </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-            <span class="carousel-control-next-icon"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
+    <div class="intro-section">
+        <h1>Đây là trang Home</h1>
+        <p>Trang này hiển thị danh sách các sản phẩm, kèm ảnh</p>
     </div>
 
-    <!-- Product -->
-    <h2>Just For You</h2>
-    <div class="card" style="width: 18rem;">
-        <img src="https://surl.li/mnlcbm" class="card-img-top" alt="...">
-        <div class="card-body">
-            <h5 class="card-title">Card title</h5>
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
-            <a href="#" class="btn btn-primary">Go somewhere</a>
+    <div class="search-box">
+        <input type="text" class="form-control search-input" placeholder="Tìm sản phẩm">
+        <select class="form-control product-category">
+            <option>Tất cả</option>
+            <option>Danh mục 1</option>
+            <option>Danh mục 2</option>
+            <option>Danh mục 3</option>
+            <option>Danh mục 4</option>
+        </select>
+        <button class="btn btn-primary">Tìm kiếm</button>
+    </div>
+
+    <div class="row">
+        <div class="card product-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" class="product-image">
+                <rect rx="6" ry="6" width="100%" height="100%" fill="#9aa0a6" />
+                <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="50" fill="#ffffff">
+                    Image cap
+                </text>
+            </svg>
+            <div class="card-body">
+                <p class="card-title product-name">iPhone 16 Pro Max 256GB</p>
+                <p class="card-text product-price">Giá: 30.000.000 VNĐ</p>
+            </div>
         </div>
     </div>
 
+    <div class="d-flex justify-content-center">
+        <ul class="pagination">
+            <li class="page-item">
+                <a class="page-link">First</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link"><i class="fa fa-chevron-left"></i></a>
+            </li>
+            <li class="page-item">
+                <a class="page-link"><i class="fa fa-chevron-right"></i></a>
+            </li>
+            <li class="page-item">
+                <a class="page-link">Last</a>
+            </li>
+        </ul>
+    </div>
 </main>
 <app-footer></app-footer>
