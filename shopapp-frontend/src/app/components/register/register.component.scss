@@ -1,2 +1,43 @@
 // File: register.component.scss
 @use '../../../styles.scss' as *;
+
+.register-form {
+    background-color: #F1F1F1;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px;
+    max-width: 500px;
+    border: 1px solid rgb(32, 34, 60);
+    color: #000000;
+    align-items: center;
+    justify-content: center;
+}
+
+.register-form .register-header {
+    text-align: center;
+    color: rgb(0, 0, 0);
+    margin-bottom: 15px;
+}
+
+.register-form .checkbox-text {
+    color: rgba(148, 148, 148, 0.87);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.register-form .checkbox-text .form-check-input {
+    margin: 4px 5px;
+}
+
+.register-form .register-button {
+    background: rgb(68, 51, 223);
+    color: white;
+    border-radius: 30px;
+    width: 100%;
+    padding: 10px 0;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    border: none;
+}
