@@ -1,2 +1,67 @@
 // File: login.component.scss
 @use '../../../styles.scss' as *;
+
+.login-form {
+    background-color: #F1F1F1;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px;
+    max-width: 500px;
+    border: 1px solid rgb(32, 34, 60);
+    color: #000000;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-form .login-header {
+    text-align: center;
+    color: rgb(0, 0, 0);
+    margin-bottom: 15px;
+}
+
+.login-form .checkbox-text {
+    color: rgba(148, 148, 148, 0.87);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.login-form .checkbox-text .form-check-input {
+    margin: 4px 5px;
+}
+
+.login-form .login-button {
+    background: rgb(68, 51, 223);
+    color: white;
+    border-radius: 30px;
+    width: 100%;
+    padding: 10px 0;
+    margin-top: 20px;
+    border: none;
+}
+
+.login-form .social-login-buttons {
+    display: flex;
+}
+
+.login-form .social-login-buttons .social-button {
+    flex: 1;
+    margin: 5px;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.login-form .social-login-buttons .google-button {
+    background-color: #db4437;
+    color: white;
+    border: none;
+}
+
+.login-form .social-login-buttons .facebook-button {
+    background-color: #4267B2;
+    color: white;
+    border: none;
+}
