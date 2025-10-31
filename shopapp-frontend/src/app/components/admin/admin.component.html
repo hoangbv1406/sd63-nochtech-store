@@ -1,3 +1,40 @@
 <!-- File: admin.component.html -->
-<header></header>
+<header class="header bg-success text-white d-flex justify-content-between">
+    <h1 class="header-title">Dashboard Header</h1>
+    <button class="btn btn-danger btn-sm" (click)="logout()">Logout</button>
+</header>
+<main>
+    <div class="row">
+        <nav id="sidebar" class="col-md-2 col-lg-2 d-md-block bg-light sidebar">
+            <div class="position-sticky">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" (click)="showAdminComponent('orders')" routerLink="/admin/orders"
+                            routerLinkActive="active">
+                            Orders
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" (click)="showAdminComponent('categories')" routerLink="/admin/categories"
+                            routerLinkActive="active">
+                            Categories
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" (click)="showAdminComponent('products')" routerLink="/admin/products"
+                            routerLinkActive="active">
+                            Products
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" (click)="showAdminComponent('users')" routerLink="/admin/users"
+                            routerLinkActive="active">
+                            Users
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+</main>
 <router-outlet />
