@@ -1,17 +1,42 @@
 // File: home.component.ts
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 import { HeaderComponent } from '../header/header.component';
 import { FooterComponent } from '../footer/footer.component';
+import { Category } from '../../models/category';
+import { FormsModule } from '@angular/forms';
+import { BaseComponent } from '../base/base.component';
+import { ApiResponse } from '../../responses/api.response';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, FooterComponent, HeaderComponent],
+  imports: [CommonModule, RouterModule, FooterComponent, HeaderComponent, FormsModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent {
+export class HomeComponent extends BaseComponent implements OnInit {
+  categories: Category[] = [];
+  selectedCategoryId: number = 0;
+
+  ngOnInit() {
+    this.activatedRoute.queryParams.subscribe(params => {
+      this.selectedCategoryId = Number(params['categoryId']) || 0;
+    });
+    this.getCategories(0, 100);
+  }
+
+  getCategories(page: number, limit: number) {
+    this.categoryService.getCategories(page, limit).subscribe({
+      next: (apiResponse: ApiResponse) => {
+        debugger;
+        this.categories = apiResponse.data;
+      },
+      complete: () => {
+        debugger;
+      },
+    });
+  }
 }

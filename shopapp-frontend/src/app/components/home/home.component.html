@@ -8,12 +8,13 @@
 
     <div class="search-box">
         <input type="text" class="form-control search-input" placeholder="Tìm sản phẩm">
-        <select class="form-control product-category">
-            <option>Tất cả</option>
-            <option>Danh mục 1</option>
-            <option>Danh mục 2</option>
-            <option>Danh mục 3</option>
-            <option>Danh mục 4</option>
+        <select class="form-control product-category" [(ngModel)]="selectedCategoryId">
+            <option [value]="0">Tất cả</option>
+            @for(category of categories; track category.name) {
+            <option [value]="category.id">
+                {{ category.name }}
+            </option>
+            }
         </select>
         <button class="btn btn-primary">Tìm kiếm</button>
     </div>

@@ -1,7 +1,9 @@
 // File: category.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import { ApiResponse } from '../responses/api.response';
+import { Observable } from 'rxjs/internal/Observable';
 
 @Injectable({
   providedIn: 'root'
@@ -9,4 +11,11 @@ import { environment } from '../../environments/environment';
 export class CategoryService {
   private apiBaseUrl = environment.apiBaseUrl;
   constructor(private http: HttpClient) { }
+
+  getCategories(page: number, limit: number): Observable<ApiResponse> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+    return this.http.get<ApiResponse>(`${environment.apiBaseUrl}/categories`, { params });
+  }
 }
