@@ -14,6 +14,8 @@ import { ProductAdminComponent } from './components/admin/product/product.admin.
 import { CategoryAdminComponent } from './components/admin/category/category.admin.component';
 import { DetailOrderAdminComponent } from './components/admin/order-detail/detail.order.admin.component';
 import { UserAdminComponent } from './components/admin/user/user.admin.component';
+import { AdminGuardFn } from './guards/admin.guard';
+import { UserProfileComponent } from './components/user-profile/user.profile.component';
 
 export const routes: Routes = [
     { path: '', component: HomeComponent },
@@ -24,10 +26,11 @@ export const routes: Routes = [
     { path: 'products/:id', component: DetailProductComponent },
     { path: 'orders', component: OrderComponent },
     { path: 'orders/:id', component: OrderDetailComponent },
+    { path: 'user-profile', component: UserProfileComponent },
     { path: 'payments/payment-callback', component: PaymentCallbackComponent },
 
     {
-        path: 'admin', component: AdminComponent,
+        path: 'admin', component: AdminComponent, canActivate: [AdminGuardFn],
         children: [
             { path: 'categories', component: CategoryAdminComponent },
             { path: 'products', component: ProductAdminComponent },

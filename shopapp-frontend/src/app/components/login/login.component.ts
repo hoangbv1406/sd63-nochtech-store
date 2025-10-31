@@ -44,6 +44,12 @@ export class LoginComponent extends BaseComponent implements OnInit {
           if (this.rememberMe) {
             this.userService.saveUserResponseToLocalStorage(this.userResponse);
           }
+          if (this.userResponse?.role.name === 'admin') {
+            this.router.navigate(['/admin']);
+          }
+          if (this.userResponse?.role.name === 'user') {
+            this.router.navigate(['/']);
+          }
         }),
           catchError((error: HttpErrorResponse) => {
             console.error('Lỗi khi lấy thông tin người dùng:', error?.error?.message ?? '');
