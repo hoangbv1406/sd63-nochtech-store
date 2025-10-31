@@ -9,3 +9,19 @@
 .navbar .container .navbar-nav .nav-link {
     color: rgb(173, 178, 203);
 }
+
+.popover-list {
+    padding: 0px 10px 0px 10px;
+}
+
+.popover-item {
+    display: block;
+    margin-bottom: 5px;
+    text-decoration: none;
+    color: #333;
+}
+
+.popover-item:hover {
+    background-color: #ffffff;
+    color: rgb(127, 68, 255);
+}
