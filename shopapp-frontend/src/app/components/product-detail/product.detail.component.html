@@ -2,5 +2,43 @@
 <app-header></app-header>
 <main class="container-fluid">
     <h1>Đây là trang Chi tiết sản phẩm</h1>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div id="carouselExample" class="carousel slide">
+                <div class="carousel-inner">
+                    @for(image of product?.product_images; track image.image_url) {
+                    <div class="carousel-item"
+                        [class.active]="product?.product_images?.indexOf(image) === currentImageIndex">
+                        <div class="square-image">
+                            <img [src]="image.image_url" class="product-image" alt="Product Image">
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+            <div class="row">
+                <div class="thumbnail-container">
+                    @for(image of product?.product_images; track image.image_url; let i = $index) {
+                    <div class="thumbnail-item" [ngClass]="{'active': i === currentImageIndex}">
+                        <img [src]="image.image_url" class="thumbnail-image" alt="Thumbnail Image">
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="product-details">
+                <h2>{{ product?.name }}</h2>
+                <p>{{ product?.description }}</p>
+                <p>Giá: {{ product?.price }}</p>
+                <div class="product-actions">
+                    <button class="btn btn-primary">Thêm vào giỏ hàng</button>
+                    <button class="btn btn-success">Mua ngay</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </main>
 <app-footer></app-footer>
