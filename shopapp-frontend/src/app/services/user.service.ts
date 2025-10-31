@@ -1,12 +1,23 @@
 // File: user.service.ts
-import { Inject, Injectable } from '@angular/core';
+import { Inject, inject, Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpUtilService } from './http.util.service';
 import { DOCUMENT } from '@angular/common';
 import { UserResponse } from '../responses/user.response';
+import { LoginDTO } from '../dtos/user/login.dto';
+import { ApiResponse } from '../responses/api.response';
+import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
+  private http = inject(HttpClient);
+  private httpUtilService = inject(HttpUtilService);
+  private apiConfig = { headers: this.httpUtilService.createHeaders() };
+  private apiLogin = `${environment.apiBaseUrl}/users/login`;
+  private apiUserDetail = `${environment.apiBaseUrl}/users/details`;
   localStorage?: Storage;
 
   constructor(@Inject(DOCUMENT) private document: Document) {
@@ -48,6 +59,16 @@ export class UserService {
     } catch (error) {
       console.error('Error removing user data from local storage:', error);
     }
+  }
+
+  login(loginDTO: LoginDTO): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(this.apiLogin, loginDTO, this.apiConfig);
+  }
+
+  getUserDetail(token: string): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(this.apiUserDetail, null, {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json', Authorization: `Bearer ${token}` })
+    });
   }
 
 }
