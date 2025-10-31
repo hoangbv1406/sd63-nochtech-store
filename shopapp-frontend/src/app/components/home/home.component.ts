@@ -58,4 +58,9 @@ export class HomeComponent extends BaseComponent implements OnInit {
       },
     });
   }
+
+  onProductClick(productId: number) {
+    this.router.navigate(['/products', productId]);
+  }
+
 }
