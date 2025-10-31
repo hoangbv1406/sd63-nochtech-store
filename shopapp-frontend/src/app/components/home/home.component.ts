@@ -9,6 +9,8 @@ import { Category } from '../../models/category';
 import { FormsModule } from '@angular/forms';
 import { BaseComponent } from '../base/base.component';
 import { ApiResponse } from '../../responses/api.response';
+import { Product } from '../../models/product';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-home',
@@ -20,12 +22,14 @@ import { ApiResponse } from '../../responses/api.response';
 export class HomeComponent extends BaseComponent implements OnInit {
   categories: Category[] = [];
   selectedCategoryId: number = 0;
+  products: Product[] = [];
 
   ngOnInit() {
     this.activatedRoute.queryParams.subscribe(params => {
       this.selectedCategoryId = Number(params['categoryId']) || 0;
     });
     this.getCategories(0, 100);
+    this.getProducts(0, 100);
   }
 
   getCategories(page: number, limit: number) {
@@ -33,6 +37,21 @@ export class HomeComponent extends BaseComponent implements OnInit {
       next: (apiResponse: ApiResponse) => {
         debugger;
         this.categories = apiResponse.data;
+      },
+      complete: () => {
+        debugger;
+      },
+    });
+  }
+
+  getProducts(page: number, limit: number) {
+    this.productService.getProducts(page, limit).subscribe({
+      next: (apiresponse: ApiResponse) => {
+        const productsArray: Product[] = Array.isArray(apiresponse.data) ? apiresponse.data : (apiresponse.data?.products ?? []);
+        productsArray.forEach((product: Product) => {
+          product.url = `${environment.apiBaseUrl}/products/images/${product.thumbnail}`;
+        });
+        this.products = productsArray;
       },
       complete: () => {
         debugger;
