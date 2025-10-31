@@ -78,4 +78,16 @@ export class DetailProductComponent extends BaseComponent implements OnInit {
     }
   }
 
+  nextImage(): void {
+    this.showImage(this.currentImageIndex + 1);
+  }
+
+  previousImage(): void {
+    this.showImage(this.currentImageIndex - 1);
+  }
+
+  thumbnailClick(index: number) {
+    this.currentImageIndex = index;
+  }
+
 }

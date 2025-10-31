@@ -16,18 +16,25 @@
                     </div>
                     }
                 </div>
+                <button class="carousel-control-prev" type="button" (click)="previousImage()" aria-label="Previous">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" (click)="nextImage()" aria-label="Next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
             </div>
             <div class="row">
                 <div class="thumbnail-container">
                     @for(image of product?.product_images; track image.image_url; let i = $index) {
-                    <div class="thumbnail-item" [ngClass]="{'active': i === currentImageIndex}">
+                    <div class="thumbnail-item" [ngClass]="{'active': i === currentImageIndex}" (click)="thumbnailClick(i)">
                         <img [src]="image.image_url" class="thumbnail-image" alt="Thumbnail Image">
                     </div>
                     }
                 </div>
             </div>
         </div>
-
         <div class="col-md-6">
             <div class="product-details">
                 <h2>{{ product?.name }}</h2>
