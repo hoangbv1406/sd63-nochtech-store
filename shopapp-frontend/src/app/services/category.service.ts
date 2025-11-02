@@ -4,6 +4,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { ApiResponse } from '../responses/api.response';
 import { Observable } from 'rxjs/internal/Observable';
+import { InsertCategoryDTO } from '../dtos/category/insert.category.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -17,5 +18,9 @@ export class CategoryService {
       .set('page', page.toString())
       .set('limit', limit.toString());
     return this.http.get<ApiResponse>(`${environment.apiBaseUrl}/categories`, { params });
+  }
+
+  insertCategory(insertCategoryDTO: InsertCategoryDTO): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.apiBaseUrl}/categories`, insertCategoryDTO);
   }
 }
