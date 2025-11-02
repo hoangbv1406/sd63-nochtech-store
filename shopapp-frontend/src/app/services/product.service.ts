@@ -34,6 +34,10 @@ export class ProductService {
     return this.http.put<ApiResponse>(`${this.apiBaseUrl}/products/${productId}`, updatedProduct);
   }
 
+  deleteProduct(productId: number): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.apiBaseUrl}/products/${productId}`);
+  }
+
   uploadImages(productId: number, files: File[]): Observable<ApiResponse> {
     const formData = new FormData();
     for (let i = 0; i < files.length; i++) { formData.append('files', files[i]) }

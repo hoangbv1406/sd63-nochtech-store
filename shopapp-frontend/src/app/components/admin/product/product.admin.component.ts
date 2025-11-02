@@ -55,4 +55,28 @@ export class ProductAdminComponent extends BaseComponent implements OnInit {
     this.router.navigate(['/admin/products/update', productId]);
   }
 
+  deleteProduct(product: Product) {
+    const confirmation = window.confirm('Are you sure you want to delete this product?');
+    if (confirmation) {
+      this.productService.deleteProduct(product.id).subscribe({
+        next: (apiResponse: ApiResponse) => {
+          this.toastService.showToast({
+            error: null,
+            defaultMsg: 'Xóa sản phẩm thành công',
+            title: 'Thành Công'
+          });
+          location.reload();
+        },
+        complete: () => { debugger },
+        error: (error: HttpErrorResponse) => {
+          this.toastService.showToast({
+            error: error,
+            defaultMsg: 'Lỗi khi xóa sản phẩm',
+            title: 'Lỗi Xóa'
+          });
+        }
+      });
+    }
+  }
+
 }
