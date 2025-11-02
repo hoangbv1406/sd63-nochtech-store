@@ -47,4 +47,8 @@ export class ProductAdminComponent extends BaseComponent implements OnInit {
     });
   }
 
+  insertProduct() {
+    this.router.navigate(['/admin/products/insert']);
+  }
+
 }
