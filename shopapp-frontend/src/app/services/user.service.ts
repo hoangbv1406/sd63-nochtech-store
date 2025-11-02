@@ -79,4 +79,9 @@ export class UserService {
     })
   }
 
+  getUsers(params: { page: number, limit: number, keyword: string }): Observable<ApiResponse> {
+    const url = `${environment.apiBaseUrl}/users`;
+    return this.http.get<ApiResponse>(url, { params: params });
+  }
+
 }
