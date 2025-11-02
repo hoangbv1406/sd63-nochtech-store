@@ -17,6 +17,7 @@ import { UserAdminComponent } from './components/admin/user/user.admin.component
 import { AdminGuardFn } from './guards/admin.guard';
 import { UserProfileComponent } from './components/user-profile/user.profile.component';
 import { InsertCategoryAdminComponent } from './components/admin/category/insert/insert.category.admin.component';
+import { UpdateCategoryAdminComponent } from './components/admin/category/update/update.category.admin.component';
 
 export const routes: Routes = [
     { path: '', component: HomeComponent },
@@ -35,6 +36,7 @@ export const routes: Routes = [
         children: [
             { path: 'categories', component: CategoryAdminComponent },
             { path: 'categories/insert', component: InsertCategoryAdminComponent },
+            { path: 'categories/update/:id', component: UpdateCategoryAdminComponent },
             { path: 'products', component: ProductAdminComponent },
             { path: 'orders', component: OrderAdminComponent },
             { path: 'orders/:id', component: DetailOrderAdminComponent },
