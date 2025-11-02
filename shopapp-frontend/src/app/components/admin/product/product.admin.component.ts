@@ -51,4 +51,8 @@ export class ProductAdminComponent extends BaseComponent implements OnInit {
     this.router.navigate(['/admin/products/insert']);
   }
 
+  updateProduct(productId: number) {
+    this.router.navigate(['/admin/products/update', productId]);
+  }
+
 }

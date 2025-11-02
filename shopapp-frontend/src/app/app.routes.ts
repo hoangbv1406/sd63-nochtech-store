@@ -19,6 +19,7 @@ import { UserProfileComponent } from './components/user-profile/user.profile.com
 import { InsertCategoryAdminComponent } from './components/admin/category/insert/insert.category.admin.component';
 import { UpdateCategoryAdminComponent } from './components/admin/category/update/update.category.admin.component';
 import { InsertProductAdminComponent } from './components/admin/product/insert/insert.product.admin.component';
+import { UpdateProductAdminComponent } from './components/admin/product/update/update.product.admin.component';
 
 export const routes: Routes = [
     { path: '', component: HomeComponent },
@@ -40,6 +41,7 @@ export const routes: Routes = [
             { path: 'categories/update/:id', component: UpdateCategoryAdminComponent },
             { path: 'products', component: ProductAdminComponent },
             { path: 'products/insert', component: InsertProductAdminComponent },
+            { path: 'products/update/:id', component: UpdateProductAdminComponent },
             { path: 'orders', component: OrderAdminComponent },
             { path: 'orders/:id', component: DetailOrderAdminComponent },
             { path: 'users', component: UserAdminComponent },
