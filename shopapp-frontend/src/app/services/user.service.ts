@@ -8,6 +8,7 @@ import { LoginDTO } from '../dtos/user/login.dto';
 import { ApiResponse } from '../responses/api.response';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { UpdateUserDTO } from '../dtos/user/update.user.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -69,6 +70,13 @@ export class UserService {
     return this.http.post<ApiResponse>(this.apiUserDetail, null, {
       headers: new HttpHeaders({ 'Content-Type': 'application/json', Authorization: `Bearer ${token}` })
     });
+  }
+
+  updateUserDetail(token: string, updateUserDTO: UpdateUserDTO): Observable<ApiResponse> {
+    let userResponse = this.getUserResponseFromLocalStorage();
+    return this.http.put<ApiResponse>(`${this.apiUserDetail}/${userResponse?.id}`, updateUserDTO, {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json', Authorization: `Bearer ${token}` })
+    })
   }
 
 }
