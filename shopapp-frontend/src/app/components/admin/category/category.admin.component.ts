@@ -34,4 +34,8 @@ export class CategoryAdminComponent extends BaseComponent implements OnInit {
       }
     });
   }
+
+  insertCategory() {
+    this.router.navigate(['/admin/categories/insert']);
+  }
 }
