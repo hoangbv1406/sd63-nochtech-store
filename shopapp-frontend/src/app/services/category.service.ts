@@ -33,4 +33,8 @@ export class CategoryService {
     return this.http.put<ApiResponse>(`${this.apiBaseUrl}/categories/${id}`, updatedCategory);
   }
 
+  deleteCategory(id: number): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.apiBaseUrl}/categories/${id}`);
+  }
+
 }

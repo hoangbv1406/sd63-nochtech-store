@@ -43,4 +43,27 @@ export class CategoryAdminComponent extends BaseComponent implements OnInit {
     this.router.navigate(['/admin/categories/update', categoryId]);
   }
 
+  deleteCategory(category: Category) {
+    const confirmation = window.confirm('Are you sure you want to delete this category?');
+    if (confirmation) {
+      this.categoryService.deleteCategory(category.id).subscribe({
+        next: (apiResponse: ApiResponse) => {
+          this.toastService.showToast({
+            error: null,
+            defaultMsg: 'Xóa danh mục thành công',
+            title: 'Thành Công'
+          });
+          location.reload();
+        },
+        error: (error: HttpErrorResponse) => {
+          this.toastService.showToast({
+            error: error,
+            defaultMsg: 'Lỗi khi xóa danh mục',
+            title: 'Lỗi Xóa'
+          });
+        }
+      });
+    }
+  }
+
 }
