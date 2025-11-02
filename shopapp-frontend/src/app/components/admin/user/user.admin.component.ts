@@ -41,6 +41,7 @@ export class UserAdminComponent extends BaseComponent implements OnInit {
         const usersArray = Array.isArray(apiResponse.data) ? apiResponse.data : (apiResponse.data?.users ?? apiResponse.data?.items ?? []);
         this.users = usersArray.map((u: any) => {
           return {
+            ...u,
             fullname: u.fullname ?? u.fullName ?? u.name ?? '',
             phone_number: u.phone_number ?? u.phoneNumber ?? u.phone ?? '',
             address: u.address ?? u.Address ?? u.location ?? '',
@@ -58,6 +59,32 @@ export class UserAdminComponent extends BaseComponent implements OnInit {
         });
       }
     });
+  }
+
+  toggleUserStatus(user: UserResponse) {
+    let confirmation: boolean;
+    if (user.is_active) {
+      confirmation = window.confirm('Are you sure you want to block this user?');
+    } else {
+      confirmation = window.confirm('Are you sure you want to enable this user?');
+    }
+    if (confirmation) {
+      const params = { userId: user.id, enable: !user.is_active };
+      this.userService.toggleUserStatus(params).subscribe({
+        next: (response: any) => {
+          console.error('Block/unblock user successfully');
+          location.reload();
+        },
+        complete: () => { debugger },
+        error: (error: HttpErrorResponse) => {
+          this.toastService.showToast({
+            error: error,
+            defaultMsg: 'Lỗi thay đổi trạng thái người dùng',
+            title: 'Lỗi Hệ Thống'
+          });
+        }
+      });
+    }
   }
 
 }

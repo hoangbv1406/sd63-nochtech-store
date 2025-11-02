@@ -84,4 +84,9 @@ export class UserService {
     return this.http.get<ApiResponse>(url, { params: params });
   }
 
+  toggleUserStatus(params: { userId: number, enable: boolean }): Observable<ApiResponse> {
+    const url = `${environment.apiBaseUrl}/users/block/${params.userId}/${params.enable ? '1' : '0'}`;
+    return this.http.put<ApiResponse>(url, null, this.apiConfig);
+  }
+
 }
