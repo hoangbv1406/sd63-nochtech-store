@@ -90,4 +90,13 @@ export class DetailProductComponent extends BaseComponent implements OnInit {
     this.currentImageIndex = index;
   }
 
+  addToCart(): void {
+    this.isPressedAddToCart = true;
+    if (this.product) {
+      this.cartService.addToCart(this.product.id, this.quantity);
+    } else {
+      console.error('Không thể thêm sản phẩm vào giỏ hàng vì product là null.');
+    }
+  }
+
 }
