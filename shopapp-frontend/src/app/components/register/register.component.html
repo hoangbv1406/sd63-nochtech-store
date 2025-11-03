@@ -2,44 +2,51 @@
 <main class="container-fluid">
     <div class="row d-flex justify-content-center">
         <div class="register-form">
-            <h2 class="register-header">Đăng ký</h2>
-            <div class="form-group">
-                <label for="phoneNumber">Phone's number</label>
-                <input type="text" class="form-control" name="phone" id="phoneNumber">
-            </div>
-            <div class="form-group">
-                <label for="password">Mật khẩu</label>
-                <input name="password" placeholder="Ít nhất 3 ký tự" class="form-control">
-            </div>
-            <div class="form-group">
-                <label for="retype-password">Nhập lại mật khẩu</label>
-                <input placeholder="Ít nhất 3 ký tự" name="retypePassword" class="form-control">
-            </div>
-            <div class="form-group">
-                <label for="full-name">Họ và tên</label>
-                <input type="text" name="fullName" class="form-control" id="full-name">
-            </div>
-            <div class="form-group">
-                <label for="date-of-birth">Ngày tháng năm sinh</label>
-                <input type="date" class="form-control" id="date-of-birth" name="dateOfBirth">
-            </div>
-            <div class="form-group">
-                <label for="address">Địa chỉ</label>
-                <input type="text" name="address" class="form-control" id="address">
-            </div>
-            <div class="form-group">
-                <div class="form-check checkbox-text">
-                    <span>
-                        <input type="checkbox" name="isAccepted" class="form-check-input" id="agree">
-                        <label class="form-check-label text-start" for="agree">Tôi đồng ý với các điều khoản</label>
-                    </span>
+            <form #registerForm="ngForm" (ngSubmit)="register()">
+                <h2 class="register-header">Đăng ký</h2>
+                <div class="form-group">
+                    <label for="phoneNumber">Phone's number</label>
+                    <input type="text" class="form-control" name="phone" id="phoneNumber" [(ngModel)]="phoneNumber">
                 </div>
-            </div>
-            <button type="button" class="register-button">Đăng ký</button>
-            <p class="text-center">
-                <span>Bạn đã có tài khoản?</span>
-                <span><a href="#" routerLink="/login">Đăng nhập</a></span>
-            </p>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="text" class="form-control" name="email" id="email" [(ngModel)]="email">
+                </div>
+                <div class="form-group">
+                    <label for="password">Mật khẩu</label>
+                    <input name="password" placeholder="Ít nhất 3 ký tự" class="form-control" [(ngModel)]="password">
+                </div>
+                <div class="form-group">
+                    <label for="retype-password">Nhập lại mật khẩu</label>
+                    <input placeholder="Ít nhất 3 ký tự" name="retypePassword" class="form-control" [(ngModel)]="retypePassword">
+                </div>
+                <div class="form-group">
+                    <label for="full-name">Họ và tên</label>
+                    <input type="text" name="fullName" class="form-control" id="full-name" [(ngModel)]="fullName">
+                </div>
+                <div class="form-group">
+                    <label for="date-of-birth">Ngày tháng năm sinh</label>
+                    <input type="date" class="form-control" id="date-of-birth" name="dateOfBirth" [(ngModel)]="dateOfBirthString" (ngModelChange)="onDateChange($event)">
+                </div>
+                <div class="form-group">
+                    <label for="address">Địa chỉ</label>
+                    <input type="text" name="address" class="form-control" id="address" [(ngModel)]="address">
+                </div>
+                <div class="form-group">
+                    <div class="form-check checkbox-text">
+                        <span>
+                            <input type="checkbox" name="isAccepted" class="form-check-input" id="agree"
+                                [(ngModel)]="isAccepted">
+                            <label class="form-check-label text-start" for="agree">Tôi đồng ý với các điều khoản</label>
+                        </span>
+                    </div>
+                </div>
+                <button type="submit" class="register-button">Đăng ký</button>
+                <p class="text-center">
+                    <span>Bạn đã có tài khoản?</span>
+                    <span><a href="#" routerLink="/login">Đăng nhập</a></span>
+                </p>
+            </form>
         </div>
     </div>
 </main>

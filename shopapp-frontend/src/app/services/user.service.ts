@@ -9,6 +9,7 @@ import { ApiResponse } from '../responses/api.response';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { UpdateUserDTO } from '../dtos/user/update.user.dto';
+import { RegisterDTO } from '../dtos/user/register.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,7 @@ export class UserService {
   private http = inject(HttpClient);
   private httpUtilService = inject(HttpUtilService);
   private apiConfig = { headers: this.httpUtilService.createHeaders() };
+  private apiRegister = `${environment.apiBaseUrl}/users/register`;
   private apiLogin = `${environment.apiBaseUrl}/users/login`;
   private apiUserDetail = `${environment.apiBaseUrl}/users/details`;
   localStorage?: Storage;
@@ -64,6 +66,10 @@ export class UserService {
 
   login(loginDTO: LoginDTO): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(this.apiLogin, loginDTO, this.apiConfig);
+  }
+
+  register(registerDTO: RegisterDTO): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(this.apiRegister, registerDTO, this.apiConfig);
   }
 
   getUserDetail(token: string): Observable<ApiResponse> {
