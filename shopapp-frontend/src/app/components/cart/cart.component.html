@@ -1,6 +1,44 @@
 <!-- File: cart.component.html -->
 <app-header></app-header>
 <main class="container-fluid">
-    <h1>Đây là trang Cart</h1>
+    <h1 class="cart-title">Đây là trang Cart</h1>
+
+    @if (cartEntries.length === 0) {
+    <p class="empty-cart">Giỏ hàng trống.</p>
+    } @else {
+    <p class="cart-summary">Tổng sản phẩm: {{ getTotalItems() }}</p>
+
+    <table class="cart-table">
+        <thead>
+            <tr>
+                <th>Product ID</th>
+                <th>Số lượng</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for(item of cartEntries; track item.productId) {
+            <tr>
+                <td class="cell-id">{{ item.productId }}</td>
+                <td class="cell-quantity">
+                    <div class="quantity-control">
+                        <button class="btn quantity-btn" (click)="decrease(item.productId)">-</button>
+                        <span class="quantity-value">{{ item.quantity }}</span>
+                        <button class="btn quantity-btn" (click)="increase(item.productId)">+</button>
+                    </div>
+                </td>
+                <td class="cell-action">
+                    <button class="btn btn-remove" (click)="remove(item.productId)">Xóa</button>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="cart-actions">
+        <button class="btn btn-clear" (click)="clearCart()">Xóa toàn bộ giỏ</button>
+        <button class="btn btn-checkout">Tiến hành thanh toán</button>
+    </div>
+    }
 </main>
 <app-footer></app-footer>
