@@ -8,6 +8,7 @@ export interface Product {
   thumbnail: string;
   description: string;
   category_id: number;
+  category_name?: string;
   url: string;
   product_images: ProductImage[];
 }
