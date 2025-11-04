@@ -6,7 +6,10 @@
         @if (cartEntries.length === 0) {
         <div class="cart-page-header">Giỏ hàng trống.</div>
         } @else {
-        <div class="cart-page-header">{{ getTotalItems() }} sản phẩm trong giỏ hàng</div>
+        <div class="cart-page-header">
+            <span>{{ getTotalItems() }}</span>
+            <span>sản phẩm trong giỏ hàng</span>
+        </div>
 
         <div class="cart-wrapper">
             <div class="cart-items-section">
@@ -42,7 +45,9 @@
                             </div>
                         </div>
                         <div class="col-total">
-                            <span class="item-total-price">{{ (item.product.price * item.quantity) | number:'1.0-0' }}₫</span>
+                            <span class="item-total-price">
+                                {{ (item.product.price * item.quantity) | number:'1.0-0' }}₫
+                            </span>
                         </div>
                         <div class="col-action">
                             <span class="action-link" (click)="remove(item.product.id)">Xóa</span>
@@ -56,9 +61,11 @@
                 <div class="summary-card">
                     <div class="summary-title">Tổng:</div>
                     <div>
-                        <div class="summary-total">{{ totalAmount | number:'1.0-0' }}₫</div>
+                        <div class="summary-total">
+                            {{ totalAmount | number:'1.0-0' }}₫
+                        </div>
                     </div>
-                    <button class="btn-checkout">Tiến hành thanh toán</button>
+                    <button class="btn-checkout" (click)="buyNow()">Tiến hành thanh toán</button>
                     <div class="coupon-area">
                         <div class="coupon-input-group">
                             <input type="text" class="coupon-input" placeholder="Nhập mã giảm giá">

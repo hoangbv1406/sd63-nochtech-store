@@ -19,6 +19,9 @@ import { environment } from '../../../environments/environment';
 export class CartComponent extends BaseComponent implements OnInit {
     cartEntries: Array<{ product: Product; quantity: number }> = [];
     totalAmount: number = 0;
+    product?: Product;
+    quantity: number = 1;
+    isPressedAddToCart: boolean = false;
 
     ngOnInit(): void {
         this.loadCart();
@@ -39,7 +42,7 @@ export class CartComponent extends BaseComponent implements OnInit {
                 this.cartEntries = responses.map((response) => {
                     const product = response.data;
                     if (product.thumbnail) {
-                        product.url = `${environment.apiBaseUrl}/products/images/${product.thumbnail}`;
+                        product.url = product.thumbnail;
                     }
                     return {
                         product: product,
@@ -108,4 +111,21 @@ export class CartComponent extends BaseComponent implements OnInit {
             this.calculateTotal();
         }
     }
+
+    addToCart(): void {
+        this.isPressedAddToCart = true;
+        if (this.product) {
+            this.cartService.addToCart(this.product.id, this.quantity);
+        } else {
+            console.error('Không thể thêm sản phẩm vào giỏ hàng vì product là null.');
+        }
+    }
+
+    buyNow(): void {
+        if (this.isPressedAddToCart == false) {
+            this.addToCart();
+        }
+        this.router.navigate(['/orders']);
+    }
+
 }
