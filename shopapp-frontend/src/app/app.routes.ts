@@ -22,6 +22,7 @@ import { InsertProductAdminComponent } from './components/admin/product/insert/i
 import { UpdateProductAdminComponent } from './components/admin/product/update/update.product.admin.component';
 import { CartComponent } from './components/cart/cart.component';
 import { OrderHistoryComponent } from './components/order-history/order.history.component';
+import { ProductListComponent } from './components/product-list/product.list.component';
 
 export const routes: Routes = [
     { path: '', component: HomeComponent },
@@ -29,6 +30,7 @@ export const routes: Routes = [
     { path: 'auth/google/callback', component: AuthCallbackComponent },
     { path: 'auth/facebook/callback', component: AuthCallbackComponent },
     { path: 'register', component: RegisterComponent },
+    { path: 'products', component: ProductListComponent },
     { path: 'products/:id', component: DetailProductComponent },
     { path: 'orders', component: OrderComponent },
     { path: 'orders/:id', component: OrderDetailComponent },

@@ -1,0 +1,129 @@
+<!-- File: product.list.component.html -->
+<app-header></app-header>
+<main class="container-fluid">
+    <div class="container">
+        <div class="shopee-layout">
+
+            <aside class="sidebar-filter">
+                <div class="filter-header">
+                    <i class="fas fa-list-ul"></i>
+                    <span>Tất Cả Danh Mục</span>
+                </div>
+
+                <ul class="category-tree">
+                    <li class="category-item" [class.active]="categoryId === 0" (click)="searchByCategory(0)">
+                        Tất cả sản phẩm
+                    </li>
+                    @for (cate of categories; track cate.id) {
+                    <li class="category-item" [class.active]="cate.id === categoryId"
+                        (click)="searchByCategory(cate.id)">
+                        {{ cate.name }}
+                    </li>
+                    }
+                </ul>
+
+                <div class="filter-header">
+                    <i class="fas fa-filter"></i>
+                    <span>Bộ lọc tìm kiếm</span>
+                </div>
+
+                <div class="filter-group">
+                    <div class="filter-group-title">Khoảng Giá</div>
+                    <div class="price-range-inputs">
+                        <input type="text" class="price-input" placeholder="₫ TỪ">
+                        <span>-</span>
+                        <input type="text" class="price-input" placeholder="₫ ĐẾN">
+                    </div>
+                    <button class="btn-apply-price">Áp dụng</button>
+                </div>
+
+                <button class="btn-clear-all" (click)="searchByCategory(0)">
+                    Xóa tất cả
+                </button>
+            </aside>
+
+            <div class="main-content">
+                <div class="shopee-sort-bar">
+                    <div class="sort-options">
+                        <span class="sort-bar-label">Sắp xếp theo</span>
+                        <button class="btn-sort active">Phổ Biến</button>
+                        <button class="btn-sort">Mới Nhất</button>
+                        <button class="btn-sort">Bán Chạy</button>
+                        <div class="sort-price-dropdown">
+                            <i class="fas fa-chevron-down"></i>
+                            <span>Giá</span>
+                        </div>
+                    </div>
+
+                    <div class="mini-pagination">
+                        <span class="mini-page-state">
+                            <span class="current-page">{{ currentPage + 1 }}</span>/{{ totalPages }}
+                        </span>
+                        <button class="btn-mini-page" [class.disabled]="currentPage === 0"
+                            (click)="onPageChange(currentPage - 1)">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="btn-mini-page" [class.disabled]="currentPage >= totalPages - 1"
+                            (click)="onPageChange(currentPage + 1)">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="product-grid">
+                    @for(product of products; track product.id) {
+                    <article class="product-card" (click)="onProductClick(product.id)">
+                        <figure class="product-img">
+                            <div class="img-placeholder">
+                                @if (product.url) {
+                                <img [src]="product.url" [alt]="product.name" class="product-image">
+                                } @else {
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" class="product-image">
+                                    <rect rx="6" ry="6" width="100%" height="100%" fill="#eee" />
+                                    <text x="50%" y="50%" text-anchor="middle" fill="#999">No Image</text>
+                                </svg>
+                                }
+                            </div>
+                        </figure>
+                        <div class="product-info-body">
+                            <h3 class="product-name">{{ product.name }}</h3>
+                            <div class="price-box">
+                                <span class="current-price">
+                                    <span class="currency-symbol">₫</span>{{ product.price | number:'1.0-0' }}
+                                </span>
+                                <span class="sold-count">Đã bán 0</span>
+                            </div>
+                        </div>
+                    </article>
+                    }
+                    @empty {
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 50px; color: #777;">
+                        Không tìm thấy sản phẩm nào phù hợp.
+                    </div>
+                    }
+                </div>
+
+                @if (totalPages > 0) {
+                <div class="shopee-pagination">
+                    <button class="btn-page" [disabled]="currentPage === 0" (click)="onPageChange(currentPage - 1)">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+
+                    @for (page of visiblePages; track page) {
+                    <button class="btn-page" [class.active]="page === currentPage" (click)="onPageChange(page)">
+                        {{ page + 1 }}
+                    </button>
+                    }
+
+                    <button class="btn-page" [disabled]="currentPage >= totalPages - 1"
+                        (click)="onPageChange(currentPage + 1)">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                }
+            </div>
+
+        </div>
+    </div>
+</main>
+<app-footer></app-footer>
