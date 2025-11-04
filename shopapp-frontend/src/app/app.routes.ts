@@ -20,6 +20,7 @@ import { InsertCategoryAdminComponent } from './components/admin/category/insert
 import { UpdateCategoryAdminComponent } from './components/admin/category/update/update.category.admin.component';
 import { InsertProductAdminComponent } from './components/admin/product/insert/insert.product.admin.component';
 import { UpdateProductAdminComponent } from './components/admin/product/update/update.product.admin.component';
+import { CartComponent } from './components/cart/cart.component';
 
 export const routes: Routes = [
     { path: '', component: HomeComponent },
@@ -32,6 +33,7 @@ export const routes: Routes = [
     { path: 'orders/:id', component: OrderDetailComponent },
     { path: 'user-profile', component: UserProfileComponent },
     { path: 'payments/payment-callback', component: PaymentCallbackComponent },
+    { path: 'cart', component: CartComponent },
 
     {
         path: 'admin', component: AdminComponent, canActivate: [AdminGuardFn],
