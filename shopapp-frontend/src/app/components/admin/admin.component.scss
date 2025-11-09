@@ -2,34 +2,176 @@
 @use '../../../styles.scss' as *;
 
 .container-fluid {
-    background-color: white;
+    display: flex;
+    min-height: 100vh;
 }
 
-.header {
-    background-color: #333;
-    color: white;
-    padding: 10px;
+.sidebar {
+    width: 250px;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100vh;
+    z-index: 1000;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #000;
+    font-weight: bold;
+    font-size: 29px;
+    font-style: italic;
+    padding: 13px 20px;
     text-align: center;
 }
 
-#sidebar {
-    background-color: #007bff !important;
-    color: white;
-    height: 100vh;
+.logo-icon {
+    background-color: #000;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 5px;
+    font-style: normal;
+}
+
+.sidebar-menu {
+    flex: 1;
+    list-style: none;
     overflow-y: auto;
+    scrollbar-width: none;
 }
 
-#sidebar a {
-    color: white;
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 10px 15px;
+.sidebar-menu::-webkit-scrollbar {
+    width: 6px;
 }
 
-#sidebar a.active {
-    font-weight: bold;
-    background-color: #0056b3;
+.sidebar-menu::-webkit-scrollbar-track {
+    background: transparent;
 }
 
-#sidebar a:hover {
-    background-color: #0056b3;
+.sidebar-menu::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border-radius: 10px;
+    transition: background-color 0.3s;
+}
+
+.sidebar:hover .sidebar-menu::-webkit-scrollbar-thumb {
+    background-color: #e0e0e0;
+}
+
+.sidebar:hover .sidebar-menu {
+    scrollbar-width: thin;
+    scrollbar-color: #e0e0e0 transparent;
+}
+
+.sidebar-menu li a {
+    display: flex;
+    align-items: center;
+    padding: 15px 25px;
+    text-decoration: none;
+    color: #555;
+    font-size: 16px;
+    transition: all 0.2s ease;
+}
+
+.sidebar-menu li a.active {
+    background-color: transparent;
+    color: inherit;
+}
+
+.sidebar-menu li a:not(.active):hover {
+    background-color: #05a;
+    color: #ffffff;
+}
+
+.sidebar-menu:not(:hover) li a.active,
+.sidebar-menu li a.active:hover {
+    background-color: #D0EEFF;
+    color: #05a;
+}
+
+.sidebar-menu li a i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+.sidebar-footer {
+    padding: 15px 25px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.btn-logout {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #d32f2f;
+    font-size: 16px;
+}
+
+.btn-logout i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+.content-area {
+    flex: 1;
+    margin-left: 250px;
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-header {
+    height: 70px;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 999;
+}
+
+.header-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.notification-box {
+    position: relative;
+    cursor: pointer;
+    color: #555;
+    font-size: 20px;
+    transition: color 0.2s;
+}
+
+.notification-box:hover {
+    color: #05a;
+}
+
+.user-profile {
+    font-size: 16px;
+    color: #333;
+}
+
+.main-content {
+    background-color: $shopapp-background-color-main;
+    padding: 30px;
 }

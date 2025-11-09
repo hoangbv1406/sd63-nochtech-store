@@ -1,43 +1,103 @@
 <!-- File: admin.component.html -->
-<header class="header bg-success text-white d-flex justify-content-between">
-    <h1 class="header-title">Dashboard Header</h1>
-    <button class="btn btn-danger btn-sm" (click)="logout()">Logout</button>
-</header>
-<main>
-    <div class="row">
-        <nav id="sidebar" class="col-md-2 col-lg-2 d-md-block bg-light sidebar">
-            <div class="position-sticky">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link" (click)="showAdminComponent('orders')" routerLink="/admin/orders"
-                            routerLinkActive="active">
-                            Orders
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" (click)="showAdminComponent('categories')" routerLink="/admin/categories"
-                            routerLinkActive="active">
-                            Categories
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" (click)="showAdminComponent('products')" routerLink="/admin/products"
-                            routerLinkActive="active">
-                            Products
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" (click)="showAdminComponent('users')" routerLink="/admin/users"
-                            routerLinkActive="active">
-                            Users
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+<main class="container-fluid">
 
-        <div class="col-md-10 col-lg-10 overflow-auto">
+    <aside class="sidebar">
+        <a href="#" class="logo">
+            <div class="logo-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="50" height="50">
+                    <circle cx="50" cy="50" r="45" fill="#FFFFFF" stroke="#000000" stroke-width="0.5" />
+                    <circle cx="50" cy="50" r="35" fill="#000000" />
+                    <circle cx="50" cy="50" r="25" fill="#0066FF" />
+                    <circle cx="50" cy="50" r="15" fill="#FF0000" />
+                    <circle cx="50" cy="50" r="10" fill="#FFD700" />
+                </svg>
+            </div>
+            <div class="logo-title">NochTech</div>
+        </a>
+
+        <ul class="sidebar-menu">
+            <li>
+                <a (click)="showAdminComponent('dashboard')" routerLink="/admin/dashboard" routerLinkActive="active">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a (click)="showAdminComponent('orders')" routerLink="/admin/orders" routerLinkActive="active">
+                    <i class="fas fa-clipboard-check"></i>
+                    <span>Orders</span>
+                </a>
+            </li>
+            <li>
+                <a (click)="showAdminComponent('products')" routerLink="/admin/products" routerLinkActive="active">
+                    <i class="fas fa-archive"></i>
+                    <span>Products</span>
+                </a>
+            </li>
+            <li>
+                <a (click)="showAdminComponent('categories')" routerLink="/admin/categories" routerLinkActive="active">
+                    <i class="fas fa-list"></i>
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a (click)="showAdminComponent('inventory')" routerLink="/admin/inventory" routerLinkActive="active">
+                    <i class="fas fa-dolly-flatbed"></i>
+                    <span>Inventory</span>
+                </a>
+            </li>
+            <li>
+                <a (click)="showAdminComponent('users')" routerLink="/admin/users" routerLinkActive="active">
+                    <i class="fas fa-user-friends"></i>
+                    <span>Users</span>
+                </a>
+            </li>
+            <li>
+                <a (click)="showAdminComponent('promotions')" routerLink="/admin/promotions" routerLinkActive="active">
+                    <i class="fas fa-gift"></i>
+                    <span>Promotions</span>
+                </a>
+            </li>
+            <li>
+                <a (click)="showAdminComponent('cms')" routerLink="/admin/cms" routerLinkActive="active">
+                    <i class="fas fa-edit"></i>
+                    <span>CMS</span>
+                </a>
+            </li>
+            <li>
+                <a (click)="showAdminComponent('settings')" routerLink="/admin/settings" routerLinkActive="active">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <a class="btn-logout" (click)="logout()">
+                <i class="fas fa-power-off"></i>
+                <span>Đăng xuất</span>
+            </a>
+        </div>
+    </aside>
+
+    <section class="content-area">
+        <header class="admin-header">
+            <div class="header-title">Title</div>
+
+            <div class="header-right">
+                <div class="notification-box">
+                    <i class="far fa-bell"></i>
+                    <span class="notification-badge"></span>
+                </div>
+                <div class="user-profile">
+                    Xin chào, <b>Admin</b>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-content">
             <router-outlet />
         </div>
-    </div>
+    </section>
+
 </main>
