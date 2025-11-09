@@ -1,40 +1,92 @@
 <!-- File: product.admin.component.html -->
-<div class="container">
-    <div class="row">
-        <div class="col-md-8 ">
-            <button class="btn btn-success" (click)="insertProduct()">Thêm sản phẩm mới</button>
-        </div>
-    </div>
+<main class="container-fluid">
+    <div class="product-container">
 
-    <table class="table">
-        <thead class="table-light">
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Thumbnail</th>
-                <th>Description</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @for(product of products; track product.id) {
-            <tr>
-                <td>{{ product.id }}</td>
-                <td>{{ product.name }}</td>
-                <td>{{ product.price }}</td>
-                <td>
-                    <img src="{{ product.url }}" class="rounded-square" alt="Thumbnail" width="100" height="100">
-                </td>
-                <td>{{ product.description }}</td>
-                <td>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn btn-primary" (click)="updateProduct(product.id)">Update</button>
-                        <button class="btn btn-danger" (click)="deleteProduct(product)">Delete</button>
-                    </div>
-                </td>
-            </tr>
-            }
-        </tbody>
-    </table>
-</div>
+        <div class="action-bar">
+            <div class="action-left">
+                <div class="search-box">
+                    <input type="text" placeholder="Tìm kiếm sản phẩm...">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+                <div class="filter-wrapper">
+                    <button class="btn-filter" id="filterBtn">
+                        <i class="fa-solid fa-filter"></i>
+                    </button>
+                </div>
+            </div>
+            <button class="btn-add" (click)="insertProduct()">
+                <i class="fa-solid fa-plus"></i>
+                <span>Thêm sản phẩm</span>
+            </button>
+        </div>
+
+        <div class="table-responsive">
+            <table class="product-table">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox"></th>
+                        <th>ID</th>
+                        <th>Hình ảnh</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Danh mục</th>
+                        <th>Giá bán</th>
+                        <th>Kho</th>
+                        <th>Trạng thái</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for(product of products; track product.id) {
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td><span class="id-text">{{ product.id }}</span></td>
+                        <td>
+                            <div class="product-thumbnail">
+                                <img [src]="product.url" alt="product">
+                            </div>
+                        </td>
+                        <td><span class="name-text">{{ product.name }}</span></td>
+                        <td>null</td>
+                        <td><span class="price-text">{{ product.price | number:'1.0-0'}}₫</span></td>
+                        <td>null</td>
+                        <td><span class="badge status-active">Còn hàng</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-icon btn-edit" title="Sửa" (click)="updateProduct(product.id)">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button class="btn-icon btn-delete" title="Xóa" (click)="deleteProduct(product)">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-footer">
+            <div class="footer-left">
+                <span>Đang xem 1 đến 10 trong tổng số 50 mục</span>
+            </div>
+            <div class="footer-right">
+                <div class="page-size">
+                    <span>Xem</span>
+                    <select class="page-select">
+                        <option>10</option>
+                        <option>25</option>
+                        <option>50</option>
+                    </select>
+                    <span>mục</span>
+                </div>
+                <nav class="pagination-nav">
+                    <button class="btn-page">Trước</button>
+                    <button class="btn-page active">1</button>
+                    <button class="btn-page">Tiếp</button>
+                </nav>
+            </div>
+        </div>
+
+    </div>
+</main>
