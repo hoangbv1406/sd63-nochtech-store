@@ -1,51 +1,157 @@
 <!-- File: product.detail.component.html -->
 <app-header></app-header>
 <main class="container-fluid">
-    <h1>Đây là trang Chi tiết sản phẩm</h1>
+    <div class="container">
 
-    <div class="row">
-        <div class="col-md-6">
-            <div id="carouselExample" class="carousel slide">
-                <div class="carousel-inner">
-                    @for(image of product?.product_images; track image.image_url) {
-                    <div class="carousel-item"
-                        [class.active]="product?.product_images?.indexOf(image) === currentImageIndex">
-                        <div class="square-image">
+        <div class="breadcrumb">
+            <a href="#">NochTech</a>
+        </div>
+
+        <div class="product-card">
+            <div class="product-gallery">
+                <div class="carousel">
+                    <div class="main-image">
+                        @for(image of product?.product_images; track image.image_url) {
+                        <div class="carousel-item" [class.active]="product?.product_images?.indexOf(image) === currentImageIndex">
                             <img [src]="image.image_url" class="product-image" alt="Product Image">
                         </div>
+                        }
                     </div>
-                    }
+                    <button class="carousel-control-prev" type="button" (click)="previousImage()">
+                        <span class="carousel-control-prev-icon"></span>
+                    </button>
+                    <button class="carousel-control-next" type="button" (click)="nextImage()">
+                        <span class="carousel-control-next-icon"></span>
+                    </button>
                 </div>
-                <button class="carousel-control-prev" type="button" (click)="previousImage()" aria-label="Previous">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" (click)="nextImage()" aria-label="Next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
-            </div>
-            <div class="row">
-                <div class="thumbnail-container">
+
+                <div class="thumbnail-list">
                     @for(image of product?.product_images; track image.image_url; let i = $index) {
-                    <div class="thumbnail-item" [ngClass]="{'active': i === currentImageIndex}" (click)="thumbnailClick(i)">
+                    <div class="thumbnail" [ngClass]="{'active': i === currentImageIndex}" (click)="thumbnailClick(i)">
                         <img [src]="image.image_url" class="thumbnail-image" alt="Thumbnail Image">
                     </div>
                     }
                 </div>
+
+                <div class="social-share">
+                    <div>
+                        <span>Chia sẻ:</span>
+                        <i class="fab fa-facebook"></i>
+                        <i class="fab fa-facebook-messenger"></i>
+                    </div>
+                    <div>
+                        <i class="far fa-heart"></i>
+                        <span>Đã thích (654)</span>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="col-md-6">
-            <div class="product-details">
-                <h2>{{ product?.name }}</h2>
-                <p>{{ product?.description }}</p>
-                <p>Giá: {{ product?.price }}</p>
-                <div class="product-actions">
-                    <button class="btn btn-primary" (click)="addToCart()">Thêm vào giỏ hàng</button>
-                    <button class="btn btn-success">Mua ngay</button>
+
+            <div class="product-info">
+                <h1 class="product-title">{{ product?.name }}</h1>
+
+                <div class="product-meta">
+                    <div class="rating">
+                        <span class="rating-stars">5.0</span>
+                        <i class="fas fa-star star-icon"></i>
+                        <i class="fas fa-star star-icon"></i>
+                        <i class="fas fa-star star-icon"></i>
+                        <i class="fas fa-star star-icon"></i>
+                        <i class="fas fa-star star-icon"></i>
+                    </div>
+                    <div class="separator"></div>
+                    <div class="sold">20 Đánh giá</div>
+                    <div class="separator"></div>
+                    <div class="sold">124 Đã bán</div>
+                </div>
+
+                <div class="price-section">
+                    <span class="current-price">{{ product?.price }}</span>
+                </div>
+
+                <div class="option-row">
+                    <div class="option-label">Vận Chuyển</div>
+                    <div class="transport-info">
+                        <div class="transport-free-row">
+                            <i class="fas fa-truck"></i>
+                            <span>Miễn phí vận chuyển</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="option-row">
+                    <div class="option-label">Số Lượng</div>
+                    <div class="quantity-selector">
+                        <button class="qty-btn">-</button>
+                        <input type="text" class="qty-input" value="1">
+                        <button class="qty-btn">+</button>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-add-cart" (click)="addToCart()">Thêm Vào Giỏ Hàng</button>
+                    <button class="btn btn-buy-now">Mua Ngay</button>
+                </div>
+
+                <div class="guarantee-box">
+                    <div class="guarantee-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>NochTech Đảm Bảo</span>
+                    </div>
+                    <div>3 Ngày Trả Hàng / Hoàn Tiền</div>
                 </div>
             </div>
         </div>
+
+        <div class="content-layout">
+            <div class="left-content">
+                <div class="section-box">
+                    <div class="section-header header-plain">CHI TIẾT SẢN PHẨM</div>
+                    <div class="detail-row">
+                        <span class="detail-label">Danh Mục</span>
+                        <span class="detail-value">
+                            <a href="#" class="text-link">NochTech</a>
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Xuất xứ</span>
+                        <span class="detail-value">Việt Nam</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Trạng Thái</span>
+                        <span class="detail-value">Còn Hàng</span>
+                    </div>
+                </div>
+
+                <div class="section-box">
+                    <div class="section-header header-plain">MÔ TẢ SẢN PHẨM</div>
+                    <div class="product-description">{{ product?.description }}</div>
+                </div>
+
+                <div class="section-box">
+                    <h2 class="review-header">ĐÁNH GIÁ SẢN PHẨM</h2>
+                    <div class="review-summary">
+                        <div class="summary-score">
+                            <div class="score">
+                                <span class="score-big">5.0</span>
+                                <span class="score-small">trên 5</span>
+                            </div>
+                            <div class="score-stars">★★★★★</div>
+                        </div>
+                        <div class="filter-buttons">
+                            <button class="btn-filter active">Tất Cả</button>
+                            <button class="btn-filter">5 Sao</button>
+                            <button class="btn-filter">4 Sao</button>
+                            <button class="btn-filter">3 Sao</button>
+                            <button class="btn-filter">2 Sao</button>
+                            <button class="btn-filter">1 Sao</button>
+                            <button class="btn-filter">Có Bình Luận</button>
+                            <button class="btn-filter">Có Hình Ảnh</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </main>
 <app-footer></app-footer>
