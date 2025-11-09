@@ -1,52 +1,70 @@
 <!-- File: register.component.html -->
 <main class="container-fluid">
-    <div class="row d-flex justify-content-center">
-        <div class="register-form">
-            <form #registerForm="ngForm" (ngSubmit)="register()">
-                <h2 class="register-header">Đăng ký</h2>
-                <div class="form-group">
-                    <label for="phoneNumber">Phone's number</label>
-                    <input type="text" class="form-control" name="phone" id="phoneNumber" [(ngModel)]="phoneNumber">
-                </div>
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="text" class="form-control" name="email" id="email" [(ngModel)]="email">
-                </div>
-                <div class="form-group">
-                    <label for="password">Mật khẩu</label>
-                    <input name="password" placeholder="Ít nhất 3 ký tự" class="form-control" [(ngModel)]="password">
-                </div>
-                <div class="form-group">
-                    <label for="retype-password">Nhập lại mật khẩu</label>
-                    <input placeholder="Ít nhất 3 ký tự" name="retypePassword" class="form-control" [(ngModel)]="retypePassword">
-                </div>
-                <div class="form-group">
-                    <label for="full-name">Họ và tên</label>
-                    <input type="text" name="fullName" class="form-control" id="full-name" [(ngModel)]="fullName">
-                </div>
-                <div class="form-group">
-                    <label for="date-of-birth">Ngày tháng năm sinh</label>
-                    <input type="date" class="form-control" id="date-of-birth" name="dateOfBirth" [(ngModel)]="dateOfBirthString" (ngModelChange)="onDateChange($event)">
-                </div>
-                <div class="form-group">
-                    <label for="address">Địa chỉ</label>
-                    <input type="text" name="address" class="form-control" id="address" [(ngModel)]="address">
-                </div>
-                <div class="form-group">
-                    <div class="form-check checkbox-text">
-                        <span>
-                            <input type="checkbox" name="isAccepted" class="form-check-input" id="agree"
-                                [(ngModel)]="isAccepted">
-                            <label class="form-check-label text-start" for="agree">Tôi đồng ý với các điều khoản</label>
-                        </span>
+    <div class="container">
+
+        <div class="register-layout">
+            <section class="brand-section">
+                <h1 class="brand-name">NochTech</h1>
+                <h2 class="brand-slogan">NOCH đại diện cho các giá trị cốt lõi</h2>
+                <h2 class="brand-slogan">New - Optimized - Connected - Honest</h2>
+            </section>
+
+            <section class="register-card">
+                <div class="card-header">
+                    <h3 class="card-title">Đăng ký</h3>
+                    <div class="qr-section">
+                        <div class="qr-tooltip">Đăng ký với mã QR</div>
+                        <i class="fas fa-qrcode qr-icon"></i>
                     </div>
                 </div>
-                <button type="submit" class="register-button">Đăng ký</button>
-                <p class="text-center">
+
+                <form action="#" method="POST" #registerForm="ngForm" (ngSubmit)="register()">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Họ và tên" name="fullName" [(ngModel)]="fullName">
+                    </div>
+                    <div class="input-group">
+                        <input type="tel" class="form-control" placeholder="Số điện thoại" name="phone" [(ngModel)]="phoneNumber">
+                    </div>
+                    <div class="input-group">
+                        <input type="email" class="form-control" placeholder="Email" name="email" [(ngModel)]="email">
+                    </div>
+                    <div class="input-group">
+                        <input type="password" class="form-control" placeholder="Mật khẩu" name="password" [(ngModel)]="password">
+                        <i class="fas fa-eye-slash toggle-password"></i>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" class="form-control" placeholder="Nhập lại mật khẩu" name="retypePassword" [(ngModel)]="retypePassword">
+                        <i class="fas fa-eye-slash toggle-password"></i>
+                    </div>
+                    <div class="input-group">
+                        <input type="date" class="form-control" placeholder="Ngày/Tháng/Năm Sinh" name="dateOfBirth" [(ngModel)]="dateOfBirthString" (ngModelChange)="onDateChange($event)">
+                    </div>
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Địa chỉ" name="address" [(ngModel)]="address">
+                    </div>
+                    <button type="submit" class="btn-submit">Đăng ký</button>
+                </form>
+
+                <div class="separator"><span>HOẶC</span></div>
+
+                <div class="social-buttons">
+                    <button class="btn-social"><i class="fab fa-facebook"></i> Facebook</button>
+                    <button class="btn-social"><i class="fab fa-google"></i> Google</button>
+                </div>
+
+                <div class="terms-text">
+                    <span>Bằng việc đăng kí, bạn đã đồng ý với NochTech về</span><br>
+                    <a href="#">Điều khoản dịch vụ</a>
+                    <span> & </span>
+                    <a href="#">Chính sách bảo mật</a>
+                </div>
+
+                <div class="card-footer-text">
                     <span>Bạn đã có tài khoản?</span>
-                    <span><a href="#" routerLink="/login">Đăng nhập</a></span>
-                </p>
-            </form>
+                    <a routerLink="/login">Đăng nhập</a>
+                </div>
+            </section>
         </div>
+
     </div>
 </main>

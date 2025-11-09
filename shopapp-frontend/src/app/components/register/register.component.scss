@@ -1,43 +1,227 @@
 // File: register.component.scss
 @use '../../../styles.scss' as *;
 
-.register-form {
-    background-color: #F1F1F1;
-    border-radius: 10px;
-    padding: 20px;
-    margin: 20px;
-    max-width: 500px;
-    border: 1px solid rgb(32, 34, 60);
-    color: #000000;
+.container-fluid {
+    background-color: #F2F4F7;
+    min-height: 100vh;
+    display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.register-form .register-header {
-    text-align: center;
-    color: rgb(0, 0, 0);
-    margin-bottom: 15px;
+.container {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 0 20px;
+    width: 100%;
 }
 
-.register-form .checkbox-text {
-    color: rgba(148, 148, 148, 0.87);
+.register-layout {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 10px;
-}
-
-.register-form .checkbox-text .form-check-input {
-    margin: 4px 5px;
-}
-
-.register-form .register-button {
-    background: rgb(68, 51, 223);
-    color: white;
-    border-radius: 30px;
     width: 100%;
-    padding: 10px 0;
-    margin-top: 20px;
+    padding: 40px 0;
+}
+
+.brand-section {
+    flex: 1;
+    padding-right: 50px;
+    color: #1c1e21;
+}
+
+.brand-name {
+    font-size: 60px;
+    font-weight: bold;
     margin-bottom: 10px;
+    letter-spacing: -1px;
+}
+
+.brand-slogan {
+    font-size: 28px;
+    line-height: 1.4;
+    font-weight: 400;
+}
+
+.register-card {
+    background-color: #fff;
+    width: 400px;
+    border-radius: 4px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    position: relative;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.card-title {
+    font-size: 20px;
+    color: #222;
+    font-weight: 500;
+}
+
+.qr-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.qr-tooltip {
+    background-color: #fff4f4;
+    border: 2px solid #ffbfb0;
+    color: #ee4d2d;
+    padding: 10px 10px;
+    font-size: 12px;
+    font-weight: bold;
+    position: relative;
+    border-radius: 2px;
+}
+
+.qr-tooltip::after {
+    content: "";
+    position: absolute;
+    right: -6px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-left: 6px solid #ffbfb0;
+}
+
+.qr-icon {
+    font-size: 24px;
+    color: #ee4d2d;
+    cursor: pointer;
+}
+
+.input-group {
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.form-control {
+    width: 100%;
+    height: 40px;
+    padding: 10px;
+    border: 1px solid #dbdbdb;
+    border-radius: 2px;
+    outline: none;
+    font-size: 14px;
+}
+
+.form-control:focus {
+    border-color: #777;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+    cursor: pointer;
+}
+
+.btn-submit {
+    width: 100%;
+    height: 40px;
+    background-color: #ee4d2d;
+    color: #fff;
     border: none;
+    border-radius: 2px;
+    font-size: 14px;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 10px;
+    letter-spacing: 0.5px;
+}
+
+.btn-submit:hover {
+    opacity: 0.9;
+}
+
+.separator {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+    color: #ccc;
+    font-size: 12px;
+}
+
+.separator::before,
+.separator::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background-color: #dbdbdb;
+}
+
+.separator span {
+    padding: 0 10px;
+}
+
+.social-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-social {
+    flex: 1;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1px solid #dbdbdb;
+    background-color: #fff;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #000;
+}
+
+.btn-social:hover {
+    background-color: #f5f5f5;
+}
+
+.fa-facebook {
+    color: #1877f2;
+    font-size: 18px;
+}
+
+.fa-google {
+    color: #ea4335;
+    font-size: 18px;
+}
+
+.terms-text {
+    font-size: 12px;
+    text-align: center;
+    color: #000;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.terms-text a {
+    color: #05a;
+    text-decoration: none;
+}
+
+.card-footer-text {
+    margin-top: 25px;
+    text-align: center;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.card-footer-text a {
+    text-decoration: none;
+    color: #ee4d2d;
+    font-weight: 500;
+    padding: 0 5px;
 }
