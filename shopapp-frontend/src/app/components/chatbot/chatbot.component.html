@@ -1,0 +1,93 @@
+<!-- File: chatbot.component.html -->
+<div class="chatbot-container">
+
+    @if (isOpen) {
+    <div class="chat-window">
+
+        @if (currentView === 'menu') {
+        <div class="chat-header">
+            <div class="header-info">
+                <i class="fa-solid fa-comments"></i>
+                <span>Hỗ trợ khách hàng</span>
+            </div>
+            <button class="btn-close" (click)="toggleChat()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="menu-body">
+            <div class="menu-intro">
+                <p>Xin chào! Bạn muốn kết nối với ai?</p>
+            </div>
+
+            <button class="menu-btn bot-option" (click)="selectMode('bot')">
+                <div class="icon-circle">
+                    <i class="fa-solid fa-robot"></i>
+                </div>
+                <div class="btn-text">
+                    <strong>Chat với Trợ lý AI</strong>
+                    <span>Trả lời tự động 24/7</span>
+                </div>
+                <i class="fa-solid fa-chevron-right arrow"></i>
+            </button>
+
+            <button class="menu-btn human-option" (click)="selectMode('human')">
+                <div class="icon-circle">
+                    <i class="fa-solid fa-headset"></i>
+                </div>
+                <div class="btn-text">
+                    <strong>Chat với Nhân viên</strong>
+                    <span>Tư vấn trực tiếp</span>
+                </div>
+                <i class="fa-solid fa-chevron-right arrow"></i>
+            </button>
+        </div>
+        }
+        @else {
+        <div class="chat-header">
+            <div class="header-left">
+                <button class="btn-back" (click)="goBack()">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <div class="header-info">
+                    @if(currentView === 'bot') {
+                    <i class="fa-solid fa-robot"></i> <span>Trợ lý AI</span>
+                    }
+                    @else {
+                    <i class="fa-solid fa-headset"></i> <span>Nhân viên hỗ trợ</span>
+                    }
+                </div>
+            </div>
+
+            <button class="btn-close" (click)="toggleChat()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="chat-body">
+            @for (msg of currentMessages; track $index) {
+            <div class="message-item" [ngClass]="{'msg-user': msg.sender === 'user', 'msg-bot': msg.sender === 'bot'}">
+                <div class="bubble">
+                    {{ msg.text }}
+                </div>
+            </div>
+            }
+        </div>
+
+        <div class="chat-footer">
+            <input type="text" [(ngModel)]="userMessage" (keyup.enter)="sendMessage()"
+                [placeholder]="currentView === 'bot' ? 'Hỏi trợ lý ảo...' : 'Chat với nhân viên...'" class="chat-input">
+            <button class="btn-send" (click)="sendMessage()">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+        }
+
+    </div>
+    }
+
+    <button class="chat-toggle-btn" (click)="toggleChat()" [class.active]="isOpen">
+        <i class="fa-solid" [ngClass]="isOpen ? 'fa-chevron-down' : 'fa-comment-dots'"></i>
+    </button>
+
+</div>
