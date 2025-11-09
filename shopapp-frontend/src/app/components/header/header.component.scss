@@ -1,17 +1,94 @@
 // File: header.component.scss
 @use '../../../styles.scss' as *;
 
-.navbar {
-    background-color: rgba(0, 0, 0, 0);
-    height: 70px;
+header {
+    background-color: $shopapp-background-color-header;
+    width: 100%;
 }
 
-.navbar .container .navbar-nav .nav-link {
-    color: rgb(173, 178, 203);
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 10px;
+}
+
+.top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    gap: 15px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #000;
+    font-weight: bold;
+    font-size: 29px;
+    font-style: italic;
+}
+
+.logo-icon {
+    background-color: #000;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 5px;
+    font-style: normal;
+}
+
+.search-form {
+    flex-grow: 1;
+    max-width: 800px;
+    position: relative;
+}
+
+.search-form input {
+    width: 100%;
+    height: 38px;
+    border: none;
+    border-radius: 50px;
+    padding: 0 15px 0 40px;
+    outline: none;
+    font-size: 14px;
+}
+
+.search-form .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #777;
+}
+
+.search-form input::placeholder {
+    color: #ffa600;
+}
+
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 14px;
+}
+
+.action-link {
+    text-decoration: none;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
 }
 
 .popover-list {
     padding: 0px 10px 0px 10px;
+    background-color: #ffffff;
 }
 
 .popover-item {
@@ -22,6 +99,54 @@
 }
 
 .popover-item:hover {
-    background-color: #ffffff;
     color: rgb(127, 68, 255);
+}
+
+.location-box {
+    background-color: #ffe56c;
+    padding: 5px 10px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    max-width: 250px;
+    height: 38px;
+}
+
+.location-box span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 14px;
+}
+
+.main-nav {
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 10px 0;
+}
+
+.nav-list {
+    display: flex;
+    list-style: none;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-item a {
+    text-decoration: none;
+    color: #000;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.nav-item a:hover {
+    color: #333;
+}
+
+.nav-icon {
+    font-size: 16px;
 }
