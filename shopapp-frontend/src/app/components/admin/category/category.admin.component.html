@@ -1,34 +1,82 @@
 <!-- File: category.admin.component.html -->
-<main class="container">
-    <h1>Category Admin</h1>
-    <div class="row">
-        <div class="col-md-8 ">
-            <button class="btn btn-success" (click)="insertCategory()">Thêm danh mục mới</button>
+<main class="container-fluid">
+    <div class="category-container">
+
+        <div class="action-bar">
+            <div class="action-left">
+                <div class="search-box">
+                    <input type="text" placeholder="Tìm kiếm danh mục...">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+                <div class="filter-wrapper">
+                    <button class="btn-filter" id="filterBtn">
+                        <i class="fa-solid fa-filter"></i>
+                    </button>
+                </div>
+            </div>
+            <button class="btn-add" (click)="insertCategory()">
+                <i class="fa-solid fa-plus"></i>
+                <span>Thêm danh mục</span>
+            </button>
         </div>
+
+        <div class="table-responsive">
+            <table class="category-table">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox"></th>
+                        <th>ID</th>
+                        <th>Tên danh mục</th>
+                        <th>Mô tả</th>
+                        <th>Trạng thái</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for(category of categories; track category.id){
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td><span class="id-text">{{ category.id }}</span></td>
+                        <td><span class="name-text">{{ category.name }}</span></td>
+                        <td>null</td>
+                        <td><span class="badge status-active">Hiển thị</span></td>
+                        <td class="action-buttons">
+                            <button class="btn-icon btn-edit" title="Sửa" (click)="updateCategory(category.id)">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button class="btn-icon btn-delete" title="Xóa" (click)="deleteCategory(category)">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    }@empty {
+                    <div class="">No categories found.</div>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-footer">
+            <div class="footer-left">
+                <span>Đang xem 1 đến 10 trong tổng số 50 mục</span>
+            </div>
+            <div class="footer-right">
+                <div class="page-size">
+                    <span>Xem</span>
+                    <select class="page-select">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                    </select>
+                    <span>mục</span>
+                </div>
+                <nav class="pagination-nav">
+                    <button class="btn-page">Trước</button>
+                    <button class="btn-page active">1</button>
+                    <button class="btn-page">Tiếp</button>
+                </nav>
+            </div>
+        </div>
+
     </div>
-    <table class="table">
-        <thead class="table-light">
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @for(category of categories; track category.id){
-            <tr>
-                <td>{{ category.id }}</td>
-                <td>{{ category.name }}</td>
-                <td>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn btn-primary" (click)="updateCategory(category.id)">Update</button>
-                        <button class="btn btn-danger" (click)="deleteCategory(category)">Delete</button>
-                    </div>
-                </td>
-            </tr>
-            } @empty {
-            <h2>No categories found</h2>
-            }
-        </tbody>
-    </table>
 </main>
