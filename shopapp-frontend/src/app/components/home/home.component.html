@@ -1,60 +1,36 @@
 <!-- File: home.component.html -->
 <app-header></app-header>
 <main class="container-fluid">
-    <div class="intro-section">
-        <h1>Đây là trang Home</h1>
-        <p>Trang này hiển thị danh sách các sản phẩm, kèm ảnh</p>
-    </div>
+    <div class="container">
 
-    <div class="search-box">
-        <input type="text" class="form-control search-input" placeholder="Tìm sản phẩm">
-        <select class="form-control product-category" [(ngModel)]="selectedCategoryId">
-            <option [value]="0">Tất cả</option>
-            @for(category of categories; track category.name) {
-            <option [value]="category.id">
-                {{ category.name }}
-            </option>
-            }
-        </select>
-        <button class="btn btn-primary">Tìm kiếm</button>
-    </div>
-
-    <div class="row">
-        @for(product of products; track product.id) {
-        <div class="card product-item col-lg-4 col-md-6" (click)="onProductClick(product.id)">
-            @if (product.thumbnail) {
-            <img [src]="product.url" alt="Product Image" class="product-image">
-            } @else {
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" class="product-image">
-                <rect rx="6" ry="6" width="100%" height="100%" fill="#9aa0a6" />
-                <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="50" fill="#ffffff">
-                    Image cap
-                </text>
-            </svg>
-            }
-            <div class="card-body">
-                <p class="card-title product-name">{{ product.name }}</p>
-                <p class="card-text product-price">{{ product.price }}</p>
-            </div>
+        <div class="section">
+            <h2 class="section-title">Gợi ý cho bạn</h2>
+            <section class="product-grid">
+                @for(product of products; track product.id) {
+                <article class="product-card" (click)="onProductClick(product.id)">
+                    <figure class="product-img">
+                        <div class="img-placeholder">
+                            @if (product.thumbnail) {
+                            <img [src]="product.url" alt="Product Image" class="product-image">
+                            } @else {
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" class="product-image">
+                                <rect rx="6" ry="6" width="100%" height="100%" fill="#9aa0a6" />
+                                <text x="50%" y="50%" text-anchor="middle" font-size="50" fill="#ffffff">
+                                    Image cap
+                                </text>
+                            </svg>
+                            }
+                        </div>
+                    </figure>
+                    <h3 class="product-name">{{ product.name }}</h3>
+                    <div class="price-box">
+                        <span class="current-price">{{ product.price }}</span>
+                    </div>
+                </article>
+                }
+            </section>
         </div>
-        }
-    </div>
 
-    <div class="d-flex justify-content-center">
-        <ul class="pagination">
-            <li class="page-item">
-                <a class="page-link">First</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link"><i class="fa fa-chevron-left"></i></a>
-            </li>
-            <li class="page-item">
-                <a class="page-link"><i class="fa fa-chevron-right"></i></a>
-            </li>
-            <li class="page-item">
-                <a class="page-link">Last</a>
-            </li>
-        </ul>
     </div>
 </main>
 <app-footer></app-footer>
