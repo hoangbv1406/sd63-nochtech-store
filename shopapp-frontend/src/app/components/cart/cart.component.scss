@@ -1,122 +1,265 @@
 // File: cart.component.scss
 @use '../../../styles.scss' as *;
 
-.cart-title {
-    margin: 0 0 16px 0;
-    font-size: 1.5rem;
-    font-weight: 600;
+.container-fluid {
+    background-color: $shopapp-background-color-main;
+    padding: 20px 0;
 }
 
-.cart-summary {
-    margin: 8px 0 16px 0;
-    font-size: 1rem;
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 10px;
+}
+
+.cart-page-header {
+    margin-bottom: 6px;
+    margin-left: 5px;
+    font-size: 16px;
+    color: #2d2f31;
+}
+
+.cart-wrapper {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.cart-items-section {
+    flex: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.cart-header {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    padding: 15px 20px;
+    border-radius: 3px;
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.05);
+    font-weight: 500;
+    color: #555;
+}
+
+.col-checkbox {
+    width: 5%;
+}
+
+.col-product {
+    width: 45%;
+}
+
+.col-price {
+    width: 15%;
+    text-align: center;
+}
+
+.col-qty {
+    width: 15%;
+    text-align: center;
+}
+
+.col-total {
+    width: 12%;
+    text-align: center;
+}
+
+.col-action {
+    width: 8%;
+    text-align: center;
+}
+
+.shop-group {
+    background: #fff;
+    border-radius: 3px;
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.05);
+    padding-bottom: 1px;
+}
+
+.product-item {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #e8e8e8;
+}
+
+.product-item:last-child {
+    border-bottom: none;
+}
+
+.product-info-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.product-img {
+    width: 80px;
+    height: 80px;
+    background-color: #eee;
+    border: 1px solid #e1e1e1;
+    flex-shrink: 0;
+}
+
+.thumbnail-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.product-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-right: 10px;
+}
+
+.product-title {
+    font-size: 14px;
+    line-height: 16px;
+    max-height: 32px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+}
+
+.price-current {
+    font-weight: 500;
+}
+
+.qty-selector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(0, 0, 0, .09);
+    width: fit-content;
+    margin: 0 auto;
+}
+
+.qty-btn {
+    width: 25px;
+    height: 25px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    border-right: 1px solid rgba(0, 0, 0, .09);
+}
+
+.qty-btn:last-child {
+    border-right: none;
+    border-left: 1px solid rgba(0, 0, 0, .09);
+}
+
+.qty-input {
+    width: 40px;
+    height: 25px;
+    text-align: center;
+    border: none;
+    font-size: 14px;
+    outline: none;
+}
+
+.item-total-price {
+    color: #d0021b;
+    font-weight: 500;
+}
+
+.action-link {
+    cursor: pointer;
     color: #333;
 }
 
-.empty-cart {
-    font-size: 1rem;
-    color: #666;
-    margin: 8px 0;
+.action-link:hover {
+    color: #05a;
 }
 
-.cart-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 16px;
+.cart-summary-section {
+    flex: 1;
+    position: sticky;
+    top: 20px;
 }
 
-.cart-table thead tr {
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-}
-
-.cart-table thead th {
-    padding: 8px;
-    font-weight: 600;
-    font-size: 0.95rem;
-}
-
-.cart-table tbody tr {
-    border-bottom: 1px solid #f0f0f0;
-}
-
-.cart-table tbody td {
-    padding: 8px;
-    vertical-align: middle;
-}
-
-.cell-id {
-    width: 20%;
-}
-
-.cell-quantity {
-    width: 50%;
-}
-
-.cell-action {
-    width: 30%;
-}
-
-.quantity-control {
-    display: inline-flex;
-    align-items: center;
-}
-
-.quantity-value {
-    margin: 0 8px;
-    min-width: 24px;
-    text-align: center;
-    display: inline-block;
-}
-
-.btn {
-    border: 1px solid #ccc;
+.summary-card {
     background: #fff;
-    padding: 6px 10px;
-    font-size: 0.95rem;
-    cursor: pointer;
-    border-radius: 6px;
-    transition: background 0.12s ease, border-color 0.12s ease;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid #d1d7dc;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
-.btn:hover {
-    background: #f5f5f5;
+.summary-title {
+    color: #888;
+    font-size: 16px;
+    font-weight: bold;
 }
 
-.quantity-btn {
-    width: 32px;
-    height: 32px;
-    padding: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.btn-remove {
-    border-color: #e0b4b4;
-    color: #9b2b2b;
-    background: #fff;
-}
-
-.btn-clear {
-    margin-right: 8px;
-    border-color: #d9d9d9;
-    background: #fff;
+.summary-total {
+    font-size: 32px;
+    font-weight: 700;
+    color: #2d2f31;
 }
 
 .btn-checkout {
-    background: #1976d2;
-    color: #fff;
-    border-color: transparent;
+    background-color: #ee4d2d;
+    color: white;
+    font-weight: 700;
+    height: 48px;
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
 }
 
 .btn-checkout:hover {
-    background: #155fa0;
+    background-color: #f05d40;
 }
 
-.cart-actions {
+.coupon-area {
+    margin-top: 10px;
+}
+
+.coupon-input-group {
     display: flex;
-    gap: 8px;
-    margin-top: 12px;
-    align-items: center;
+    height: 40px;
+}
+
+.coupon-input {
+    width: 10px;
+    flex: 1;
+    padding: 0 10px;
+    border: 1px solid #2d2f31;
+    border-right: none;
+    outline: none;
+    font-size: 14px;
+}
+
+.btn-apply {
+    background-color: rgba(255, 87, 34, 0.1);
+    color: #ee4d2d;
+    border: 1px solid #ee4d2d;
+    font-size: 14px;
+    padding: 0 15px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-apply:hover {
+    background-color: rgba(255, 87, 34, 0.15);
+}
+
+.summary-note {
+    font-size: 12px;
+    color: #888;
+    text-align: center;
+    margin-top: 10px;
 }

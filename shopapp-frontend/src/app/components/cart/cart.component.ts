@@ -2,9 +2,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { HeaderComponent } from '../header/header.component';
 import { FooterComponent } from '../footer/footer.component';
-import { CartService } from '../../services/cart.service';
+import { BaseComponent } from '../base/base.component';
+import { Product } from '../../models/product';
+import { environment } from '../../../environments/environment';
 
 @Component({
     selector: 'app-cart',
@@ -13,21 +16,44 @@ import { CartService } from '../../services/cart.service';
     templateUrl: './cart.component.html',
     styleUrl: './cart.component.scss'
 })
-export class CartComponent implements OnInit {
-    cartEntries: Array<{ productId: number; quantity: number }> = [];
-
-    constructor(private cartService: CartService) { }
+export class CartComponent extends BaseComponent implements OnInit {
+    cartEntries: Array<{ product: Product; quantity: number }> = [];
+    totalAmount: number = 0;
 
     ngOnInit(): void {
         this.loadCart();
     }
 
     private loadCart() {
-        const map = this.cartService.getCart() ?? new Map<number, number>();
-        this.cartEntries = Array.from(map.entries()).map(([id, qty]) => ({
-            productId: Number(id),
-            quantity: qty
-        }));
+        const cartMap = this.cartService.getCart() ?? new Map<number, number>();
+        if (cartMap.size === 0) {
+            this.cartEntries = [];
+            return;
+        }
+
+        const productIds = Array.from(cartMap.keys());
+        const requests = productIds.map(id => this.productService.getDetailProduct(id));
+
+        forkJoin(requests).subscribe({
+            next: (responses) => {
+                this.cartEntries = responses.map((response) => {
+                    const product = response.data;
+                    if (product.thumbnail) {
+                        product.url = `${environment.apiBaseUrl}/products/images/${product.thumbnail}`;
+                    }
+                    return {
+                        product: product,
+                        quantity: cartMap.get(product.id) || 1
+                    };
+                });
+                this.calculateTotal();
+            },
+            error: (err) => console.error(err)
+        });
+    }
+
+    onProductClick(productId: number) {
+        this.router.navigate(['/products', productId]);
     }
 
     increase(productId: number) {
@@ -35,7 +61,7 @@ export class CartComponent implements OnInit {
         const cur = map.get(productId) ?? 0;
         map.set(productId, cur + 1);
         this.cartService.setCart(map);
-        this.loadCart();
+        this.updateQuantityLocal(productId, cur + 1);
     }
 
     decrease(productId: number) {
@@ -43,27 +69,43 @@ export class CartComponent implements OnInit {
         const cur = map.get(productId) ?? 0;
         if (cur <= 1) {
             map.delete(productId);
+            this.cartService.setCart(map);
+            this.cartEntries = this.cartEntries.filter(e => e.product.id !== productId);
         } else {
             map.set(productId, cur - 1);
+            this.cartService.setCart(map);
+            this.updateQuantityLocal(productId, cur - 1);
         }
-        this.cartService.setCart(map);
-        this.loadCart();
+        this.calculateTotal();
     }
 
     remove(productId: number) {
         const map = this.cartService.getCart();
         map.delete(productId);
         this.cartService.setCart(map);
-        this.loadCart();
+        this.cartEntries = this.cartEntries.filter(e => e.product.id !== productId);
+        this.calculateTotal();
     }
 
     clearCart() {
         this.cartService.clearCart();
-        this.loadCart();
+        this.cartEntries = [];
+        this.totalAmount = 0;
     }
 
     getTotalItems(): number {
         return this.cartEntries.reduce((s, e) => s + e.quantity, 0);
     }
 
+    calculateTotal(): void {
+        this.totalAmount = this.cartEntries.reduce((acc, item) => acc + (item.product.price * item.quantity), 0);
+    }
+
+    private updateQuantityLocal(productId: number, newQty: number) {
+        const item = this.cartEntries.find(e => e.product.id === productId);
+        if (item) {
+            item.quantity = newQty;
+            this.calculateTotal();
+        }
+    }
 }
