@@ -1,0 +1,76 @@
+<!-- File: order.history.component.html -->
+<app-header></app-header>
+<div class="main-content">
+    <div class="container">
+
+        <div class="intro-section">
+            <h1>Lịch sử đơn hàng</h1>
+            <p>Theo dõi trạng thái các đơn hàng bạn đã mua</p>
+        </div>
+
+        @if(orders.length > 0) {
+        <div class="order-container">
+            <div class="table-responsive">
+                <table class="order-table">
+                    <thead>
+                        <tr>
+                            <th>Mã đơn hàng</th>
+                            <th>Ngày đặt</th>
+                            <th>Địa chỉ nhận hàng</th>
+                            <th>Tổng tiền</th>
+                            <th>Trạng thái</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for(order of orders; track order.id) {
+                        <tr>
+                            <td>
+                                <span class="id-text">#ORD-{{ order.id }}</span>
+                            </td>
+                            <td>
+                                <div class="date-info">
+                                    <span class="date">{{ order.order_date | date:'dd/MM/yyyy' }}</span>
+                                    <small class="time">{{ order.order_date | date:'HH:mm' }}</small>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="address-text" title="{{order.address}}">{{ order.address }}</span>
+                            </td>
+                            <td>
+                                <span class="total-price">{{ order.total_money | number:'1.0-0' }}₫</span>
+                            </td>
+                            <td>
+                                @switch(order.status) {
+                                @case('pending') { <span class="badge status-pending">Chờ xử lý</span> }
+                                @case('processing') { <span class="badge status-processing">Đang xử lý</span> }
+                                @case('shipped') { <span class="badge status-shipped">Đang giao hàng</span> }
+                                @case('delivered') { <span class="badge status-delivered">Đã giao</span> }
+                                @case('cancelled') { <span class="badge status-cancelled">Đã hủy</span> }
+                                @default { <span class="badge status-processing">{{ order.status }}</span> }
+                                }
+                            </td>
+                            <td>
+                                <button class="btn-view-detail" (click)="viewOrderDetails(order.id)">
+                                    <i class="fa-solid fa-eye"></i>
+                                    <span>Xem chi tiết</span>
+                                </button>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+        } @else {
+        <div class="empty-order">
+            <img src="https://cdni.iconscout.com/illustration/premium/thumb/empty-cart-2130356-1800917.png" alt="Empty">
+            <h3>Bạn chưa có đơn hàng nào</h3>
+            <a routerLink="#" class="btn-home">Mua sắm ngay</a>
+        </div>
+        }
+
+    </div>
+</div>
+<app-footer></app-footer>

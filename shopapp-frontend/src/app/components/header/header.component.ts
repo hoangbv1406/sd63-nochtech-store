@@ -30,6 +30,8 @@ export class HeaderComponent extends BaseComponent implements OnInit {
   handleItemClick(index: number): void {
     if (index === 0) {
       this.router.navigate(['/user-profile']);
+    } else if (index === 1) {
+      this.router.navigate(['/order-history']);
     } else if (index === 2) {
       this.tokenService.removeToken();
       this.userService.removeUserFromLocalStorage();
