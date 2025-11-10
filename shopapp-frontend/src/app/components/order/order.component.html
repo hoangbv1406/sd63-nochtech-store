@@ -1,6 +1,110 @@
 <!-- File: order.component.html -->
 <app-header></app-header>
-<main class="container-fluid">
-    <h1>Đây là trang Đơn hàng</h1>
-</main>
+
+<div class="container-fluid">
+    <main class="order-page">
+        <h1 class="page-title">Thanh toán đơn hàng</h1>
+
+        <form [formGroup]="orderForm" class="order-layout">
+            <section class="form-section">
+                <h2 class="section-title">Thông tin người nhận</h2>
+
+                <div class="form-group">
+                    <label>Họ và tên</label>
+                    <input type="text" formControlName="fullname" placeholder="Nhập họ và tên"
+                        [class.invalid]="orderForm.get('fullname')!.invalid && orderForm.get('fullname')!.touched">
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" formControlName="email" placeholder="Email (ví dụ: abc@gmail.com)"
+                        [class.invalid]="orderForm.get('email')!.invalid && orderForm.get('email')!.touched">
+                </div>
+
+                <div class="form-group">
+                    <label>Số điện thoại</label>
+                    <input type="text" formControlName="phone_number" placeholder="Số điện thoại liên hệ"
+                        [class.invalid]="orderForm.get('phone_number')!.invalid && orderForm.get('phone_number')!.touched">
+                </div>
+
+                <div class="form-group">
+                    <label>Địa chỉ nhận hàng</label>
+                    <input type="text" formControlName="address" placeholder="Địa chỉ cụ thể (Số nhà, đường...)"
+                        [class.invalid]="orderForm.get('address')!.invalid && orderForm.get('address')!.touched">
+                </div>
+
+                <div class="form-group">
+                    <label>Ghi chú</label>
+                    <textarea rows="2" formControlName="note" placeholder="Lưu ý cho người giao hàng..."></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Vận chuyển</label>
+                        <select formControlName="shipping_method">
+                            <option value="express">Giao hàng nhanh</option>
+                            <option value="normal">Giao hàng tiêu chuẩn</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Thanh toán</label>
+                        <select formControlName="payment_method">
+                            <option value="cod">Thanh toán khi nhận hàng (COD)</option>
+                            <option value="vnpay">Ví điện tử VNPAY</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <section class="cart-section">
+                <h2 class="section-title">Sản phẩm đã chọn</h2>
+
+                <div class="cart-list">
+                    <div class="cart-row" *ngFor="let item of cartItems; let i = index">
+                        <div class="product">
+                            <img [src]="item.product.thumbnail" />
+                            <div class="product-info">
+                                <div class="name">{{ item.product.name }}</div>
+                                <div class="sub">Phân loại: Túi Vải</div>
+                            </div>
+                        </div>
+
+                        <div class="qty-control">
+                            <button type="button" (click)="decreaseQuantity(i)">-</button>
+                            <span class="qty-val">{{ item.quantity }}</span>
+                            <button type="button" (click)="increaseQuantity(i)">+</button>
+                        </div>
+
+                        <div class="price-col">
+                            <div class="unit-price">{{ item.product.price | number:'1.0-0' }}đ</div>
+                            <div class="total-price">{{ (item.product.price * item.quantity) | number:'1.0-0' }}đ</div>
+                        </div>
+
+                        <button class="delete-btn" (click)="confirmDelete(i)" title="Xóa">
+                            <i class="fa fa-trash"></i> Xóa
+                        </button>
+                    </div>
+                </div>
+
+                <div class="summary-box">
+                    <div class="summary-row">
+                        <span>Tổng tiền hàng:</span>
+                        <span class="total-amount">{{ totalAmount | number:'1.0-0' }}đ</span>
+                    </div>
+
+                    <div class="coupon-box">
+                        <input type="text" formControlName="couponCode" placeholder="Mã giảm giá">
+                        <button type="button" (click)="applyCoupon()">Áp dụng</button>
+                    </div>
+
+                    <button class="btn-submit-order" type="button" (click)="placeOrder()">
+                        ĐẶT HÀNG NGAY
+                    </button>
+                </div>
+            </section>
+        </form>
+    </main>
+</div>
+
 <app-footer></app-footer>
