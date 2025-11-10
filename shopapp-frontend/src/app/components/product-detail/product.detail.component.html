@@ -65,7 +65,7 @@
                 </div>
 
                 <div class="price-section">
-                    <span class="current-price">{{ product?.price }}</span>
+                    <span class="current-price">{{ product?.price | number:'1.0-0' }}₫</span>
                 </div>
 
                 <div class="option-row">
@@ -89,7 +89,7 @@
 
                 <div class="action-buttons">
                     <button class="btn btn-add-cart" (click)="addToCart()">Thêm Vào Giỏ Hàng</button>
-                    <button class="btn btn-buy-now">Mua Ngay</button>
+                    <button class="btn btn-buy-now" (click)="buyNow()">Mua Ngay</button>
                 </div>
 
                 <div class="guarantee-box">

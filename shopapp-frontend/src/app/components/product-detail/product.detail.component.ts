@@ -99,4 +99,11 @@ export class DetailProductComponent extends BaseComponent implements OnInit {
     }
   }
 
+  buyNow(): void {
+    if (this.isPressedAddToCart == false) {
+      this.addToCart();
+    }
+    this.router.navigate(['/orders']);
+  }
+
 }
