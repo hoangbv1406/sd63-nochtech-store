@@ -26,6 +26,8 @@ export class UserProfileComponent extends BaseComponent implements OnInit {
   userProfileForm: FormGroup = this.formBuilder.group({
     fullname: [''],
     address: [''],
+    phone_number: [{ value: '' }],
+    email: [{ value: '' }],
     password: [''],
     retype_password: [''],
     date_of_birth: [Date.now()],
@@ -39,6 +41,8 @@ export class UserProfileComponent extends BaseComponent implements OnInit {
         this.userProfileForm.patchValue({
           fullname: this.userResponse?.fullname || '',
           address: this.userResponse?.address || '',
+          email: this.userResponse?.email || '',
+          phone_number: this.userResponse?.phone_number || '',
           date_of_birth: this.userResponse?.date_of_birth.toISOString().substring(0, 10),
         });
         this.userService.saveUserResponseToLocalStorage(this.userResponse);
