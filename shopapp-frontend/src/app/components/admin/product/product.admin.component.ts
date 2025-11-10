@@ -18,25 +18,46 @@ import { HttpErrorResponse } from '@angular/common/http';
 })
 export class ProductAdminComponent extends BaseComponent implements OnInit {
   products: Product[] = [];
+  keyword: string = "";
+  currentPage: number = 0;
+  itemsPerPage: number = 10;
+  totalPages: number = 0;
+  visiblePages: number[] = [];
 
   constructor() {
     super();
   }
 
   ngOnInit() {
-    this.getProducts(0, 100);
+    this.getProducts(this.keyword, this.currentPage, this.itemsPerPage);
   }
 
-  getProducts(page: number, limit: number) {
-    this.productService.getProducts(page, limit).subscribe({
-      next: (apiresponse: ApiResponse) => {
-        const productsArray: Product[] = Array.isArray(apiresponse.data) ? apiresponse.data : (apiresponse.data?.products ?? []);
+  searchProducts() {
+    this.currentPage = 0;
+    this.getProducts(this.keyword, this.currentPage, this.itemsPerPage);
+  }
+
+  getProducts(keyword: string, page: number, limit: number) {
+    this.productService.getProducts(keyword, 0, page, limit).subscribe({
+      next: (apiResponse: ApiResponse) => {
+        const responseData = apiResponse.data;
+        const productsArray: Product[] = responseData.products || [];
+        this.totalPages = responseData.totalPages || 0;
+        this.visiblePages = this.generateVisiblePageArray(this.currentPage, this.totalPages);
+
         productsArray.forEach((product: Product) => {
-          product.url = product?.thumbnail ? `${environment.apiBaseUrl}/products/images/${product.thumbnail}` : `${environment.apiBaseUrl}/products/images/notfound.jpeg`;
+          if (product.thumbnail && (product.thumbnail.startsWith('http://') || product.thumbnail.startsWith('https://'))) {
+            product.url = product.thumbnail;
+          } else {
+            product.url = `${environment.apiBaseUrl}/products/images/${product.thumbnail}`;
+          }
         });
+
         this.products = productsArray;
       },
-      complete: () => { debugger },
+      complete: () => {
+        debugger
+      },
       error: (error: HttpErrorResponse) => {
         this.toastService.showToast({
           error: error,
@@ -45,6 +66,25 @@ export class ProductAdminComponent extends BaseComponent implements OnInit {
         });
       }
     });
+  }
+
+  onPageChange(page: number) {
+    this.currentPage = page;
+    this.getProducts(this.keyword, this.currentPage, this.itemsPerPage);
+  }
+
+  generateVisiblePageArray(currentPage: number, totalPages: number): number[] {
+    const maxVisiblePages = 5;
+    const halfVisible = Math.floor(maxVisiblePages / 2);
+
+    let startPage = Math.max(currentPage - halfVisible, 0);
+    let endPage = Math.min(startPage + maxVisiblePages - 1, totalPages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(endPage - maxVisiblePages + 1, 0);
+    }
+
+    return new Array(endPage - startPage + 1).fill(0).map((_, index) => startPage + index);
   }
 
   insertProduct() {
@@ -56,7 +96,7 @@ export class ProductAdminComponent extends BaseComponent implements OnInit {
   }
 
   deleteProduct(product: Product) {
-    const confirmation = window.confirm('Are you sure you want to delete this product?');
+    const confirmation = window.confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');
     if (confirmation) {
       this.productService.deleteProduct(product.id).subscribe({
         next: (apiResponse: ApiResponse) => {
@@ -65,7 +105,7 @@ export class ProductAdminComponent extends BaseComponent implements OnInit {
             defaultMsg: 'Xóa sản phẩm thành công',
             title: 'Thành Công'
           });
-          location.reload();
+          this.getProducts(this.keyword, this.currentPage, this.itemsPerPage);
         },
         complete: () => { debugger },
         error: (error: HttpErrorResponse) => {

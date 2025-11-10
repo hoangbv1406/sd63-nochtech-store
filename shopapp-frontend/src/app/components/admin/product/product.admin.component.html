@@ -5,8 +5,8 @@
         <div class="action-bar">
             <div class="action-left">
                 <div class="search-box">
-                    <input type="text" placeholder="Tìm kiếm sản phẩm...">
-                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Tìm kiếm sản phẩm..." [(ngModel)]="keyword" (keyup.enter)="searchProducts()">
+                    <i class="fa-solid fa-magnifying-glass" (click)="searchProducts()"></i>
                 </div>
                 <div class="filter-wrapper">
                     <button class="btn-filter" id="filterBtn">
@@ -42,11 +42,15 @@
                         <td><span class="id-text">{{ product.id }}</span></td>
                         <td>
                             <div class="product-thumbnail">
+                                @if(product.url) {
                                 <img [src]="product.url" alt="product">
+                                } @else {
+                                <i class="fa-regular fa-image"></i>
+                                }
                             </div>
                         </td>
                         <td><span class="name-text">{{ product.name }}</span></td>
-                        <td>null</td>
+                        <td><span class="cate-text">{{ product.category_name || 'Chưa phân loại' }}</span></td>
                         <td><span class="price-text">{{ product.price | number:'1.0-0'}}₫</span></td>
                         <td>null</td>
                         <td><span class="badge status-active">Còn hàng</span></td>
@@ -68,22 +72,35 @@
 
         <div class="table-footer">
             <div class="footer-left">
-                <span>Đang xem 1 đến 10 trong tổng số 50 mục</span>
+                <span>Trang {{ currentPage + 1 }} / {{ totalPages }}</span>
             </div>
             <div class="footer-right">
                 <div class="page-size">
                     <span>Xem</span>
-                    <select class="page-select">
-                        <option>10</option>
-                        <option>25</option>
-                        <option>50</option>
+                    <select class="page-select" [(ngModel)]="itemsPerPage" (change)="searchProducts()">
+                        <option [ngValue]="10">10</option>
+                        <option [ngValue]="25">25</option>
+                        <option [ngValue]="50">50</option>
                     </select>
                     <span>mục</span>
                 </div>
+
                 <nav class="pagination-nav">
-                    <button class="btn-page">Trước</button>
-                    <button class="btn-page active">1</button>
-                    <button class="btn-page">Tiếp</button>
+                    <button class="btn-page" (click)="onPageChange(currentPage - 1)"
+                        [disabled]="currentPage === 0" [class.disabled]="currentPage === 0">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+
+                    @for(page of visiblePages; track page) {
+                    <button class="btn-page" [class.active]="page === currentPage" (click)="onPageChange(page)">
+                        {{ page + 1 }}
+                    </button>
+                    }
+
+                    <button class="btn-page" (click)="onPageChange(currentPage + 1)"
+                        [disabled]="currentPage >= totalPages - 1" [class.disabled]="currentPage >= totalPages - 1">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
                 </nav>
             </div>
         </div>
