@@ -5,11 +5,12 @@ import { RouterModule } from '@angular/router';
 import { BaseComponent } from '../base/base.component';
 import { UserResponse } from '../../responses/user.response';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterModule, NgbModule],
+  imports: [CommonModule, RouterModule, NgbModule, FormsModule],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })
@@ -17,9 +18,16 @@ export class HeaderComponent extends BaseComponent implements OnInit {
   userResponse?: UserResponse | null;
   isPopoverOpen = false;
   activeNavItem: number = 0;
+  keyword: string = "";
 
   ngOnInit() {
     this.userResponse = this.userService.getUserResponseFromLocalStorage();
+  }
+
+  searchProducts() {
+    this.router.navigate(['/products'], {
+      queryParams: { keyword: this.keyword }
+    });
   }
 
   togglePopover(event: Event): void {
@@ -36,6 +44,7 @@ export class HeaderComponent extends BaseComponent implements OnInit {
       this.tokenService.removeToken();
       this.userService.removeUserFromLocalStorage();
       this.userResponse = this.userService.getUserResponseFromLocalStorage();
+      this.router.navigate(['/']).catch(err => { window.location.href = `${window.location.origin}/#` });
     }
     this.isPopoverOpen = false;
   }

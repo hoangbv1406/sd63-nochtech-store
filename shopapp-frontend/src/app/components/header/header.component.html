@@ -16,17 +16,19 @@
                 <div class="">NochTech.com</div>
             </a>
 
-            <form class="search-form">
-                <i class="fas fa-search search-icon"></i>
-                <input type="text" placeholder="Tìm kiến sản phẩm yêu thích">
-            </form>
+            <div class="search-form">
+                <i class="fas fa-search search-icon" (click)="searchProducts()" style="cursor: pointer;"></i>
+                <input type="text" placeholder="Tìm kiếm sản phẩm yêu thích" [(ngModel)]="keyword" name="keyword"
+                    (keyup.enter)="searchProducts()">
+            </div>
 
             <div class="user-actions">
                 <div class="action-link">
                     <i class="far fa-user"></i>
                     @if(userResponse) {
                     <ng-container popoverTitle="User Actions" triggers="click">
-                        <a class="nav-link" [ngbPopover]="popoverContent" (click)="togglePopover($event)">{{ userResponse.fullname }}</a>
+                        <a class="nav-link" [ngbPopover]="popoverContent" (click)="togglePopover($event)">{{
+                            userResponse.fullname }}</a>
                         <ng-template #popoverContent>
                             <div class="popover-list">
                                 <a class="popover-item" (click)="handleItemClick(0)">Tài khoản của tôi</a>
@@ -56,37 +58,37 @@
         <nav class="main-nav">
             <ul class="nav-list">
                 <li class="nav-item">
-                    <a href="#">
+                    <a [routerLink]="['/products']" [queryParams]="{ keyword: 'Điện thoại' }">
                         <i class="fas fa-mobile-alt nav-icon"></i>
                         <span>Điện thoại</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#">
+                    <a [routerLink]="['/products']" [queryParams]="{ keyword: 'Laptop' }">
                         <i class="fas fa-laptop nav-icon"></i>
                         <span>Laptop</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#">
+                    <a [routerLink]="['/products']" [queryParams]="{ keyword: 'Phụ kiện' }">
                         <i class="fas fa-headphones nav-icon"></i>
                         <span>Phụ kiện</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#">
+                    <a [routerLink]="['/products']" [queryParams]="{ keyword: 'Smartwatch' }">
                         <i class="fas fa-stopwatch nav-icon"></i>
                         <span>Smartwatch</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#">
+                    <a [routerLink]="['/products']" [queryParams]="{ keyword: 'Đồng hồ' }">
                         <i class="fas fa-clock nav-icon"></i>
                         <span>Đồng hồ</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#">
+                    <a [routerLink]="['/products']" [queryParams]="{ keyword: 'Tablet' }">
                         <i class="fas fa-tablet-alt nav-icon"></i>
                         <span>Tablet</span>
                     </a>
@@ -98,7 +100,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#">
+                    <a [routerLink]="['/products']" [queryParams]="{ keyword: 'Màn hình, Máy in' }">
                         <i class="fas fa-desktop nav-icon"></i>
                         <span>Màn hình, Máy in</span>
                     </a>
