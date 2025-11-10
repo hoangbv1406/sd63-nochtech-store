@@ -1,2 +1,123 @@
 <!-- File: order.admin.component.html -->
-<main></main>
+<main class="container-fluid">
+    <div class="order-container">
+
+        <div class="action-bar">
+            <div class="action-left">
+                <div class="search-box">
+                    <input type="text" placeholder="Tìm kiếm đơn hàng..." (click)="searchOrders()">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+                <div class="filter-wrapper">
+                    <button class="btn-filter" id="filterBtn">
+                        <i class="fa-solid fa-filter"></i>
+                    </button>
+                </div>
+            </div>
+            <button class="btn-add">
+                <i class="fa-solid fa-plus"></i>
+                <span>Thêm đơn hàng</span>
+            </button>
+        </div>
+
+        <div class="table-responsive">
+            <table class="order-table">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox"></th>
+                        <th>Mã đơn</th>
+                        <th>Khách hàng</th>
+                        <th>Ngày đặt</th>
+                        <th>Tổng tiền</th>
+                        <th>Thanh toán</th>
+                        <th>Trạng thái</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for(order of orders; track order.id){
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td><span class="id-text">#ORD-{{ order.id }}</span></td>
+                        <td>
+                            <div class="customer-name">{{ order.fullname }}</div>
+                            <small style="color: #888;">{{ order.phone_number }}</small>
+                        </td>
+                        <td>
+                            <div>{{ order.order_date | date:'dd-MM-yyyy':'UTC' }}</div>
+                            <small>{{ order.order_date | date:'HH:mm:ss':'UTC' }} UTC</small>
+                        </td>
+                        <td><span class="total-price">{{ order.total_money | number:'1.0-0' }}₫</span></td>
+
+                        <td>
+                            @if(order.payment_method == 'cod') {
+                            <span class="badge status-pending">Chưa thanh toán</span>
+                            } @else {
+                            <span class="badge status-delivered">Đã thanh toán</span>
+                            }
+                        </td>
+
+                        <td>
+                            @switch(order.status) {
+                            @case('pending') {
+                            <span class="badge status-pending">Chờ xử lý</span>
+                            }
+                            @case('processing') {
+                            <span class="badge status-processing">Đang xử lý</span>
+                            }
+                            @case('shipped') {
+                            <span class="badge status-shipped">Đang giao</span>
+                            }
+                            @case('delivered') {
+                            <span class="badge status-delivered">Đã giao</span>
+                            }
+                            @case('cancelled') {
+                            <span class="badge status-cancelled">Đã hủy</span>
+                            }
+                            @default {
+                            <span class="badge status-processing">{{ order.status }}</span>
+                            }
+                            }
+                        </td>
+
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-icon btn-view" title="Xem chi tiết" (click)="viewDetails(order)">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                                <button class="btn-icon btn-delete" title="Xóa" (click)="deleteOrder(order.id)">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+
+            </table>
+        </div>
+
+        <div class="table-footer">
+            <div class="footer-left">
+                <span>Đang xem 1 đến 10 trong tổng số 50 mục</span>
+            </div>
+            <div class="footer-right">
+                <div class="page-size">
+                    <span>Xem</span>
+                    <select class="page-select">
+                        <option>10</option>
+                        <option>25</option>
+                        <option>50</option>
+                    </select>
+                    <span>mục</span>
+                </div>
+                <nav class="pagination-nav">
+                    <button class="btn-page" (click)="onPageChange(currentPage + 1)">Trước</button>
+                    <button class="btn-page active">1</button>
+                    <button class="btn-page" (click)="onPageChange(totalPages)">Tiếp</button>
+                </nav>
+            </div>
+        </div>
+
+    </div>
+</main>
