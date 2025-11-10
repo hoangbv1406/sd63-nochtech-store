@@ -40,13 +40,25 @@ export class UserAdminComponent extends BaseComponent implements OnInit {
         console.log('GET /users =>', apiResponse);
         const usersArray = Array.isArray(apiResponse.data) ? apiResponse.data : (apiResponse.data?.users ?? apiResponse.data?.items ?? []);
         this.users = usersArray.map((u: any) => {
+          let createdAtDate: Date | null = null;
+          if (Array.isArray(u.createdAt)) {
+            createdAtDate = new Date(
+              u.createdAt[0],
+              u.createdAt[1] - 1,
+              u.createdAt[2],
+              u.createdAt[3],
+              u.createdAt[4],
+              u.createdAt[5]
+            );
+          }
           return {
             ...u,
             fullname: u.fullname ?? u.fullName ?? u.name ?? '',
             phone_number: u.phone_number ?? u.phoneNumber ?? u.phone ?? '',
             address: u.address ?? u.Address ?? u.location ?? '',
             is_active: (u.is_active ?? u.isActive ?? u.active ?? false),
-            role: (typeof u.role === 'string' ? { name: u.role } : (u.role ?? { name: (u.roleName ?? u.role_name ?? '') }))
+            role: (typeof u.role === 'string' ? { name: u.role } : (u.role ?? { name: (u.roleName ?? u.role_name ?? '') })),
+            created_at: createdAtDate
           } as UserResponse;
         });
       },
