@@ -1,6 +1,106 @@
 <!-- File: order.detail.component.html -->
 <app-header></app-header>
-<main class="container-fluid">
-    <h1>Đây là trang Chi tiết đơn hàng</h1>
-</main>
+<div class="container">
+    <div class="order-container">
+
+        <div class="panel-header">
+            <div class="header-left">
+                <div class="title-box">
+                    <h3 class="panel-title">Chi tiết đơn hàng #ORD-{{ orderResponse.id }}</h3>
+                    <p class="panel-desc">Ngày đặt: {{ orderResponse.order_date | date:'dd/MM/yyyy HH:mm' }}</p>
+                </div>
+            </div>
+
+            <div class="status-wrapper">
+                <span class="status-label">Trạng thái:</span>
+                @switch(orderResponse.status) {
+                @case('pending') { <span class="badge status-pending">Chờ xử lý</span> }
+                @case('processing') { <span class="badge status-processing">Đang xử lý</span> }
+                @case('shipped') { <span class="badge status-shipped">Đang giao hàng</span> }
+                @case('delivered') { <span class="badge status-delivered">Đã giao</span> }
+                @case('cancelled') { <span class="badge status-cancelled">Đã hủy</span> }
+                @default { <span class="badge status-processing">{{ orderResponse.status }}</span> }
+                }
+            </div>
+        </div>
+
+        <div class="panel-body">
+            <div class="info-column">
+                <h4 class="section-title"><i class="fa-regular fa-user"></i> Địa chỉ nhận hàng</h4>
+                <div class="info-group">
+                    <label>Người nhận:</label>
+                    <span>{{ orderResponse.fullname }}</span>
+                </div>
+                <div class="info-group">
+                    <label>Số điện thoại:</label>
+                    <span>{{ orderResponse.phone_number }}</span>
+                </div>
+                <div class="info-group">
+                    <label>Địa chỉ:</label>
+                    <span class="address-text">{{ orderResponse.address }}</span>
+                </div>
+                <div class="divider"></div>
+                <div class="info-group">
+                    <label>Phương thức thanh toán:</label>
+                    <span class="badge-payment">{{ orderResponse.payment_method }}</span>
+                </div>
+                <div class="info-group">
+                    <label>Ghi chú:</label>
+                    <span class="note-text">{{ orderResponse.note || 'Không có' }}</span>
+                </div>
+            </div>
+
+            <div class="products-column">
+                <h4 class="section-title"><i class="fa-solid fa-box-open"></i> Sản phẩm</h4>
+                <div class="table-responsive">
+                    <table class="product-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 50%">Sản phẩm</th>
+                                <th style="width: 20%" class="text-right">Đơn giá</th>
+                                <th style="width: 15%" class="text-center">SL</th>
+                                <th style="width: 15%" class="text-right">Tạm tính</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for(detail of orderResponse.order_details; track detail.id) {
+                            <tr>
+                                <td>
+                                    <div class="product-cell">
+                                        <div class="product-thumb">
+                                            <img [src]="detail.product.thumbnail" alt="Product">
+                                        </div>
+                                        <span class="product-name">{{ detail.product.name }}</span>
+                                    </div>
+                                </td>
+                                <td class="text-right">{{ detail.product.price | number:'1.0-0' }}₫</td>
+                                <td class="text-center">{{ detail.number_of_products }}</td>
+                                <td class="text-right font-weight-bold">
+                                    {{ (detail.product.price * detail.number_of_products) | number:'1.0-0' }}₫
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="total-row">
+                                <td colspan="3" class="text-right label-total">Tổng tiền thanh toán:</td>
+                                <td class="text-right value-total">
+                                    {{ orderResponse.total_money | number:'1.0-0' }}₫
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel-footer">
+            <button class="btn-back" (click)="goBack()">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Quay lại danh sách</span>
+            </button>
+        </div>
+
+    </div>
+</div>
 <app-footer></app-footer>
