@@ -1,18 +1,30 @@
 @if(updatedCategory) {
-<div>
-  <div class="container">
-    <div class="row">
-      <div class="col-md-6 offset-md-3">
-        <h3>Update Category</h3>
-        <form (ngSubmit)="updateCategory()">
-          <div class="form-group mb-3">
-            <label for="name">Name:</label>
-            <input type="text" id="name" [(ngModel)]="updatedCategory.name" name="name" class="form-control" required>
-          </div>
-          <button type="submit" class="btn btn-primary">Update</button>
-        </form>
+<div class="page-wrapper">
+  <div class="admin-panel">
+
+    <div class="panel-header">
+      <div class="icon-box">
+        <i class="fa-solid fa-pen-to-square"></i>
+      </div>
+      <div class="title-box">
+        <h3 class="panel-title">Cập Nhật Danh Mục</h3>
+        <p class="panel-desc">Chỉnh sửa tên danh mục id: {{ updatedCategory.id }}</p>
       </div>
     </div>
+
+    <form (ngSubmit)="updateCategory()" class="panel-form">
+      <div class="form-group">
+        <label for="name" class="input-label">Tên danh mục</label>
+        <input type="text" id="name" [(ngModel)]="updatedCategory.name" name="name" class="form-input"
+          placeholder="Nhập tên danh mục mới" required>
+      </div>
+
+      <div class="form-footer">
+        <button type="button" class="btn-back" onclick="history.back()">Hủy bỏ</button>
+        <button type="submit" class="btn-update"><i class="fa-solid fa-save"></i>Lưu thay đổi</button>
+      </div>
+    </form>
+
   </div>
 </div>
 }
