@@ -1,34 +1,58 @@
-<div class="container">
-  <div class="row">
-    <div class="col-md-6 offset-md-3">
-      <h3>Insert Product</h3>
-      <form (ngSubmit)="insertProduct()" enctype="multipart/form-data">
-        <div class="form-group">
-          <label for="name">Name:</label>
-          <input type="text" id="name" [(ngModel)]="insertProductDTO.name" name="name" class="form-control" required>
+<!-- File: insert.product.admin.component.html -->
+<div class="admin-container">
+  <div class="form-card">
+
+    <h3 class="form-title">Thêm Sản Phẩm Mới</h3>
+
+    <form (ngSubmit)="insertProduct()" enctype="multipart/form-data" class="admin-form">
+      <div class="form-group">
+        <label for="name" class="form-label">Tên sản phẩm:</label>
+        <input type="text" id="name" [(ngModel)]="insertProductDTO.name" name="name" class="form-input"
+          placeholder="Nhập tên sản phẩm" required>
+      </div>
+
+      <div class="form-group">
+        <label for="price" class="form-label">Giá bán:</label>
+        <div class="input-wrapper">
+          <input type="text" id="price" [(ngModel)]="insertProductDTO.price" name="price" class="form-input"
+            placeholder="0" required>
+          <span class="currency-unit">VNĐ</span>
         </div>
-        <div class="form-group mb-3">
-          <label for="price">Price:</label>
-          <input type="text" id="price" [(ngModel)]="insertProductDTO.price" name="price" class="form-control col-md-3" required>
+      </div>
+
+      <div class="form-group">
+        <label for="description" class="form-label">Mô tả chi tiết:</label>
+        <textarea id="description" [(ngModel)]="insertProductDTO.description" name="description" class="form-input"
+          rows="4" placeholder="Nhập mô tả sản phẩm..." required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="category" class="form-label">Danh mục:</label>
+        <select id="category" [(ngModel)]="insertProductDTO.category_id" name="category" class="form-input" required>
+          <option value="" disabled selected>-- Chọn danh mục --</option>
+          @for(category of categories; track category.id) {
+          <option [value]="category.id">{{ category.name }}</option>
+          }
+        </select>
+        <div class="select-arrow"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="images" class="form-label">Hình ảnh (Tối đa 5 ảnh):</label>
+        <div class="file-upload-wrapper">
+          <input type="file" id="images" name="images" multiple (change)="onFileChange($event)" accept="image/*"
+            class="file-input">
+          <div class="file-custom-label">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <span>Chọn ảnh hoặc kéo thả vào đây</span>
+          </div>
         </div>
-        <div class="form-group mb-3">
-          <label for="description">Description:</label>
-          <textarea id="description" [(ngModel)]="insertProductDTO.description" name="description" class="form-control" required></textarea>
-        </div>
-        <div class="form-group mb-3">
-          <label for="category">Category:</label>
-          <select id="category" [(ngModel)]="insertProductDTO.category_id" name="category" class="form-control" required>
-            @for(category of categories; track category.id) {
-            <option [value]="category.id">{{ category.name }}</option>
-            }
-          </select>
-        </div>
-        <div class="form-group mb-3">
-          <label for="images">Images (up to 10):</label>
-          <input type="file" id="images" name="images" multiple (change)="onFileChange($event)" accept="image/*">
-        </div>
-        <button type="submit" class="btn btn-primary">Insert</button>
-      </form>
-    </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-submit">Thêm sản phẩm</button>
+      </div>
+    </form>
+
   </div>
 </div>
