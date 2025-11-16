@@ -59,7 +59,7 @@ public class User extends BaseEntity implements UserDetails, OAuth2User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private List<Comment> comments = new ArrayList<>();
+    private List<ProductReview> comments = new ArrayList<>();
 
     @Override
     public boolean isAccountNonExpired() {

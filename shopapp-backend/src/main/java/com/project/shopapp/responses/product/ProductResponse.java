@@ -1,7 +1,7 @@
 package com.project.shopapp.responses.product;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.project.shopapp.models.Comment;
+import com.project.shopapp.models.ProductReview;
 import com.project.shopapp.models.Favorite;
 import com.project.shopapp.models.Product;
 import com.project.shopapp.models.ProductImage;
@@ -54,7 +54,7 @@ public class ProductResponse extends BaseResponse {
     private List<FavoriteResponse> favorites = new ArrayList<>();
 
     public static ProductResponse fromProduct(Product product) {
-        List<Comment> comments = product.getComments();
+        List<ProductReview> comments = product.getComments();
         List<Favorite> favorites = product.getFavorites();
         ProductResponse productResponse = ProductResponse.builder()
                 .id(product.getId())

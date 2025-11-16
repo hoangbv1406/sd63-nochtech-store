@@ -2,7 +2,7 @@ package com.project.shopapp.services.comment;
 
 import com.project.shopapp.dtos.CommentDTO;
 import com.project.shopapp.exceptions.DataNotFoundException;
-import com.project.shopapp.models.Comment;
+import com.project.shopapp.models.ProductReview;
 import com.project.shopapp.models.Product;
 import com.project.shopapp.models.User;
 import com.project.shopapp.repositories.CommentRepository;
@@ -24,30 +24,30 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<CommentResponse> getCommentsByUserAndProduct(Long userId, Long productId) {
-        List<Comment> comments = commentRepository.findByUserIdAndProductId(userId, productId);
+        List<ProductReview> comments = commentRepository.findByUserIdAndProductId(userId, productId);
         return comments.stream().map(comment -> CommentResponse.fromComment(comment)).collect(Collectors.toList());
     }
 
     @Override
     public List<CommentResponse> getCommentsByProduct(Long productId) {
-        List<Comment> comments = commentRepository.findByProductId(productId);
+        List<ProductReview> comments = commentRepository.findByProductId(productId);
         return comments.stream().map(comment -> CommentResponse.fromComment(comment)).collect(Collectors.toList());
     }
 
     @Override
-    public Comment createComment(CommentDTO commentDTO) {
+    public ProductReview createComment(CommentDTO commentDTO) {
         User user = userRepository.findById(commentDTO.getUserId()).orElse(null);
         Product product = productRepository.findById(commentDTO.getProductId()).orElse(null);
         if (user == null || product == null) {
             throw new IllegalArgumentException("User or product not found");
         }
-        Comment newComment = Comment.builder().user(user).product(product).content(commentDTO.getContent()).build();
+        ProductReview newComment = ProductReview.builder().user(user).product(product).content(commentDTO.getContent()).build();
         return commentRepository.save(newComment);
     }
 
     @Override
     public void updateComment(Long id, CommentDTO commentDTO) throws DataNotFoundException {
-        Comment existingComment = commentRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Comment not found"));
+        ProductReview existingComment = commentRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Comment not found"));
         existingComment.setContent(commentDTO.getContent());
         commentRepository.save(existingComment);
     }
