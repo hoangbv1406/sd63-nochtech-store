@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @ToString
 public class BaseEntity {
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
@@ -24,7 +24,7 @@ public class BaseEntity {
 
     @PrePersist
     protected void onCreate() {
-        createdAt = createdAt != null ? createdAt : LocalDateTime.now();
+        createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
     }
 
