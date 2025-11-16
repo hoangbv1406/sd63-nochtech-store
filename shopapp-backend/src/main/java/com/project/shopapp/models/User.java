@@ -8,6 +8,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
@@ -26,7 +27,7 @@ public class User extends BaseEntity implements UserDetails, OAuth2User {
     @Column(name = "fullname", length = 100)
     private String fullName;
 
-    @Column(name = "phone_number", length = 10, nullable = true)
+    @Column(name = "phone_number", length = 15, nullable = true)
     private String phoneNumber;
 
     @Column(name = "email", length = 255, nullable = true)
@@ -38,7 +39,7 @@ public class User extends BaseEntity implements UserDetails, OAuth2User {
     @Column(name = "profile_image", length = 255)
     private String profileImage;
 
-    @Column(name = "password", length = 200, nullable = false)
+    @Column(name = "password", length = 200)
     private String password;
 
     @Column(name = "is_active")
@@ -47,39 +48,27 @@ public class User extends BaseEntity implements UserDetails, OAuth2User {
     @Column(name = "date_of_birth")
     private Date dateOfBirth;
 
-    @Column(name = "facebook_account_id")
-    private String facebookAccountId;
+    @Column(name = "email_verified_at")
+    private LocalDateTime emailVerifiedAt;
 
-    @Column(name = "google_account_id")
-    private String googleAccountId;
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id")
     private Role role;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
-    private List<ProductReview> comments = new ArrayList<>();
+    private List<SocialAccount> socialAccounts = new ArrayList<>();
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<ProductReview> reviews = new ArrayList<>();
 
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<UserAddress> userAddresses = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -99,8 +88,28 @@ public class User extends BaseEntity implements UserDetails, OAuth2User {
     }
 
     @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return active;
+    }
+
+    @Override
     public Map<String, Object> getAttributes() {
-        return new HashMap<String, Object>();
+        return new HashMap<>();
     }
 
     @Override
