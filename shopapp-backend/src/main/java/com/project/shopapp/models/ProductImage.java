@@ -12,15 +12,13 @@ import lombok.*;
 @Getter
 @Setter
 public class ProductImage {
-
-    // Maximum number of images allowed per product
     public static final int MAXIMUM_IMAGES_PER_PRODUCT = 10;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     @JsonIgnore
     private Product product;
