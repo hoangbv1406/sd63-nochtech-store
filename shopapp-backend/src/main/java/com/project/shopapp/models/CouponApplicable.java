@@ -1,19 +1,18 @@
 package com.project.shopapp.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.project.shopapp.enums.CouponApplicableType;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
-
 @Entity
-@Table(name = "coupon_conditions")
+@Table(name = "coupon_applicables")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Getter
 @Setter
-public class CouponCondition {
+public class CouponApplicable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,16 +23,11 @@ public class CouponCondition {
     @JsonBackReference
     private Coupon coupon;
 
-    @Column(name = "attribute", nullable = false)
-    private String attribute;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "object_type", nullable = false)
+    private CouponApplicableType objectType;
 
-    @Column(name = "operator", nullable = false)
-    private String operator;
-
-    @Column(name = "value", nullable = false)
-    private String value;
-
-    @Column(name = "discount_amount", nullable = false)
-    private BigDecimal discountAmount;
+    @Column(name = "object_id", nullable = false)
+    private Long objectId;
 
 }
