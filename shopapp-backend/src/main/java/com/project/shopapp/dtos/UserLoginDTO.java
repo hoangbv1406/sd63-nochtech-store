@@ -22,11 +22,10 @@ public class UserLoginDTO extends SocialAccountDTO {
     @JsonProperty("email")
     private String email;
 
-    @NotBlank(message = "Password is required.")
     @JsonProperty("password")
     private String password;
 
-    @Min(value = 1, message = "Role ID must be at least 1.")
+    @Min(value = 1, message = "Role ID must be at least 1")
     @JsonProperty("role_id")
     private Long roleId;
 

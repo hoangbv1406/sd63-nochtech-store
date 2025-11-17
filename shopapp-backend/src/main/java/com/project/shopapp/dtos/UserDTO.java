@@ -30,7 +30,6 @@ public class UserDTO extends SocialAccountDTO {
     @JsonProperty("address")
     private String address;
 
-    @NotBlank(message = "Password is required.")
     @JsonProperty("password")
     private String password;
 
@@ -40,7 +39,7 @@ public class UserDTO extends SocialAccountDTO {
     @JsonProperty("date_of_birth")
     private Date dateOfBirth;
 
-    @NotNull(message = "Role is required.")
+    @NotNull(message = "Role ID is required")
     @JsonProperty("role_id")
     private Long roleId;
 

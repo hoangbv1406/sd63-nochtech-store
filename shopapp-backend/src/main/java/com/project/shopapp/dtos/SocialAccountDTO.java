@@ -12,22 +12,20 @@ import lombok.*;
 @SuperBuilder
 public abstract class SocialAccountDTO {
 
-    @JsonProperty("facebook_account_id")
-    protected String facebookAccountId;
+    @JsonProperty("provider")
+    protected String provider;
 
-    @JsonProperty("google_account_id")
-    protected String googleAccountId;
+    @JsonProperty("provider_id")
+    protected String providerId;
 
-    public boolean isFacebookAccountIdValid() {
-        return facebookAccountId != null && !facebookAccountId.isEmpty();
-    }
+    @JsonProperty("email")
+    protected String email;
 
-    public boolean isGoogleAccountIdValid() {
-        return googleAccountId != null && !googleAccountId.isEmpty();
-    }
+    @JsonProperty("name")
+    protected String name;
 
     public boolean isSocialLogin() {
-        return isFacebookAccountIdValid() || isGoogleAccountIdValid();
+        return provider != null && !provider.isEmpty() && providerId != null && !providerId.isEmpty();
     }
 
 }
