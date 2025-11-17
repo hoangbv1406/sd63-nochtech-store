@@ -12,7 +12,7 @@ import lombok.*;
 @Builder
 public class RefreshTokenDTO {
 
-    @NotBlank
+    @NotBlank(message = "Refresh token is required")
     @JsonProperty("refreshToken")
     private String refreshToken;
 
