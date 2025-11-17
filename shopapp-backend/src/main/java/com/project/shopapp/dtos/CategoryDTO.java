@@ -12,8 +12,14 @@ import lombok.*;
 @Builder
 public class CategoryDTO {
 
-    @NotEmpty(message = "Category name is required.")
+    @NotEmpty(message = "Category name cannot be empty")
     @JsonProperty("name")
     private String name;
+
+    @JsonProperty("parent_id")
+    private Long parentId;
+
+    @JsonProperty("slug")
+    private String slug;
 
 }
