@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import java.util.List;
 public class OrderDTO {
 
     @JsonProperty("user_id")
+    @Min(value = 1, message = "User ID must be > 0")
     private Long userId;
 
     @JsonProperty("fullname")
@@ -26,29 +28,36 @@ public class OrderDTO {
     @JsonProperty("email")
     private String email;
 
-    @NotBlank(message = "Phone number is required.")
-    @Size(min = 5, message = "Phone number must be at least 5 characters.")
+    @NotBlank(message = "Phone number is required")
+    @Size(min = 5, message = "Phone number must be at least 5 characters")
     @JsonProperty("phone_number")
     private String phoneNumber;
-
-    @JsonProperty("status")
-    private String status;
 
     @JsonProperty("address")
     private String address;
 
+    @JsonProperty("province_code")
+    private String provinceCode;
+
+    @JsonProperty("district_code")
+    private String districtCode;
+
+    @JsonProperty("ward_code")
+    private String wardCode;
+
     @JsonProperty("note")
     private String note;
 
-    @Min(value = 0, message = "Total money must be non-negative.")
+    @Min(value = 0, message = "Total money must be >= 0")
     @JsonProperty("total_money")
-    private Float totalMoney;
+    private BigDecimal totalMoney;
+
+    @Min(value = 0, message = "Shipping fee must be >= 0")
+    @JsonProperty("shipping_fee")
+    private BigDecimal shippingFee;
 
     @JsonProperty("shipping_method")
     private String shippingMethod;
-
-    @JsonProperty("shipping_address")
-    private String shippingAddress;
 
     @JsonProperty("shipping_date")
     private LocalDate shippingDate;
