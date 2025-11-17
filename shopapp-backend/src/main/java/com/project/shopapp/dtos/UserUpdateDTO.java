@@ -34,4 +34,7 @@ public class UserUpdateDTO extends SocialAccountDTO {
     @JsonProperty("date_of_birth")
     private Date dateOfBirth;
 
+    @JsonProperty("email")
+    private String email;
+
 }
