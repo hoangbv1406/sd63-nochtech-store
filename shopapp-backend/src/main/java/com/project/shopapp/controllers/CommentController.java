@@ -1,7 +1,7 @@
 package com.project.shopapp.controllers;
 
 import com.project.shopapp.components.SecurityUtils;
-import com.project.shopapp.dtos.CommentDTO;
+import com.project.shopapp.dtos.ProductReviewDTO;
 import com.project.shopapp.models.User;
 import com.project.shopapp.responses.ResponseObject;
 import com.project.shopapp.responses.comment.CommentResponse;
@@ -43,7 +43,7 @@ public class CommentController {
 
     @PostMapping("")
     public ResponseEntity<ResponseObject> createComment(
-            @Valid @RequestBody CommentDTO commentDTO
+            @Valid @RequestBody ProductReviewDTO commentDTO
     ) {
         User loginUser = securityUtils.getLoggedInUser();
         if (loginUser.getId() != commentDTO.getUserId()) {
@@ -64,7 +64,7 @@ public class CommentController {
     @PutMapping("/{commentId}")
     public ResponseEntity<ResponseObject> updateComment(
             @PathVariable("commentId") Long commentId,
-            @Valid @RequestBody CommentDTO commentDTO
+            @Valid @RequestBody ProductReviewDTO commentDTO
     ) throws Exception {
         User loginUser = securityUtils.getLoggedInUser();
         if (!Objects.equals(loginUser.getId(), commentDTO.getUserId())) {

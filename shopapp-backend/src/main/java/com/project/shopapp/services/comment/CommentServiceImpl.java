@@ -1,6 +1,6 @@
 package com.project.shopapp.services.comment;
 
-import com.project.shopapp.dtos.CommentDTO;
+import com.project.shopapp.dtos.ProductReviewDTO;
 import com.project.shopapp.exceptions.DataNotFoundException;
 import com.project.shopapp.models.ProductReview;
 import com.project.shopapp.models.Product;
@@ -35,7 +35,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public ProductReview createComment(CommentDTO commentDTO) {
+    public ProductReview createComment(ProductReviewDTO commentDTO) {
         User user = userRepository.findById(commentDTO.getUserId()).orElse(null);
         Product product = productRepository.findById(commentDTO.getProductId()).orElse(null);
         if (user == null || product == null) {
@@ -46,7 +46,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void updateComment(Long id, CommentDTO commentDTO) throws DataNotFoundException {
+    public void updateComment(Long id, ProductReviewDTO commentDTO) throws DataNotFoundException {
         ProductReview existingComment = commentRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Comment not found"));
         existingComment.setContent(commentDTO.getContent());
         commentRepository.save(existingComment);
