@@ -5,7 +5,7 @@ import com.project.shopapp.exceptions.DataNotFoundException;
 import com.project.shopapp.models.ProductReview;
 import com.project.shopapp.models.Product;
 import com.project.shopapp.models.User;
-import com.project.shopapp.repositories.CommentRepository;
+import com.project.shopapp.repositories.ProductReviewRepository;
 import com.project.shopapp.repositories.ProductRepository;
 import com.project.shopapp.repositories.UserRepository;
 import com.project.shopapp.responses.comment.CommentResponse;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
-    private final CommentRepository commentRepository;
+    private final ProductReviewRepository commentRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
 
