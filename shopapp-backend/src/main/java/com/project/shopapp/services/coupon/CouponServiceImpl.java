@@ -1,7 +1,6 @@
 package com.project.shopapp.services.coupon;
 
 import com.project.shopapp.models.Coupon;
-import com.project.shopapp.repositories.CouponConditionRepository;
 import com.project.shopapp.repositories.CouponRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
