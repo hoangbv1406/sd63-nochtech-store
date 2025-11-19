@@ -29,20 +29,11 @@ public class UserResponse {
     @JsonProperty("address")
     private String address;
 
-    @JsonProperty("profile_image")
-    private String profileImage;
-
     @JsonProperty("is_active")
     private boolean active;
 
     @JsonProperty("date_of_birth")
     private Date dateOfBirth;
-
-    @JsonProperty("facebook_account_id")
-    private String facebookAccountId;
-
-    @JsonProperty("google_account_id")
-    private String googleAccountId;
 
     @JsonProperty("role")
     private Role role;
@@ -54,11 +45,8 @@ public class UserResponse {
                 .phoneNumber(user.getPhoneNumber())
                 .email(user.getEmail())
                 .address(user.getAddress())
-                .profileImage(user.getProfileImage())
                 .active(user.isActive())
                 .dateOfBirth(user.getDateOfBirth())
-                .facebookAccountId(user.getFacebookAccountId())
-                .googleAccountId(user.getGoogleAccountId())
                 .role(user.getRole())
                 .build();
     }
