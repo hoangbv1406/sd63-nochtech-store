@@ -1,7 +1,6 @@
 package com.project.shopapp.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -14,8 +13,10 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
+@Builder
 @SuperBuilder
 @Jacksonized
+@EqualsAndHashCode(callSuper = true)
 public class UserDTO extends SocialAccountDTO {
 
     @JsonProperty("fullname")

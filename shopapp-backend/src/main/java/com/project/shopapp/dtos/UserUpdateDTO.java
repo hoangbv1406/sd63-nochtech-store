@@ -14,6 +14,7 @@ import java.util.Date;
 @ToString
 @SuperBuilder
 @Jacksonized
+@EqualsAndHashCode(callSuper = true)
 public class UserUpdateDTO extends SocialAccountDTO {
 
     @JsonProperty("fullname")
@@ -33,8 +34,5 @@ public class UserUpdateDTO extends SocialAccountDTO {
 
     @JsonProperty("date_of_birth")
     private Date dateOfBirth;
-
-    @JsonProperty("email")
-    private String email;
 
 }
