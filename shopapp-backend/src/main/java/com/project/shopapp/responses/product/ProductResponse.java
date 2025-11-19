@@ -12,6 +12,7 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,58 +21,59 @@ import java.util.List;
 @Builder
 public class ProductResponse extends BaseResponse {
 
-    @JsonProperty("id")
     private Long id;
-
-    @JsonProperty("name")
     private String name;
-
-    @JsonProperty("price")
-    private Float price;
-
-    @JsonProperty("thumbnail")
+    private String price;
     private String thumbnail;
-
-    @JsonProperty("description")
     private String description;
 
-    @JsonProperty("totalPages")
-    private int totalPages;
+    @JsonProperty("specs")
+    private String specs;
 
     @JsonProperty("category_id")
     private Long categoryId;
 
+    @JsonProperty("brand_id")
+    private Long brandId;
+
     @JsonProperty("category_name")
     private String categoryName;
+
+    @JsonProperty("brand_name")
+    private String brandName;
 
     @JsonProperty("product_images")
     private List<ProductImage> productImages = new ArrayList<>();
 
-    @JsonProperty("comments")
-    private List<CommentResponse> comments = new ArrayList<>();
-
-    @JsonProperty("favorites")
-    private List<FavoriteResponse> favorites = new ArrayList<>();
+    @JsonProperty("variants")
+    private List<ProductVariantResponse> variants = new ArrayList<>();
 
     public static ProductResponse fromProduct(Product product) {
-        List<ProductReview> comments = product.getComments();
-        List<Favorite> favorites = product.getFavorites();
-        ProductResponse productResponse = ProductResponse.builder()
+        ProductResponse response = ProductResponse.builder()
                 .id(product.getId())
                 .name(product.getName())
-                .price(product.getPrice())
+                .price(product.getPrice().toString())
                 .thumbnail(product.getThumbnail())
-                .comments(comments.stream().map(CommentResponse::fromComment).toList())
-                .favorites(favorites.stream().map(FavoriteResponse::fromFavorite).toList())
                 .description(product.getDescription())
-                .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
-                .categoryName(product.getCategory() != null ? product.getCategory().getName() : "")
+                .specs(product.getSpecs())
+                .categoryId(product.getCategory().getId())
+                .categoryName(product.getCategory().getName())
+                .brandId(product.getBrand() != null ? product.getBrand().getId() : null)
+                .brandName(product.getBrand() != null ? product.getBrand().getName() : null)
                 .productImages(product.getProductImages())
-                .totalPages(0)
                 .build();
-        productResponse.setCreatedAt(product.getCreatedAt());
-        productResponse.setUpdatedAt(product.getUpdatedAt());
-        return productResponse;
+
+        response.setCreatedAt(product.getCreatedAt());
+        response.setUpdatedAt(product.getUpdatedAt());
+
+        if (product.getVariants() != null) {
+            response.setVariants(product.getVariants().stream()
+                    .map(ProductVariantResponse::fromProductVariant)
+                    .collect(Collectors.toList())
+            );
+        }
+
+        return response;
     }
 
 }
