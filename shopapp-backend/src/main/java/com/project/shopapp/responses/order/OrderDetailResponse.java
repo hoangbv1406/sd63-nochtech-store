@@ -50,9 +50,10 @@ public class OrderDetailResponse {
                 .id(orderDetail.getId())
                 .orderId(orderDetail.getOrder().getId())
                 .productId(orderDetail.getProduct().getId())
-                .productName(orderDetail.getProduct().getName())
+                .productName(orderDetail.getProductName())
                 .variantName(orderDetail.getVariantName())
-                .variantId(null)
+                .variantId(orderDetail.getProductItem() != null && orderDetail.getProductItem().getVariant() != null
+                        ? orderDetail.getProductItem().getVariant().getId() : null)
                 .sku(null)
                 .thumbnail(orderDetail.getProduct().getThumbnail())
                 .price(orderDetail.getPrice())

@@ -35,6 +35,15 @@ public class OrderResponse {
     @JsonProperty("address")
     private String address;
 
+    @JsonProperty("province_code")
+    private String provinceCode;
+
+    @JsonProperty("district_code")
+    private String districtCode;
+
+    @JsonProperty("ward_code")
+    private String wardCode;
+
     @JsonProperty("note")
     private String note;
 
@@ -75,6 +84,9 @@ public class OrderResponse {
                 .phoneNumber(order.getPhoneNumber())
                 .email(order.getEmail())
                 .address(order.getAddress())
+                .provinceCode(order.getProvinceCode())
+                .districtCode(order.getDistrictCode())
+                .wardCode(order.getWardCode())
                 .note(order.getNote())
                 .orderDate(order.getOrderDate())
                 .status(order.getStatus() != null ? order.getStatus().toString() : "")
