@@ -3,7 +3,7 @@ package com.project.shopapp.services.comment;
 import com.project.shopapp.dtos.ProductReviewDTO;
 import com.project.shopapp.exceptions.DataNotFoundException;
 import com.project.shopapp.models.ProductReview;
-import com.project.shopapp.responses.comment.CommentResponse;
+import com.project.shopapp.responses.product.CommentResponse;
 
 import java.util.List;
 

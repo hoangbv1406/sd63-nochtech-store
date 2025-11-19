@@ -4,7 +4,7 @@ import com.project.shopapp.components.SecurityUtils;
 import com.project.shopapp.dtos.ProductReviewDTO;
 import com.project.shopapp.models.User;
 import com.project.shopapp.responses.ResponseObject;
-import com.project.shopapp.responses.comment.CommentResponse;
+import com.project.shopapp.responses.product.CommentResponse;
 import com.project.shopapp.services.comment.CommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

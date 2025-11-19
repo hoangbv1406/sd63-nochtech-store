@@ -8,7 +8,7 @@ import com.project.shopapp.models.User;
 import com.project.shopapp.repositories.ProductReviewRepository;
 import com.project.shopapp.repositories.ProductRepository;
 import com.project.shopapp.repositories.UserRepository;
-import com.project.shopapp.responses.comment.CommentResponse;
+import com.project.shopapp.responses.product.CommentResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
