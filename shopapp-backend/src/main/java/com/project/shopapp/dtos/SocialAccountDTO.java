@@ -25,7 +25,8 @@ public abstract class SocialAccountDTO {
     protected String name;
 
     public boolean isSocialLogin() {
-        return provider != null && !provider.isEmpty() && providerId != null && !providerId.isEmpty();
+        return provider != null && !provider.trim().isEmpty()
+                && providerId != null && !providerId.trim().isEmpty();
     }
 
 }
