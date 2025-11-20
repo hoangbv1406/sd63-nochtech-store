@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,10 +25,14 @@ public class ProductServiceImpl implements ProductService {
     private final UserRepository userRepository;
     private final FavoriteRepository favoriteRepository;
     private final CategoryRepository categoryRepository;
+    private final BrandRepository brandRepository;
+    private final ProductVariantRepository productVariantRepository;
+    private final OptionRepository optionRepository;
+    private final OptionValueRepository optionValueRepository;
 
     @Override
     public Page<ProductResponse> getAllProducts(String keyword, Long categoryId, Pageable pageable) {
-        Page<Product> productsPage = productRepository.searchProducts(categoryId, keyword, pageable);
+        Page<Product> productsPage = productRepository.searchProducts(categoryId, null, keyword, null, null, pageable);
         return productsPage.map(ProductResponse::fromProduct);
     }
 
@@ -42,28 +47,56 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product createProduct(ProductDTO productDTO) throws DataNotFoundException {
+    @Transactional
+    public Product createProduct(ProductDTO productDTO) throws Exception {
         Category existingCategory = categoryRepository.findById(productDTO.getCategoryId()).orElseThrow(
                 () -> new DataNotFoundException("Cannot find category with id: " + productDTO.getCategoryId())
         );
+
+        Brand existingBrand = null;
+        if (productDTO.getBrandId() != null) {
+            existingBrand = brandRepository.findById(productDTO.getBrandId()).orElseThrow(
+                    () -> new DataNotFoundException("Cannot find brand with id: " + productDTO.getBrandId()));
+        }
+
         Product newProduct = Product.builder()
                 .name(productDTO.getName())
                 .price(productDTO.getPrice())
                 .thumbnail(productDTO.getThumbnail())
                 .description(productDTO.getDescription())
                 .category(existingCategory)
+                .brand(existingBrand)
+                .specs(productDTO.getSpecs())
+                .isImeiTracked(productDTO.getIsImeiTracked())
                 .build();
-        return productRepository.save(newProduct);
+
+        Product savedProduct = productRepository.save(newProduct);
+
+        if (productDTO.getVariants() != null && !productDTO.getVariants().isEmpty()) {
+            for (ProductDTO.ProductVariantDTO variantDTO : productDTO.getVariants()) {
+                ProductVariant variant = ProductVariant.builder()
+                        .product(savedProduct)
+                        .sku(variantDTO.getSku())
+                        .price(variantDTO.getPrice())
+                        .originalPrice(variantDTO.getOriginalPrice())
+                        .imageUrl(variantDTO.getImageUrl())
+                        .build();
+                productVariantRepository.save(variant);
+            }
+        }
+
+        return savedProduct;
     }
 
     @Override
-    public Product updateProduct(long id, ProductDTO productDTO) throws DataNotFoundException {
+    @Transactional
+    public Product updateProduct(long id, ProductDTO productDTO) throws Exception {
         Product existingProduct = getProductById(id);
         if (existingProduct != null) {
             if (productDTO.getName() != null && !productDTO.getName().isEmpty()) {
                 existingProduct.setName(productDTO.getName());
             }
-            if (productDTO.getPrice() >= 0) {
+            if (productDTO.getPrice() != null) {
                 existingProduct.setPrice(productDTO.getPrice());
             }
             if (productDTO.getDescription() != null && !productDTO.getDescription().isEmpty()) {
@@ -72,11 +105,17 @@ public class ProductServiceImpl implements ProductService {
             if (productDTO.getThumbnail() != null && !productDTO.getThumbnail().isEmpty()) {
                 existingProduct.setThumbnail(productDTO.getThumbnail());
             }
-            if (productDTO.getCategoryId() > 0) {
+            if (productDTO.getCategoryId() != null && productDTO.getCategoryId() > 0) {
                 Category newCategory = categoryRepository.findById(productDTO.getCategoryId()).orElseThrow(
                         () -> new DataNotFoundException("Category not found")
                 );
                 existingProduct.setCategory(newCategory);
+            }
+            if (productDTO.getBrandId() != null && productDTO.getBrandId() > 0) {
+                Brand newBrand = brandRepository.findById(productDTO.getBrandId()).orElseThrow(
+                        () -> new DataNotFoundException("Brand not found")
+                );
+                existingProduct.setBrand(newBrand);
             }
             return productRepository.save(existingProduct);
         }
@@ -84,6 +123,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public Product deleteProduct(long productId) {
         Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not found."));
         productRepository.deleteById(productId);
@@ -103,8 +143,8 @@ public class ProductServiceImpl implements ProductService {
         }
         if (existingProduct.getThumbnail() == null) {
             existingProduct.setThumbnail(newProductImage.getImageUrl());
+            productRepository.save(existingProduct);
         }
-        productRepository.save(existingProduct);
         return productImageRepository.save(newProductImage);
     }
 
@@ -113,8 +153,7 @@ public class ProductServiceImpl implements ProductService {
         if (!userRepository.existsById(userId) || !productRepository.existsById(productId)) {
             throw new DataNotFoundException("User or product not found");
         }
-        if (favoriteRepository.existsByUserIdAndProductId(userId, productId)) {
-        } else {
+        if (!favoriteRepository.existsByUserIdAndProductId(userId, productId)) {
             Favorite favorite = Favorite.builder()
                     .product(productRepository.findById(productId).orElse(null))
                     .user(userRepository.findById(userId).orElse(null))
@@ -129,8 +168,8 @@ public class ProductServiceImpl implements ProductService {
         if (!userRepository.existsById(userId) || !productRepository.existsById(productId)) {
             throw new DataNotFoundException("User or product not found");
         }
-        if (favoriteRepository.existsByUserIdAndProductId(userId, productId)) {
-            Favorite favorite = favoriteRepository.findByUserIdAndProductId(userId, productId);
+        Favorite favorite = favoriteRepository.findByUserIdAndProductId(userId, productId);
+        if (favorite != null) {
             favoriteRepository.delete(favorite);
         }
         return productRepository.findById(productId).orElse(null);
