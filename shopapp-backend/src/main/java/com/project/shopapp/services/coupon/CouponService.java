@@ -1,5 +1,7 @@
 package com.project.shopapp.services.coupon;
 
+import java.math.BigDecimal;
+
 public interface CouponService {
-    double calculateCouponValue(String couponCode, double totalAmount);
+    BigDecimal calculateCouponValue(String couponCode, BigDecimal totalAmount);
 }
