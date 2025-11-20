@@ -67,20 +67,32 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     private boolean isBypassToken(@NonNull HttpServletRequest request) {
         final List<Pair<String, String>> bypassTokens = Arrays.asList(
+                // Public Endpoints
                 Pair.of(String.format("%s/roles**", apiPrefix), "GET"),
                 Pair.of(String.format("%s/users/register", apiPrefix), "POST"),
-                Pair.of(String.format("%s/users/login", apiPrefix), "POST"),
+                Pair.of(String.format("%s/users/login**", apiPrefix), "POST"),
                 Pair.of(String.format("%s/users/profile-images/**", apiPrefix), "GET"),
-                Pair.of(String.format("%s/users/refreshToken", apiPrefix), "POST"),
+
+                // Categories, Products, Comments, Reviews, Brands -> GET Public
                 Pair.of(String.format("%s/categories**", apiPrefix), "GET"),
                 Pair.of(String.format("%s/products**", apiPrefix), "GET"),
                 Pair.of(String.format("%s/comments**", apiPrefix), "GET"),
-                Pair.of(String.format("%s/coupons**", apiPrefix), "GET"),
-                Pair.of(String.format("%s/policies**", apiPrefix), "GET")
+                Pair.of(String.format("%s/reviews**", apiPrefix), "GET"),
+                Pair.of(String.format("%s/brands**", apiPrefix), "GET"),
+
+                // Address (Tỉnh/Huyện/Xã) -> GET Public
+                Pair.of(String.format("%s/address**", apiPrefix), "GET"),
+
+                // Policy, Coupon (Check), Health check
+                Pair.of(String.format("%s/coupons/calculate", apiPrefix), "GET"),
+                Pair.of(String.format("%s/policies**", apiPrefix), "GET"),
+                Pair.of(String.format("%s/health-check/**", apiPrefix), "GET"),
+                Pair.of(String.format("%s/actuator/**", apiPrefix), "GET")
         );
 
         String requestPath = request.getServletPath();
         String requestMethod = request.getMethod();
+
         for (Pair<String, String> token : bypassTokens) {
             String path = token.getFirst();
             String method = token.getSecond();
@@ -90,4 +102,5 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         }
         return false;
     }
+
 }
