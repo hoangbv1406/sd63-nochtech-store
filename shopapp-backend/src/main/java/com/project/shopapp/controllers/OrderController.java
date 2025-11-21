@@ -2,6 +2,7 @@ package com.project.shopapp.controllers;
 
 import com.project.shopapp.components.SecurityUtils;
 import com.project.shopapp.dtos.OrderDTO;
+import com.project.shopapp.enums.OrderStatus;
 import com.project.shopapp.models.Order;
 import com.project.shopapp.models.User;
 import com.project.shopapp.responses.ResponseObject;
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/orders")
+@RequestMapping("${api.prefix}/orders")
 @RequiredArgsConstructor
 public class OrderController {
     private final OrderService orderService;
@@ -70,7 +71,7 @@ public class OrderController {
         Order orderResponse = orderService.createOrder(orderDTO);
         return ResponseEntity.ok(ResponseObject.builder()
                 .message("Order created successfully.")
-                .data(orderResponse)
+                .data(OrderResponse.fromOrder(orderResponse))
                 .status(HttpStatus.OK)
                 .build()
         );
@@ -85,7 +86,7 @@ public class OrderController {
         return ResponseEntity.ok(new ResponseObject(
                 "Order updated successfully. orderId = " + orderId,
                 HttpStatus.OK,
-                order
+                OrderResponse.fromOrder(order)
         ));
     }
 
@@ -124,7 +125,10 @@ public class OrderController {
                     .build()
             );
         }
-        if (order.getStatus().equals(OrderStatus.DELIVERED) || order.getStatus().equals(OrderStatus.SHIPPED) || order.getStatus().equals(OrderStatus.PROCESSING)) {
+        if (order.getStatus() == OrderStatus.DELIVERED ||
+                order.getStatus() == OrderStatus.SHIPPED ||
+                order.getStatus() == OrderStatus.PROCESSING) {
+
             String message = "You cannot cancel an order with status: " + order.getStatus();
             return ResponseEntity.badRequest().body(ResponseObject.builder()
                     .status(HttpStatus.BAD_REQUEST)
@@ -133,12 +137,17 @@ public class OrderController {
                     .build()
             );
         }
-        OrderDTO orderDTO = OrderDTO.builder().userId(order.getUser().getId()).status(OrderStatus.CANCELLED).build();
+
+        OrderDTO orderDTO = OrderDTO.builder()
+                .userId(order.getUser().getId())
+                .status(OrderStatus.CANCELLED.name())
+                .build();
+
         order = orderService.updateOrder(orderId, orderDTO);
         return ResponseEntity.ok(new ResponseObject(
                 "Order cancelled successfully. orderId = " + orderId,
                 HttpStatus.OK,
-                order
+                OrderResponse.fromOrder(order)
         ));
     }
 
