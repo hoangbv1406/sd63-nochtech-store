@@ -13,7 +13,6 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-@Builder
 @SuperBuilder
 @Jacksonized
 @EqualsAndHashCode(callSuper = true)

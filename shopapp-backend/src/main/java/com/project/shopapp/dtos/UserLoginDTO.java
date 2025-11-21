@@ -12,7 +12,6 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-@Builder
 @SuperBuilder
 @Jacksonized
 @EqualsAndHashCode(callSuper = true)
