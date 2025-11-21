@@ -13,9 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("api/v1/order-details")
+@RequestMapping("${api.prefix}/order-details")
 @RequiredArgsConstructor
 public class OrderDetailController {
     private final OrderDetailService orderDetailService;
@@ -50,8 +51,9 @@ public class OrderDetailController {
             @RequestBody OrderDetailDTO orderDetailDTO
     ) throws Exception {
         OrderDetail orderDetail = orderDetailService.updateOrderDetail(orderDetailId, orderDetailDTO);
+        // Trả về DTO thay vì Entity
         return ResponseEntity.ok().body(ResponseObject.builder()
-                .data(orderDetail)
+                .data(OrderDetailResponse.fromOrderDetail(orderDetail))
                 .message("Order detail updated successfully. orderDetailId = " + orderDetailId)
                 .status(HttpStatus.OK)
                 .build()
@@ -63,6 +65,7 @@ public class OrderDetailController {
         orderDetailService.deleteById(orderDetailId);
         return ResponseEntity.ok().body(ResponseObject.builder()
                 .message("Order detail deleted successfully. orderDetailId = " + orderDetailId)
+                .status(HttpStatus.OK)
                 .build()
         );
     }
@@ -70,7 +73,10 @@ public class OrderDetailController {
     @GetMapping("/order/{orderId}")
     public ResponseEntity<ResponseObject> getOrderDetails(@Valid @PathVariable("orderId") Long orderId) {
         List<OrderDetail> orderDetails = orderDetailService.findByOrderId(orderId);
-        List<OrderDetailResponse> orderDetailResponses = orderDetails.stream().map(OrderDetailResponse::fromOrderDetail).toList();
+        List<OrderDetailResponse> orderDetailResponses = orderDetails.stream()
+                .map(OrderDetailResponse::fromOrderDetail)
+                .collect(Collectors.toList());
+
         return ResponseEntity.ok().body(ResponseObject.builder()
                 .message("Order details retrieved successfully. orderId = " + orderId)
                 .status(HttpStatus.OK)
