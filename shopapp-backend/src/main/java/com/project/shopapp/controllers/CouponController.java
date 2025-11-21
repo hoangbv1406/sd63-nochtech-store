@@ -8,8 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+
 @RestController
-@RequestMapping("api/v1/coupons")
+@RequestMapping("${api.prefix}/coupons")
 @RequiredArgsConstructor
 public class CouponController {
     private final CouponService couponService;
@@ -17,11 +19,18 @@ public class CouponController {
     @GetMapping("/calculate")
     public ResponseEntity<ResponseObject> calculateCouponValue(
             @RequestParam("couponCode") String couponCode,
-            @RequestParam("totalAmount") Double totalAmount
+            @RequestParam("totalAmount") BigDecimal totalAmount
     ) {
-        double finalAmount = couponService.calculateCouponValue(couponCode, totalAmount);
-        CouponCalculationResponse couponCalculationResponse = CouponCalculationResponse.builder().result(finalAmount).build();
-        return ResponseEntity.ok(new ResponseObject("Coupon calculated successfully.", HttpStatus.OK, couponCalculationResponse));
+        BigDecimal finalAmount = couponService.calculateCouponValue(couponCode, totalAmount);
+        CouponCalculationResponse couponCalculationResponse = CouponCalculationResponse.builder()
+                .result(finalAmount.doubleValue())
+                .build();
+
+        return ResponseEntity.ok(new ResponseObject(
+                "Coupon calculated successfully.",
+                HttpStatus.OK,
+                couponCalculationResponse
+        ));
     }
 
 }
