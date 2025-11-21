@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("api/v1/users")
+@RequestMapping("${api.prefix}/users")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
@@ -97,8 +97,66 @@ public class UserController {
         User user = userService.createUser(userDTO);
         return ResponseEntity.ok(ResponseObject.builder()
                 .status(HttpStatus.CREATED)
-                .data(user)
+                .data(UserResponse.fromUser(user))
                 .message("User registered successfully.")
+                .build()
+        );
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<ResponseObject> login(
+            @Valid @RequestBody UserLoginDTO userLoginDTO,
+            HttpServletRequest request
+    ) throws Exception {
+        String token = authService.login(userLoginDTO);
+        User userDetail = userService.getUserDetailsFromToken(token);
+
+        String userAgent = request.getHeader("User-Agent");
+        Token jwtToken = tokenService.addToken(userDetail, token, isMobileDevice(userAgent));
+
+        LoginResponse loginResponse = LoginResponse.builder()
+                .message("Login successfully")
+                .token(jwtToken.getToken())
+                .tokenType(jwtToken.getTokenType())
+                .refreshToken(jwtToken.getRefreshToken())
+                .username(userDetail.getUsername())
+                .roles(userDetail.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
+                .id(userDetail.getId())
+                .build();
+
+        return ResponseEntity.ok().body(ResponseObject.builder()
+                .message("User logged in successfully.")
+                .data(loginResponse)
+                .status(HttpStatus.OK)
+                .build()
+        );
+    }
+
+    @PostMapping("/login/social")
+    public ResponseEntity<ResponseObject> loginSocial(
+            @Valid @RequestBody UserLoginDTO userLoginDTO,
+            HttpServletRequest request
+    ) throws Exception {
+        String token = userService.loginSocial(userLoginDTO);
+        User userDetail = userService.getUserDetailsFromToken(token);
+
+        String userAgent = request.getHeader("User-Agent");
+        Token jwtToken = tokenService.addToken(userDetail, token, isMobileDevice(userAgent));
+
+        LoginResponse loginResponse = LoginResponse.builder()
+                .message("Login social successfully")
+                .token(jwtToken.getToken())
+                .tokenType(jwtToken.getTokenType())
+                .refreshToken(jwtToken.getRefreshToken())
+                .username(userDetail.getUsername())
+                .roles(userDetail.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
+                .id(userDetail.getId())
+                .build();
+
+        return ResponseEntity.ok().body(ResponseObject.builder()
+                .message("Login social successfully")
+                .data(loginResponse)
+                .status(HttpStatus.OK)
                 .build()
         );
     }
@@ -196,73 +254,6 @@ public class UserController {
         }
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<ResponseObject> login(
-            @Valid @RequestBody UserLoginDTO userLoginDTO,
-            HttpServletRequest request
-    ) throws Exception {
-        String token = userService.login(userLoginDTO);
-        String userAgent = request.getHeader("User-Agent");
-        User userDetail = userService.getUserDetailsFromToken(token);
-        Token jwtToken = tokenService.addToken(userDetail, token, isMobileDevice(userAgent));
-
-        LoginResponse loginResponse = LoginResponse.builder()
-                .message("")
-                .token(jwtToken.getToken())
-                .tokenType(jwtToken.getTokenType())
-                .refreshToken(jwtToken.getRefreshToken())
-                .username(userDetail.getUsername())
-                .roles(userDetail.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
-                .id(userDetail.getId())
-                .build();
-        return ResponseEntity.ok().body(ResponseObject.builder()
-                .message("User logged in successfully.")
-                .data(loginResponse)
-                .status(HttpStatus.OK)
-                .build()
-        );
-    }
-
-    @PostMapping("/login/social")
-    public ResponseEntity<ResponseObject> loginSocial(
-            @Valid @RequestBody UserLoginDTO userLoginDTO,
-            HttpServletRequest request
-    ) throws Exception {
-        String token = userService.loginSocial(userLoginDTO);
-        String userAgent = request.getHeader("User-Agent");
-        User userDetail = userService.getUserDetailsFromToken(token);
-        Token jwtToken = tokenService.addToken(userDetail, token, isMobileDevice(userAgent));
-
-        LoginResponse loginResponse = LoginResponse.builder()
-                .message("LOGIN SUCCESSFULLY")
-                .token(jwtToken.getToken())
-                .tokenType(jwtToken.getTokenType())
-                .refreshToken(jwtToken.getRefreshToken())
-                .username(userDetail.getUsername())
-                .roles(userDetail.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
-                .id(userDetail.getId())
-                .build();
-        return ResponseEntity.ok().body(ResponseObject.builder()
-                .message("User logged in with social account successfully.")
-                .data(loginResponse)
-                .status(HttpStatus.OK)
-                .build()
-        );
-    }
-
-    @GetMapping("/auth/social/callback")
-    public ResponseEntity<String> callback(
-            @RequestParam("code") String authorizationCode,
-            @RequestParam("loginType") String loginType
-    ) {
-        return ResponseEntity.ok("Social login callback processed successfully.");
-    }
-
-    @GetMapping("/auth/social-login")
-    public ResponseEntity<String> socialAuth(@RequestParam("loginType") String loginType) {
-        return ResponseEntity.ok("Social login initiated successfully. loginType = " + loginType);
-    }
-
     @PutMapping("/reset-password/{userId}")
     public ResponseEntity<ResponseObject> resetPassword(@PathVariable("userId") Long userId) {
         try {
@@ -274,16 +265,9 @@ public class UserController {
                     .status(HttpStatus.OK)
                     .build()
             );
-        } catch (InvalidPasswordException e) {
+        } catch (InvalidPasswordException | DataNotFoundException e) {
             return ResponseEntity.ok(ResponseObject.builder()
-                    .message("Invalid password")
-                    .data("")
-                    .status(HttpStatus.BAD_REQUEST)
-                    .build()
-            );
-        } catch (DataNotFoundException e) {
-            return ResponseEntity.ok(ResponseObject.builder()
-                    .message("User not found")
+                    .message(e.getMessage())
                     .data("")
                     .status(HttpStatus.BAD_REQUEST)
                     .build()
@@ -306,8 +290,8 @@ public class UserController {
         );
     }
 
-    public boolean isMobileDevice(String userAgent) {
-        return userAgent.toLowerCase().contains("mobile");
+    private boolean isMobileDevice(String userAgent) {
+        return userAgent != null && userAgent.toLowerCase().contains("mobile");
     }
 
 }
