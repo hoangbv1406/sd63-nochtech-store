@@ -8,6 +8,36 @@ SET SQL_SAFE_UPDATES = 0;
 START TRANSACTION;
 
 
+CREATE TABLE `affiliate_links` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `product_id` int NOT NULL,
+  `code` varchar(50) NOT NULL,
+  `clicks` int DEFAULT '0',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `code` (`code`),
+  KEY `fk_aff_user` (`user_id`),
+  KEY `fk_aff_pro` (`product_id`),
+  CONSTRAINT `fk_aff_pro` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`),
+  CONSTRAINT `fk_aff_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `affiliate_transactions` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `affiliate_link_id` int NOT NULL,
+  `order_shop_id` int NOT NULL,
+  `amount` decimal(15,2) NOT NULL,
+  `status` enum('PENDING','APPROVED','CANCELLED') DEFAULT 'PENDING',
+  `payout_date` datetime DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `fk_aff_trans_link` (`affiliate_link_id`),
+  KEY `fk_aff_trans_order` (`order_shop_id`),
+  CONSTRAINT `fk_aff_trans_link` FOREIGN KEY (`affiliate_link_id`) REFERENCES `affiliate_links` (`id`),
+  CONSTRAINT `fk_aff_trans_order` FOREIGN KEY (`order_shop_id`) REFERENCES `orders_shop` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 CREATE TABLE `brands` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(100) DEFAULT NULL,
@@ -52,6 +82,40 @@ CREATE TABLE `categories` (
   UNIQUE KEY `name` (`name`),
   KEY `fk_categories_parent` (`parent_id`),
   CONSTRAINT `fk_categories_parent` FOREIGN KEY (`parent_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `chat_messages` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `room_id` int NOT NULL,
+  `sender_id` int NOT NULL,
+  `content` text,
+  `type` enum('TEXT','IMAGE','VIDEO','PRODUCT','ORDER') DEFAULT 'TEXT',
+  `attachment_url` json DEFAULT NULL,
+  `is_read` tinyint(1) DEFAULT '0',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_msg_room` (`room_id`,`created_at`),
+  CONSTRAINT `fk_msg_room` FOREIGN KEY (`room_id`) REFERENCES `chat_rooms` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `chat_participants` (
+  `room_id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `role` enum('MEMBER','ADMIN') DEFAULT 'MEMBER',
+  `joined_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`room_id`,`user_id`),
+  KEY `fk_chat_user` (`user_id`),
+  CONSTRAINT `fk_chat_room` FOREIGN KEY (`room_id`) REFERENCES `chat_rooms` (`id`),
+  CONSTRAINT `fk_chat_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `chat_rooms` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `type` enum('PRIVATE','GROUP','SUPPORT') DEFAULT 'PRIVATE',
+  `last_message` text,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `coupon_applicables` (
@@ -106,6 +170,20 @@ CREATE TABLE `favorites` (
   CONSTRAINT `fav_user_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+CREATE TABLE `notifications` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `body` text,
+  `type` enum('ORDER','SYSTEM','PROMOTION','CHAT') NOT NULL,
+  `reference_id` varchar(100) DEFAULT NULL,
+  `is_read` tinyint(1) DEFAULT '0',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_noti_user` (`user_id`),
+  CONSTRAINT `fk_noti_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 CREATE TABLE `option_values` (
   `id` int NOT NULL AUTO_INCREMENT,
   `option_id` int NOT NULL,
@@ -124,6 +202,7 @@ CREATE TABLE `options` (
 CREATE TABLE `order_details` (
   `id` int NOT NULL AUTO_INCREMENT,
   `order_id` int DEFAULT NULL,
+  `order_shop_id` int DEFAULT NULL,
   `product_id` int DEFAULT NULL,
   `product_item_id` int DEFAULT NULL COMMENT 'Nếu bán theo IMEI thì fill vào đây',
   `supplier_id` int DEFAULT NULL,
@@ -146,6 +225,8 @@ CREATE TABLE `order_details` (
   KEY `order_details_item_fk` (`product_item_id`),
   KEY `fk_order_details_supplier` (`supplier_id`),
   KEY `idx_supplier_settlement` (`supplier_id`,`is_settled`),
+  KEY `fk_details_order_shop` (`order_shop_id`),
+  CONSTRAINT `fk_details_order_shop` FOREIGN KEY (`order_shop_id`) REFERENCES `orders_shop` (`id`),
   CONSTRAINT `fk_order_details_supplier` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`),
   CONSTRAINT `order_details_item_fk` FOREIGN KEY (`product_item_id`) REFERENCES `product_items` (`id`),
   CONSTRAINT `order_details_order_fk` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`),
@@ -167,6 +248,7 @@ CREATE TABLE `order_histories` (
 CREATE TABLE `orders` (
   `id` int NOT NULL AUTO_INCREMENT,
   `user_id` int DEFAULT NULL,
+  `pos_session_id` int DEFAULT NULL,
   `fullname` varchar(100) DEFAULT '',
   `email` varchar(100) DEFAULT '',
   `phone_number` varchar(20) NOT NULL,
@@ -197,8 +279,45 @@ CREATE TABLE `orders` (
   KEY `fk_orders_user` (`user_id`),
   KEY `fk_orders_coupon` (`coupon_id`),
   KEY `idx_order_status` (`status`),
+  KEY `fk_order_pos` (`pos_session_id`),
+  CONSTRAINT `fk_order_pos` FOREIGN KEY (`pos_session_id`) REFERENCES `pos_sessions` (`id`),
   CONSTRAINT `fk_orders_coupon` FOREIGN KEY (`coupon_id`) REFERENCES `coupons` (`id`),
   CONSTRAINT `fk_orders_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `orders_shop` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `parent_order_id` int NOT NULL COMMENT 'Link tới bảng orders gốc',
+  `shop_id` int NOT NULL,
+  `shipping_method` varchar(100) DEFAULT NULL,
+  `shipping_fee` decimal(15,2) DEFAULT '0.00',
+  `sub_total` decimal(15,2) DEFAULT '0.00' COMMENT 'Tổng tiền hàng',
+  `admin_commission` decimal(15,2) DEFAULT '0.00' COMMENT 'Phí sàn thu',
+  `shop_income` decimal(15,2) DEFAULT '0.00' COMMENT 'Thực nhận = Sub - Comm',
+  `status` enum('pending','processing','shipped','delivered','cancelled','returned') DEFAULT 'pending',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `fk_sub_order_parent` (`parent_order_id`),
+  KEY `fk_sub_order_shop` (`shop_id`),
+  CONSTRAINT `fk_sub_order_parent` FOREIGN KEY (`parent_order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_sub_order_shop` FOREIGN KEY (`shop_id`) REFERENCES `shops` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `pos_sessions` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `shop_id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `start_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `end_at` datetime DEFAULT NULL,
+  `opening_cash` decimal(15,2) DEFAULT '0.00',
+  `closing_cash` decimal(15,2) DEFAULT '0.00',
+  `status` enum('OPEN','CLOSED') DEFAULT 'OPEN',
+  `note` text,
+  PRIMARY KEY (`id`),
+  KEY `fk_pos_shop` (`shop_id`),
+  KEY `fk_pos_user` (`user_id`),
+  CONSTRAINT `fk_pos_shop` FOREIGN KEY (`shop_id`) REFERENCES `shops` (`id`),
+  CONSTRAINT `fk_pos_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `price_histories` (
@@ -284,6 +403,7 @@ CREATE TABLE `product_variants` (
 
 CREATE TABLE `products` (
   `id` int NOT NULL AUTO_INCREMENT,
+  `shop_id` int DEFAULT '1',
   `name` varchar(350) DEFAULT NULL,
   `slug` varchar(350) DEFAULT NULL,
   `price` decimal(15,2) DEFAULT NULL,
@@ -309,7 +429,9 @@ CREATE TABLE `products` (
   KEY `products_categories_fk` (`category_id`),
   KEY `products_brands_fk` (`brand_id`),
   KEY `idx_category_price` (`category_id`,`price`),
+  KEY `fk_products_shop` (`shop_id`),
   FULLTEXT KEY `ft_product_name` (`name`),
+  CONSTRAINT `fk_products_shop` FOREIGN KEY (`shop_id`) REFERENCES `shops` (`id`),
   CONSTRAINT `products_brands_fk` FOREIGN KEY (`brand_id`) REFERENCES `brands` (`id`),
   CONSTRAINT `products_categories_fk` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -327,7 +449,40 @@ CREATE TABLE `roles` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `shop_employees` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `shop_id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `role` enum('MANAGER','SALES','WAREHOUSE') DEFAULT 'SALES',
+  `status` enum('ACTIVE','RESIGNED') DEFAULT 'ACTIVE',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `ux_shop_emp` (`shop_id`,`user_id`),
+  KEY `fk_shop_emp_user` (`user_id`),
+  CONSTRAINT `fk_shop_emp_shop` FOREIGN KEY (`shop_id`) REFERENCES `shops` (`id`),
+  CONSTRAINT `fk_shop_emp_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `shops` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `owner_id` int NOT NULL COMMENT 'Chủ shop (User ID)',
+  `name` varchar(255) NOT NULL,
+  `slug` varchar(255) DEFAULT NULL,
+  `logo_url` varchar(255) DEFAULT NULL,
+  `banner_url` varchar(255) DEFAULT NULL,
+  `description` text,
+  `commission_rate` decimal(5,2) DEFAULT '5.00' COMMENT 'Phí sàn thu %',
+  `status` enum('ACTIVE','BANNED','PENDING') DEFAULT 'ACTIVE',
+  `rating_avg` float DEFAULT '5',
+  `total_orders` int DEFAULT '0',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `slug` (`slug`),
+  KEY `fk_shops_users` (`owner_id`),
+  CONSTRAINT `fk_shops_users` FOREIGN KEY (`owner_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `social_accounts` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -341,14 +496,34 @@ CREATE TABLE `social_accounts` (
   CONSTRAINT `social_accounts_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+CREATE TABLE `social_posts` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `content` text,
+  `media_type` enum('IMAGE','VIDEO') DEFAULT 'IMAGE',
+  `media_urls` json DEFAULT NULL,
+  `linked_product_id` int DEFAULT NULL,
+  `total_likes` int DEFAULT '0',
+  `total_comments` int DEFAULT '0',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `fk_posts_user` (`user_id`),
+  KEY `fk_posts_pro` (`linked_product_id`),
+  CONSTRAINT `fk_posts_pro` FOREIGN KEY (`linked_product_id`) REFERENCES `products` (`id`),
+  CONSTRAINT `fk_posts_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 CREATE TABLE `suppliers` (
   `id` int NOT NULL AUTO_INCREMENT,
+  `shop_id` int NOT NULL DEFAULT '1',
   `name` varchar(100) NOT NULL,
   `contact_email` varchar(100) DEFAULT NULL,
   `contact_phone` varchar(20) DEFAULT NULL,
   `status` enum('active','inactive') DEFAULT 'active',
   `deleted_at` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_sup_shop` (`shop_id`),
+  CONSTRAINT `fk_supplier_shop` FOREIGN KEY (`shop_id`) REFERENCES `shops` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `tokens` (
@@ -404,6 +579,72 @@ CREATE TABLE `user_addresses` (
   CONSTRAINT `fk_addr_ward` FOREIGN KEY (`ward_code`) REFERENCES `wards` (`code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+CREATE TABLE `user_credentials` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `credential_id` text NOT NULL,
+  `public_key` text NOT NULL,
+  `sign_count` int DEFAULT '0',
+  `device_label` varchar(255) DEFAULT NULL COMMENT 'VD: Macbook Pro của Tùng',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `fk_cred_user` (`user_id`),
+  CONSTRAINT `fk_cred_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `user_devices` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `fcm_token` varchar(500) NOT NULL COMMENT 'Firebase Token',
+  `device_type` enum('ANDROID','IOS','WEB') NOT NULL,
+  `device_name` varchar(255) DEFAULT NULL,
+  `last_active_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_device_user` (`user_id`),
+  CONSTRAINT `fk_device_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `user_follows` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `follower_id` int NOT NULL,
+  `following_user_id` int DEFAULT NULL,
+  `following_shop_id` int DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `ux_follow_user` (`follower_id`,`following_user_id`),
+  UNIQUE KEY `ux_follow_shop` (`follower_id`,`following_shop_id`),
+  KEY `fk_follow_dest_user` (`following_user_id`),
+  KEY `fk_follow_dest_shop` (`following_shop_id`),
+  CONSTRAINT `fk_follow_dest_shop` FOREIGN KEY (`following_shop_id`) REFERENCES `shops` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_follow_dest_user` FOREIGN KEY (`following_user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_follow_src` FOREIGN KEY (`follower_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `user_interactions` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `product_id` int DEFAULT NULL,
+  `post_id` bigint DEFAULT NULL,
+  `action_type` enum('VIEW','LIKE','SHARE','CLICK','ADD_CART') NOT NULL,
+  `duration_ms` int DEFAULT '0',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_algo_score` (`user_id`,`product_id`,`action_type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `user_showcase_items` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `product_id` int NOT NULL,
+  `is_hidden` tinyint(1) DEFAULT '0',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `ux_showcase` (`user_id`,`product_id`),
+  KEY `fk_showcase_pro` (`product_id`),
+  CONSTRAINT `fk_showcase_pro` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`),
+  CONSTRAINT `fk_showcase_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 CREATE TABLE `users` (
   `id` int NOT NULL AUTO_INCREMENT,
   `fullname` varchar(100) DEFAULT '',
@@ -437,6 +678,30 @@ CREATE TABLE `variant_values` (
   CONSTRAINT `variant_values_ibfk_1` FOREIGN KEY (`variant_id`) REFERENCES `product_variants` (`id`) ON DELETE CASCADE,
   CONSTRAINT `variant_values_ibfk_2` FOREIGN KEY (`option_value_id`) REFERENCES `option_values` (`id`),
   CONSTRAINT `variant_values_ibfk_3` FOREIGN KEY (`option_id`) REFERENCES `options` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `wallet_transactions` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `wallet_id` int NOT NULL,
+  `amount` decimal(15,2) NOT NULL,
+  `type` enum('DEPOSIT','WITHDRAWAL','SALE_REVENUE','AFFILIATE_COMMISSION','REFUND') NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `ref_order_id` int DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `fk_trans_wallet` (`wallet_id`),
+  CONSTRAINT `fk_trans_wallet` FOREIGN KEY (`wallet_id`) REFERENCES `wallets` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `wallets` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `balance` decimal(15,2) DEFAULT '0.00',
+  `frozen_balance` decimal(15,2) DEFAULT '0.00' COMMENT 'Tiền chờ đối soát',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `ux_wallets_user` (`user_id`),
+  CONSTRAINT `fk_wallets_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `wards` (
@@ -473,6 +738,20 @@ CREATE TABLE `warranty_requests` (
   CONSTRAINT `fk_warranty_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+CREATE TABLE `withdrawal_requests` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `amount` decimal(15,2) NOT NULL,
+  `bank_name` varchar(100) DEFAULT NULL,
+  `bank_account` varchar(50) DEFAULT NULL,
+  `account_holder` varchar(100) DEFAULT NULL,
+  `status` enum('PENDING','APPROVED','REJECTED') DEFAULT 'PENDING',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `fk_withdraw_user` (`user_id`),
+  CONSTRAINT `fk_withdraw_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
 SET FOREIGN_KEY_CHECKS = 1;
 SET SQL_SAFE_UPDATES = 1;
@@ -480,4 +759,6 @@ COMMIT;
 
 INSERT INTO `roles` (`id`, `name`) VALUES
 (1, 'user'),
-(2, 'admin');
+(2, 'admin'),
+(3, 'vendor'),
+(4, 'staff');
