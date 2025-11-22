@@ -22,6 +22,7 @@ CREATE TABLE `cart_items` (
   `variant_id` int DEFAULT NULL COMMENT '[NEW] Chọn biến thể trong giỏ',
   `quantity` int DEFAULT '1',
   PRIMARY KEY (`id`),
+  UNIQUE KEY `ux_cart_product_variant` (`cart_id`,`product_id`,`variant_id`),
   KEY `fk_cart_items_cart` (`cart_id`),
   KEY `fk_cart_items_product` (`product_id`),
   KEY `fk_cart_items_variant` (`variant_id`),
@@ -275,6 +276,7 @@ CREATE TABLE `product_variants` (
   `quantity` int DEFAULT '0' COMMENT '[FIX] Tồn kho riêng cho từng biến thể',
   `weight` decimal(10,2) DEFAULT '0.00' COMMENT 'Gram',
   `dimensions` varchar(50) DEFAULT NULL COMMENT 'L x W x H',
+  `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `product_id` (`product_id`),
   CONSTRAINT `product_variants_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
@@ -306,6 +308,7 @@ CREATE TABLE `products` (
   UNIQUE KEY `ux_products_slug` (`slug`),
   KEY `products_categories_fk` (`category_id`),
   KEY `products_brands_fk` (`brand_id`),
+  KEY `idx_category_price` (`category_id`,`price`),
   FULLTEXT KEY `ft_product_name` (`name`),
   CONSTRAINT `products_brands_fk` FOREIGN KEY (`brand_id`) REFERENCES `brands` (`id`),
   CONSTRAINT `products_categories_fk` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`)
