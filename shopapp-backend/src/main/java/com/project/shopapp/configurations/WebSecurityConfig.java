@@ -35,44 +35,39 @@ public class WebSecurityConfig {
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests -> {
                     requests
-                            // --- PUBLIC ENDPOINTS (Không cần token) ---
+                            // 1. PUBLIC ENDPOINTS
                             .requestMatchers(
+                                    "/api-docs/**",
+                                    "/swagger-resources/**",
+                                    "/swagger-ui/**",
+                                    "/v3/api-docs/**",
+                                    "/uploads/**",
                                     String.format("%s/users/register", apiPrefix),
                                     String.format("%s/users/login", apiPrefix),
-                                    String.format("%s/users/login/social", apiPrefix),
-                                    String.format("%s/health-check/**", apiPrefix),
+                                    String.format("%s/auth/social-login", apiPrefix),
+                                    String.format("%s/healthcheck/**", apiPrefix),
                                     String.format("%s/actuator/**", apiPrefix),
-                                    String.format("%s/policies/**", apiPrefix)
+                                    String.format("%s/payment/**", apiPrefix)
                             ).permitAll()
 
-                            // Các API GET public (Sản phẩm, Danh mục, Thương hiệu, Địa chỉ)
+                            // 2. PUBLIC GET
                             .requestMatchers(HttpMethod.GET,
-                                    String.format("%s/roles**", apiPrefix),
+                                    String.format("%s/roles/**", apiPrefix),
                                     String.format("%s/categories/**", apiPrefix),
                                     String.format("%s/products/**", apiPrefix),
                                     String.format("%s/products/images/*", apiPrefix),
-                                    String.format("%s/brands/**", apiPrefix),
-                                    String.format("%s/comments/**", apiPrefix),
-                                    String.format("%s/reviews/**", apiPrefix),
-                                    String.format("%s/address/**", apiPrefix),
-                                    String.format("%s/coupons/calculate", apiPrefix)
+                                    String.format("%s/comments/**", apiPrefix)
                             ).permitAll()
 
-                            // --- USER & ADMIN (Cần đăng nhập) ---
+                            // 3. USER & ADMIN
                             .requestMatchers(
-                                    String.format("%s/users/details/**", apiPrefix),
-                                    String.format("%s/users/profile-images/**", apiPrefix),
-                                    String.format("%s/cart/**", apiPrefix),            // Giỏ hàng
-                                    String.format("%s/orders/**", apiPrefix),          // Đơn hàng
-                                    String.format("%s/order-details/**", apiPrefix),   // Chi tiết đơn
-                                    String.format("%s/user-addresses/**", apiPrefix),  // Sổ địa chỉ
-                                    String.format("%s/warranties/**", apiPrefix),      // Bảo hành
-                                    String.format("%s/payments/**", apiPrefix),        // Thanh toán
-                                    String.format("%s/comments/**", apiPrefix),        // Comment (POST/PUT)
-                                    String.format("%s/reviews/**", apiPrefix)          // Review (POST/PUT)
+                                    String.format("%s/orders/**", apiPrefix),
+                                    String.format("%s/order_details/**", apiPrefix),
+                                    String.format("%s/cart/**", apiPrefix),
+                                    String.format("%s/user-addresses/**", apiPrefix)
                             ).hasAnyRole(Role.USER, Role.ADMIN)
 
-                            // --- ADMIN ONLY (Chỉ Admin mới được tác động dữ liệu hệ thống) ---
+                            // 4. ADMIN ONLY
                             .requestMatchers(HttpMethod.POST,
                                     String.format("%s/categories/**", apiPrefix),
                                     String.format("%s/brands/**", apiPrefix),
@@ -89,16 +84,12 @@ public class WebSecurityConfig {
 
                             .requestMatchers(HttpMethod.DELETE,
                                     String.format("%s/categories/**", apiPrefix),
-                                    String.format("%s/brands/**", apiPrefix),
-                                    String.format("%s/suppliers/**", apiPrefix),
-                                    String.format("%s/products/**", apiPrefix),
-                                    String.format("%s/product-images/**", apiPrefix)
+                                    String.format("%s/products/**", apiPrefix)
                             ).hasRole(Role.ADMIN)
 
-                            // Các request khác bắt buộc phải xác thực
+                            // 5. CÁC REQUEST CÒN LẠI BẮT BUỘC ĐĂNG NHẬP
                             .anyRequest().authenticated();
                 });
         return http.build();
     }
-
 }
