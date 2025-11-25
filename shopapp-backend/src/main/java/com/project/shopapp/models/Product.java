@@ -1,12 +1,10 @@
 package com.project.shopapp.models;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.project.shopapp.enums.ProductType;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,11 +21,26 @@ public class Product extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shop_id")
+    private Shop shop;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "brand_id")
+    private Brand brand;
+
     @Column(name = "name", nullable = false, length = 350)
     private String name;
 
-    @Column(name = "slug", length = 350, unique = true)
+    @Column(name = "slug", nullable = false, unique = true, length = 350)
     private String slug;
+
+    @Column(name = "specs", columnDefinition = "json")
+    private String specs;
 
     @Column(name = "price")
     private BigDecimal price;
@@ -45,53 +58,54 @@ public class Product extends BaseEntity {
     private String description;
 
     @Column(name = "quantity")
-    private Integer quantity;
+    @Builder.Default
+    private Integer quantity = 0;
+
+    @Column(name = "product_type")
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private ProductType productType = ProductType.OWN;
 
     @Column(name = "warranty_period")
-    private Integer warrantyPeriod;
-
-    @Column(name = "specs", columnDefinition = "json")
-    private String specs;
+    @Builder.Default
+    private Integer warrantyPeriod = 12;
 
     @Column(name = "is_imei_tracked")
-    private Boolean isImeiTracked;
+    @Builder.Default
+    private Boolean isImeiTracked = true;
 
     @Column(name = "is_featured")
-    private Boolean isFeatured;
+    @Builder.Default
+    private Boolean isFeatured = false;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "product_type")
-    private ProductType productType;
-
-    @Column(name = "meta_title")
+    @Column(name = "meta_title", length = 255)
     private String metaTitle;
 
     @Column(name = "meta_description", columnDefinition = "TEXT")
     private String metaDescription;
 
-    @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
+    @Column(name = "rating_avg")
+    @Builder.Default
+    private Float ratingAvg = 0f;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private Category category;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "brand_id")
-    private Brand brand;
+    @Column(name = "review_count")
+    @Builder.Default
+    private Integer reviewCount = 0;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ProductImage> productImages;
+    @Builder.Default
+    private List<ProductImage> productImages = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
+    @Builder.Default
+    private List<ProductVariant> variants = new ArrayList<>();
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
     private List<ProductReview> reviews = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
     private List<Favorite> favorites = new ArrayList<>();
-
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private List<ProductVariant> variants = new ArrayList<>();
 
 }
