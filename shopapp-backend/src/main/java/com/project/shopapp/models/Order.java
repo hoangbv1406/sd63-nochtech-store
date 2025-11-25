@@ -20,7 +20,7 @@ import java.util.List;
 @Builder
 @Getter
 @Setter
-public class Order {
+public class Order extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,10 +36,10 @@ public class Order {
     @Column(name = "email", length = 100)
     private String email;
 
-    @Column(name = "phone_number", nullable = false, length = 20)
+    @Column(name = "phone_number", nullable = false, length = 100)
     private String phoneNumber;
 
-    @Column(name = "address", nullable = false, length = 200)
+    @Column(name = "address", length = 200)
     private String address;
 
     @Column(name = "province_code")
@@ -55,11 +55,13 @@ public class Order {
     private String note;
 
     @Column(name = "order_date")
-    private LocalDateTime orderDate;
+    @Builder.Default
+    private LocalDateTime orderDate = LocalDateTime.now();
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private OrderStatus status;
+    @Builder.Default
+    private OrderStatus status = OrderStatus.PENDING;
 
     @Column(name = "sub_total")
     private BigDecimal subTotal;
@@ -93,33 +95,34 @@ public class Order {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_status")
-    private PaymentStatus paymentStatus;
+    @Builder.Default
+    private PaymentStatus paymentStatus = PaymentStatus.UNPAID;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "order_channel")
-    private OrderChannel orderChannel;
+    @Builder.Default
+    private OrderChannel orderChannel = OrderChannel.ONLINE;
 
     @Column(name = "active")
-    private Boolean active;
-
-    @Column(name = "vnp_txn_ref")
-    private String vnpTxnRef;
-
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private List<OrderDetail> orderDetails = new ArrayList<>();
+    @Builder.Default
+    private Boolean active = true;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coupon_id")
     private Coupon coupon;
 
-    @PrePersist
-    protected void onCreate() {
-        orderDate = LocalDateTime.now();
-        if (active == null) active = true;
-        if (status == null) status = OrderStatus.PENDING;
-        if (paymentStatus == null) paymentStatus = PaymentStatus.UNPAID;
-        if (orderChannel == null) orderChannel = OrderChannel.ONLINE;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pos_session_id")
+    private PosSession posSession;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    @Builder.Default
+    private List<OrderDetail> orderDetails = new ArrayList<>();
+
+    @OneToMany(mappedBy = "parentOrder", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    @Builder.Default
+    private List<OrderShop> subOrders = new ArrayList<>();
 
 }
