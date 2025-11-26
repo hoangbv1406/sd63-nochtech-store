@@ -1,22 +1,19 @@
 package com.project.shopapp.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.experimental.SuperBuilder;
-import lombok.extern.jackson.Jacksonized;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.Date;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
-@ToString
-@SuperBuilder
-@Jacksonized
-@EqualsAndHashCode(callSuper = true)
-public class UserDTO extends SocialAccountDTO {
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserDTO {
 
     @JsonProperty("fullname")
     private String fullName;
@@ -30,7 +27,8 @@ public class UserDTO extends SocialAccountDTO {
     @JsonProperty("address")
     private String address;
 
-    @JsonProperty("password")
+    @NotBlank(message = "Mật khẩu không được để trống")
+    @Size(min = 6, message = "Mật khẩu phải có ít nhất 6 ký tự")
     private String password;
 
     @JsonProperty("retype_password")
