@@ -1,5 +1,6 @@
 package com.project.shopapp.models;
 
+import com.project.shopapp.enums.ProductItemStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -42,11 +43,17 @@ public class ProductItem {
     @Column(name = "inbound_price")
     private BigDecimal inboundPrice;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private String status;
+    @Builder.Default
+    private ProductItemStatus status = ProductItemStatus.AVAILABLE;
+
+    @Column(name = "locked_until")
+    private LocalDateTime lockedUntil;
 
     @Column(name = "import_date")
-    private LocalDateTime importDate;
+    @Builder.Default
+    private LocalDateTime importDate = LocalDateTime.now();
 
     @Column(name = "sold_date")
     private LocalDateTime soldDate;
