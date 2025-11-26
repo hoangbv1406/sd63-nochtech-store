@@ -119,8 +119,8 @@ public class UserController {
                 .token(jwtToken.getToken())
                 .tokenType(jwtToken.getTokenType())
                 .refreshToken(jwtToken.getRefreshToken())
-                .username(userDetail.getUsername())
-                .roles(userDetail.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
+                .username(userDetail.getPhoneNumber() != null ? userDetail.getPhoneNumber() : userDetail.getEmail())
+                .roles(List.of(userDetail.getRole().getName().toUpperCase()))
                 .id(userDetail.getId())
                 .build();
 
@@ -148,8 +148,8 @@ public class UserController {
                 .token(jwtToken.getToken())
                 .tokenType(jwtToken.getTokenType())
                 .refreshToken(jwtToken.getRefreshToken())
-                .username(userDetail.getUsername())
-                .roles(userDetail.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
+                .username(userDetail.getPhoneNumber() != null ? userDetail.getPhoneNumber() : userDetail.getEmail())
+                .roles(List.of(userDetail.getRole().getName().toUpperCase()))
                 .id(userDetail.getId())
                 .build();
 
