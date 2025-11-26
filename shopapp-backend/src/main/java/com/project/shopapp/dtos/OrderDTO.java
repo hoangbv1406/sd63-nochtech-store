@@ -1,8 +1,10 @@
 package com.project.shopapp.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.Min;
+import com.project.shopapp.enums.OrderChannel;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
@@ -10,17 +12,12 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
-@ToString
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class OrderDTO {
-
-    @JsonProperty("user_id")
-    @Min(value = 1, message = "User ID must be > 0")
-    private Long userId;
 
     @JsonProperty("fullname")
     private String fullName;
@@ -28,8 +25,8 @@ public class OrderDTO {
     @JsonProperty("email")
     private String email;
 
-    @NotBlank(message = "Phone number is required")
-    @Size(min = 5, message = "Phone number must be at least 5 characters")
+    @NotBlank(message = "Số điện thoại không được để trống")
+    @Size(min = 5, message = "Số điện thoại phải có ít nhất 5 ký tự")
     @JsonProperty("phone_number")
     private String phoneNumber;
 
@@ -48,16 +45,19 @@ public class OrderDTO {
     @JsonProperty("note")
     private String note;
 
-    @Min(value = 0, message = "Total money must be >= 0")
+    @DecimalMin(value = "0.0", inclusive = true, message = "Tổng tiền không được là số âm")
     @JsonProperty("total_money")
     private BigDecimal totalMoney;
 
-    @Min(value = 0, message = "Shipping fee must be >= 0")
+    @DecimalMin(value = "0.0", inclusive = true, message = "Phí ship không được là số âm")
     @JsonProperty("shipping_fee")
     private BigDecimal shippingFee;
 
     @JsonProperty("shipping_method")
     private String shippingMethod;
+
+    @JsonProperty("shipping_address")
+    private String shippingAddress;
 
     @JsonProperty("shipping_date")
     private LocalDate shippingDate;
@@ -71,10 +71,14 @@ public class OrderDTO {
     @JsonProperty("vnp_txn_ref")
     private String vnpTxnRef;
 
+    @NotEmpty(message = "Giỏ hàng không được để trống")
     @JsonProperty("cart_items")
     private List<CartItemDTO> cartItems;
 
-    @JsonProperty("status")
-    private String status;
+    @JsonProperty("pos_session_id")
+    private Long posSessionId;
+
+    @JsonProperty("order_channel")
+    private OrderChannel orderChannel;
 
 }
