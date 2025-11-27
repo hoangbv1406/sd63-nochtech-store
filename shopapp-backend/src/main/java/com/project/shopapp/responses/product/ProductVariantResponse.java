@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 @Builder
 public class ProductVariantResponse {
 
+    @JsonProperty("id")
     private Long id;
 
     @JsonProperty("product_id")
@@ -41,18 +42,18 @@ public class ProductVariantResponse {
     public static ProductVariantResponse fromProductVariant(ProductVariant variant) {
         return ProductVariantResponse.builder()
                 .id(variant.getId())
-                .productId(variant.getProduct().getId())
+                .productId(variant.getProduct() != null ? variant.getProduct().getId() : null)
                 .sku(variant.getSku())
                 .price(variant.getPrice())
                 .originalPrice(variant.getOriginalPrice())
                 .imageUrl(variant.getImageUrl())
                 .quantity(variant.getQuantity())
-                .attributes(variant.getOptionValues().stream()
+                .attributes(variant.getOptionValues() != null ? variant.getOptionValues().stream()
                         .map(optionValue -> new VariantAttributeResponse(
                                 optionValue.getOption().getName(),
-                                optionValue.getValue())
-                        )
-                        .collect(Collectors.toList()))
+                                optionValue.getValue()
+                        ))
+                        .collect(Collectors.toList()) : null)
                 .build();
     }
 
