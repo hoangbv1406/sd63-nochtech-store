@@ -6,6 +6,7 @@ import com.project.shopapp.models.ProductImage;
 import com.project.shopapp.responses.BaseResponse;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,56 +20,78 @@ public class ProductResponse extends BaseResponse {
 
     private Long id;
     private String name;
-    private String price;
+    private BigDecimal price;
     private String thumbnail;
     private String description;
-
-    @JsonProperty("specs")
-    private String specs;
+    private String slug;
 
     @JsonProperty("category_id")
     private Long categoryId;
 
-    @JsonProperty("brand_id")
-    private Long brandId;
+    @JsonProperty("shop_id")
+    private Long shopId;
 
-    @JsonProperty("category_name")
-    private String categoryName;
+    @JsonProperty("shop_name")
+    private String shopName;
 
     @JsonProperty("brand_name")
     private String brandName;
 
+    @JsonProperty("specs")
+    private String specs;
+
+    @JsonProperty("product_type")
+    private String productType;
+
+    @JsonProperty("rating_avg")
+    private Float ratingAvg;
+
+    @JsonProperty("review_count")
+    private Integer reviewCount;
+
     @JsonProperty("product_images")
+    @Builder.Default
     private List<ProductImage> productImages = new ArrayList<>();
 
     @JsonProperty("variants")
+    @Builder.Default
     private List<ProductVariantResponse> variants = new ArrayList<>();
 
     public static ProductResponse fromProduct(Product product) {
         ProductResponse response = ProductResponse.builder()
                 .id(product.getId())
                 .name(product.getName())
-                .price(product.getPrice().toString())
+                .price(product.getPrice())
                 .thumbnail(product.getThumbnail())
                 .description(product.getDescription())
+                .slug(product.getSlug())
                 .specs(product.getSpecs())
-                .categoryId(product.getCategory().getId())
-                .categoryName(product.getCategory().getName())
-                .brandId(product.getBrand() != null ? product.getBrand().getId() : null)
-                .brandName(product.getBrand() != null ? product.getBrand().getName() : null)
+                .productType(product.getProductType() != null ? product.getProductType().name() : null)
+                .ratingAvg(product.getRatingAvg())
+                .reviewCount(product.getReviewCount())
                 .productImages(product.getProductImages())
                 .build();
 
-        response.setCreatedAt(product.getCreatedAt());
-        response.setUpdatedAt(product.getUpdatedAt());
+        if (product.getCategory() != null) {
+            response.setCategoryId(product.getCategory().getId());
+        }
+        if (product.getShop() != null) {
+            response.setShopId(product.getShop().getId());
+            response.setShopName(product.getShop().getName());
+        }
+        if (product.getBrand() != null) {
+            response.setBrandName(product.getBrand().getName());
+        }
 
-        if (product.getVariants() != null) {
+        if (product.getVariants() != null && !product.getVariants().isEmpty()) {
             response.setVariants(product.getVariants().stream()
                     .map(ProductVariantResponse::fromProductVariant)
                     .collect(Collectors.toList())
             );
         }
 
+        response.setCreatedAt(product.getCreatedAt());
+        response.setUpdatedAt(product.getUpdatedAt());
         return response;
     }
 
