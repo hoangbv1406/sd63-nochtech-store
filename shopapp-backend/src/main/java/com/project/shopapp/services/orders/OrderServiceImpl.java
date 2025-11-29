@@ -4,6 +4,7 @@ import com.project.shopapp.dtos.CartItemDTO;
 import com.project.shopapp.dtos.OrderDTO;
 import com.project.shopapp.enums.OrderStatus;
 import com.project.shopapp.exceptions.DataNotFoundException;
+import com.project.shopapp.exceptions.InvalidParamException;
 import com.project.shopapp.models.*;
 import com.project.shopapp.repositories.*;
 import com.project.shopapp.responses.order.OrderResponse;
@@ -14,19 +15,22 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
+
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final ProductVariantRepository productVariantRepository;
     private final CouponRepository couponRepository;
+    private final OrderDetailRepository orderDetailRepository;
+    private final OrderShopRepository orderShopRepository;
     private final ModelMapper modelMapper;
 
     @Override
@@ -41,34 +45,43 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public Order createOrder(OrderDTO orderDTO) throws Exception {
-        User user = userRepository.findById(orderDTO.getUserId())
-                .orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + orderDTO.getUserId()));
+    public Order createOrder(OrderDTO orderDTO, Long userId) throws Exception {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("Không tìm thấy người dùng với id: " + userId));
 
-        modelMapper.typeMap(OrderDTO.class, Order.class).addMappings(mapper -> mapper.skip(Order::setId));
         Order order = new Order();
         modelMapper.map(orderDTO, order);
 
         order.setUser(user);
         order.setOrderDate(LocalDateTime.now());
         order.setStatus(OrderStatus.PENDING);
+        order.setOrderChannel(orderDTO.getOrderChannel() != null ? orderDTO.getOrderChannel() : com.project.shopapp.enums.OrderChannel.ONLINE);
         order.setActive(true);
         order.setTotalMoney(orderDTO.getTotalMoney());
         order.setProvinceCode(orderDTO.getProvinceCode());
         order.setDistrictCode(orderDTO.getDistrictCode());
         order.setWardCode(orderDTO.getWardCode());
 
-        LocalDate shippingDate = orderDTO.getShippingDate() == null ? LocalDate.now() : orderDTO.getShippingDate();
+        LocalDate shippingDate = orderDTO.getShippingDate() == null ? LocalDate.now().plusDays(3) : orderDTO.getShippingDate();
         if (shippingDate.isBefore(LocalDate.now())) {
-            throw new DataNotFoundException("Date must be at least today !");
+            throw new InvalidParamException("Ngày giao hàng phải từ hôm nay trở đi!");
         }
         order.setShippingDate(shippingDate);
 
         if (orderDTO.getCartItems() == null || orderDTO.getCartItems().isEmpty()) {
-            throw new IllegalArgumentException("Cart items cannot be empty");
+            throw new IllegalArgumentException("Giỏ hàng không được để trống");
         }
 
-        List<OrderDetail> orderDetails = new ArrayList<>();
+        if (orderDTO.getCouponCode() != null && !orderDTO.getCouponCode().trim().isEmpty()) {
+            Coupon coupon = couponRepository.findByCodeAndActive(orderDTO.getCouponCode())
+                    .orElseThrow(() -> new IllegalArgumentException("Mã giảm giá không tồn tại hoặc đã hết hạn"));
+            order.setCoupon(coupon);
+        }
+
+        order = orderRepository.save(order);
+
+        Map<Long, List<OrderDetail>> shopOrderDetailsMap = new HashMap<>();
+        double grandTotal = 0;
 
         for (CartItemDTO cartItemDTO : orderDTO.getCartItems()) {
             OrderDetail orderDetail = new OrderDetail();
@@ -78,67 +91,93 @@ public class OrderServiceImpl implements OrderService {
             int quantity = cartItemDTO.getQuantity();
 
             Product product = productRepository.findById(productId)
-                    .orElseThrow(() -> new DataNotFoundException("Product not found with id: " + productId));
+                    .orElseThrow(() -> new DataNotFoundException("Không tìm thấy sản phẩm với id: " + productId));
 
             if (cartItemDTO.getVariantId() != null && cartItemDTO.getVariantId() > 0) {
                 ProductVariant variant = productVariantRepository.findById(cartItemDTO.getVariantId())
-                        .orElseThrow(() -> new DataNotFoundException("Variant not found"));
+                        .orElseThrow(() -> new DataNotFoundException("Không tìm thấy biến thể sản phẩm"));
 
                 if (variant.getQuantity() < quantity) {
-                    throw new RuntimeException("Variant " + variant.getSku() + " out of stock");
+                    throw new RuntimeException("Biến thể " + variant.getSku() + " đã hết hàng trong kho!");
                 }
-
                 variant.setQuantity(variant.getQuantity() - quantity);
                 productVariantRepository.save(variant);
 
                 orderDetail.setPrice(variant.getPrice());
-                orderDetail.setVariantName("Variant: " + variant.getId());
-
+                orderDetail.setVariantName("Variant ID: " + variant.getId());
             } else {
                 orderDetail.setPrice(product.getPrice());
             }
 
             orderDetail.setProduct(product);
+            orderDetail.setProductName(product.getName());
             orderDetail.setNumberOfProducts(quantity);
-            orderDetail.setTotalMoney(orderDetail.getPrice().multiply(java.math.BigDecimal.valueOf(quantity)));
+            orderDetail.setTotalMoney(orderDetail.getPrice().multiply(BigDecimal.valueOf(quantity)));
 
-            orderDetails.add(orderDetail);
-        }
-        order.setOrderDetails(orderDetails);
+            grandTotal += orderDetail.getTotalMoney().doubleValue();
 
-        String couponCode = orderDTO.getCouponCode();
-        if (couponCode != null && !couponCode.trim().isEmpty()) {
-            Coupon coupon = couponRepository.findByCodeAndActive(couponCode)
-                    .orElseThrow(() -> new IllegalArgumentException("Coupon not found or inactive"));
-            order.setCoupon(coupon);
+            Long shopId = product.getShop() != null ? product.getShop().getId() : 1L;
+            shopOrderDetailsMap.computeIfAbsent(shopId, k -> new ArrayList<>()).add(orderDetail);
         }
 
+        for (Map.Entry<Long, List<OrderDetail>> entry : shopOrderDetailsMap.entrySet()) {
+            Long shopId = entry.getKey();
+            List<OrderDetail> details = entry.getValue();
+
+            BigDecimal subTotal = details.stream()
+                    .map(OrderDetail::getTotalMoney)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            BigDecimal adminCommission = subTotal.multiply(BigDecimal.valueOf(0.05));
+
+            OrderShop orderShop = OrderShop.builder()
+                    .parentOrder(order)
+                    .shop(Shop.builder().id(shopId).build())
+                    .subTotal(subTotal)
+                    .status(OrderStatus.PENDING)
+                    .shippingFee(BigDecimal.ZERO)
+                    .adminCommission(adminCommission)
+                    .shopIncome(subTotal.subtract(adminCommission))
+                    .build();
+
+            OrderShop savedOrderShop = orderShopRepository.save(orderShop);
+
+            for (OrderDetail detail : details) {
+                detail.setOrderShop(savedOrderShop);
+                orderDetailRepository.save(detail);
+            }
+        }
+
+        order.setTotalMoney(BigDecimal.valueOf(grandTotal));
         return orderRepository.save(order);
     }
 
     @Override
+    @Transactional
     public Order updateOrder(Long id, OrderDTO orderDTO) throws DataNotFoundException {
         Order order = getOrderById(id);
-        if (order == null) throw new DataNotFoundException("Order not found");
+        if (order == null) throw new DataNotFoundException("Không tìm thấy đơn hàng");
 
         if (orderDTO.getFullName() != null) order.setFullName(orderDTO.getFullName());
         if (orderDTO.getEmail() != null) order.setEmail(orderDTO.getEmail());
         if (orderDTO.getPhoneNumber() != null) order.setPhoneNumber(orderDTO.getPhoneNumber());
         if (orderDTO.getAddress() != null) order.setAddress(orderDTO.getAddress());
-        if (orderDTO.getStatus() != null) order.setStatus(OrderStatus.valueOf(orderDTO.getStatus()));
 
         return orderRepository.save(order);
     }
 
     @Override
+    @Transactional
     public Order updateOrderStatus(Long id, String status) throws DataNotFoundException {
         Order order = getOrderById(id);
-        if (order == null) throw new DataNotFoundException("Order not found");
-        order.setStatus(OrderStatus.valueOf(status));
+        if (order == null) throw new DataNotFoundException("Không tìm thấy đơn hàng");
+
+        order.setStatus(OrderStatus.fromString(status));
         return orderRepository.save(order);
     }
 
     @Override
+    @Transactional
     public void deleteOrder(Long orderId) {
         Order order = getOrderById(orderId);
         if (order != null) {
@@ -154,8 +193,16 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Page<Order> getOrdersByKeyword(String keyword, Pageable pageable) {
-        return orderRepository.findByKeyword(keyword, pageable);
+    public Page<Order> getOrdersByKeyword(String keyword, String status, Pageable pageable) {
+        OrderStatus orderStatus = (status != null && !status.trim().isEmpty())
+                ? OrderStatus.fromString(status)
+                : null;
+
+        return orderRepository.findByKeywordAndStatus(keyword, orderStatus, pageable);
     }
 
+    @Override
+    public Page<OrderShop> getOrdersByShopId(Long shopId, Pageable pageable) {
+        return orderShopRepository.findByShopId(shopId, pageable);
+    }
 }
