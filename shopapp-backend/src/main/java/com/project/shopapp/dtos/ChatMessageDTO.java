@@ -12,6 +12,9 @@ import lombok.*;
 @NoArgsConstructor
 public class ChatMessageDTO {
 
+    @JsonProperty("sender_id")
+    private Long senderId;
+
     @JsonProperty("room_id")
     @NotNull(message = "Room ID is required")
     private Long roomId;
