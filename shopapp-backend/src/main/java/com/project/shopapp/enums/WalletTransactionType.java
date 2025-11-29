@@ -6,4 +6,6 @@ public enum WalletTransactionType {
     SALE_REVENUE,
     AFFILIATE_COMMISSION,
     REFUND,
+    TRANSFER_OUT,
+    TRANSFER_IN,
 }
