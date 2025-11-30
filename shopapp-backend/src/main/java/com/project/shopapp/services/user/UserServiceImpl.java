@@ -28,6 +28,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final SocialAccountRepository socialAccountRepository;
@@ -80,10 +81,13 @@ public class UserServiceImpl implements UserService {
                 .build();
         newUser.setRole(role);
 
-        if (!userDTO.isSocialLogin()) {
-            String password = userDTO.getPassword();
-            String encodedPassword = passwordEncoder.encode(password);
+        // 🚨 SỬA LỖI Ở ĐÂY: Nếu người dùng có gửi mật khẩu lên -> Đây là đăng ký thường -> Cần mã hóa mật khẩu
+        if (userDTO.getPassword() != null && !userDTO.getPassword().isBlank()) {
+            String encodedPassword = passwordEncoder.encode(userDTO.getPassword());
             newUser.setPassword(encodedPassword);
+        } else {
+            // Nếu không có mật khẩu thì gán chuỗi rỗng để tránh lỗi Null ở Database (Dành cho Social Login)
+            newUser.setPassword("");
         }
 
         return userRepository.save(newUser);
@@ -109,7 +113,9 @@ public class UserServiceImpl implements UserService {
         Optional<User> optionalUser = Optional.empty();
         Role roleUser = roleRepository.findByName(Role.USER).orElseThrow(() -> new DataNotFoundException("Role USER not found"));
 
-        if (!userLoginDTO.isSocialLogin()) {
+        // 🚨 SỬA LỖI Ở ĐÂY: Nhận diện Social Login thông qua sự tồn tại của Provider (Google/Facebook)
+        if (userLoginDTO.getProvider() == null || userLoginDTO.getProvider().isBlank() ||
+                userLoginDTO.getProviderId() == null || userLoginDTO.getProviderId().isBlank()) {
             throw new IllegalArgumentException("Invalid social account information. Provider and ProviderId are required.");
         }
 
@@ -132,7 +138,7 @@ public class UserServiceImpl implements UserService {
                         .email(Optional.ofNullable(userLoginDTO.getEmail()).orElse(""))
                         .profileImage(Optional.ofNullable(userLoginDTO.getProfileImage()).orElse(""))
                         .role(roleUser)
-                        .password("")
+                        .password("") // Social Login không xài mật khẩu
                         .active(true)
                         .build();
                 user = userRepository.save(newUser);
