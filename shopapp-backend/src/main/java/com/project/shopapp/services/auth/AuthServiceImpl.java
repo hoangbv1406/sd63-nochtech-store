@@ -36,17 +36,17 @@ public class AuthServiceImpl implements AuthService {
         }
 
         if (optionalUser.isEmpty()) {
-            throw new DataNotFoundException("Invalid phone number / email or password");
+            throw new DataNotFoundException("Sai số điện thoại, email hoặc mật khẩu");
         }
 
         User existingUser = optionalUser.get();
         if (!existingUser.isActive()) {
-            throw new DataNotFoundException("User is locked or inactive");
+            throw new DataNotFoundException("Tài khoản của bạn đã bị khóa");
         }
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                subject, userLoginDTO.getPassword(),
-                existingUser.getAuthorities()
+                subject,
+                userLoginDTO.getPassword()
         );
 
         authenticationManager.authenticate(authenticationToken);
