@@ -1,5 +1,6 @@
 package com.project.shopapp.configurations;
 
+import com.project.shopapp.models.User;
 import com.project.shopapp.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -20,8 +21,13 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return identifier -> userRepository.findByPhoneNumber(identifier).or(() -> userRepository.findByEmail(identifier))
-                .orElseThrow(() -> new UsernameNotFoundException("Cannot find user with identifier = " + identifier));
+        return identifier -> {
+            User user = userRepository.findByPhoneNumber(identifier)
+                    .or(() -> userRepository.findByEmail(identifier))
+                    .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy người dùng với định danh: " + identifier));
+
+            return new com.project.shopapp.security.CustomUserDetails(user, null);
+        };
     }
 
     @Bean
