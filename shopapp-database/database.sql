@@ -38,6 +38,17 @@ CREATE TABLE `affiliate_transactions` (
   CONSTRAINT `fk_aff_trans_order` FOREIGN KEY (`order_shop_id`) REFERENCES `orders_shop` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+CREATE TABLE `banners` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) DEFAULT NULL,
+  `image_url` varchar(300) NOT NULL,
+  `target_url` varchar(300) DEFAULT NULL COMMENT 'Link click vào banner',
+  `position` varchar(50) DEFAULT 'HOME_MAIN' COMMENT 'Vị trí đặt banner',
+  `display_order` int DEFAULT '0',
+  `is_active` tinyint(1) DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 CREATE TABLE `brands` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(100) DEFAULT NULL,
@@ -78,6 +89,7 @@ CREATE TABLE `categories` (
   `name` varchar(50) DEFAULT NULL,
   `parent_id` int DEFAULT NULL,
   `slug` varchar(100) DEFAULT NULL,
+  `icon_url` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
   KEY `fk_categories_parent` (`parent_id`),
@@ -130,6 +142,7 @@ CREATE TABLE `coupon_applicables` (
 
 CREATE TABLE `coupons` (
   `id` int NOT NULL AUTO_INCREMENT,
+  `shop_id` int DEFAULT NULL,
   `code` varchar(50) NOT NULL,
   `name` varchar(255) NOT NULL,
   `description` text,
@@ -144,7 +157,9 @@ CREATE TABLE `coupons` (
   `is_active` tinyint(1) DEFAULT '1',
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `ux_coupon_code` (`code`)
+  UNIQUE KEY `ux_coupon_code` (`code`),
+  KEY `fk_coupons_shop` (`shop_id`),
+  CONSTRAINT `fk_coupons_shop` FOREIGN KEY (`shop_id`) REFERENCES `shops` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `districts` (
@@ -168,6 +183,30 @@ CREATE TABLE `favorites` (
   KEY `fav_product_fk` (`product_id`),
   CONSTRAINT `fav_product_fk` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`),
   CONSTRAINT `fav_user_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `flash_sale_items` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `flash_sale_id` int NOT NULL,
+  `product_id` int NOT NULL,
+  `promotional_price` decimal(15,2) NOT NULL,
+  `quantity_limit` int NOT NULL COMMENT 'Số lượng SP bán trong đợt sale',
+  `sold_count` int DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `fk_fs_items_fs` (`flash_sale_id`),
+  KEY `fk_fs_items_product` (`product_id`),
+  CONSTRAINT `fk_fs_items_fs` FOREIGN KEY (`flash_sale_id`) REFERENCES `flash_sales` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_fs_items_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `flash_sales` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `start_time` datetime NOT NULL,
+  `end_time` datetime NOT NULL,
+  `status` enum('PENDING','ACTIVE','ENDED') DEFAULT 'PENDING',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `notifications` (
@@ -424,6 +463,8 @@ CREATE TABLE `products` (
   `is_featured` tinyint(1) DEFAULT '0',
   `min_price` decimal(15,2) DEFAULT NULL,
   `max_price` decimal(15,2) DEFAULT NULL,
+  `rating_avg` float DEFAULT '0',
+  `review_count` int DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_products_slug` (`slug`),
   KEY `products_categories_fk` (`category_id`),
@@ -463,6 +504,21 @@ CREATE TABLE `shop_employees` (
   KEY `fk_shop_emp_user` (`user_id`),
   CONSTRAINT `fk_shop_emp_shop` FOREIGN KEY (`shop_id`) REFERENCES `shops` (`id`),
   CONSTRAINT `fk_shop_emp_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `shop_reviews` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `shop_id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `order_shop_id` int NOT NULL,
+  `rating` tinyint DEFAULT '5',
+  `content` text,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `fk_shop_reviews_shop` (`shop_id`),
+  KEY `fk_shop_reviews_user` (`user_id`),
+  CONSTRAINT `fk_shop_reviews_shop` FOREIGN KEY (`shop_id`) REFERENCES `shops` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_shop_reviews_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `shops` (
@@ -684,7 +740,7 @@ CREATE TABLE `wallet_transactions` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `wallet_id` int NOT NULL,
   `amount` decimal(15,2) NOT NULL,
-  `type` enum('DEPOSIT','WITHDRAWAL','SALE_REVENUE','AFFILIATE_COMMISSION','REFUND') NOT NULL,
+  `type` enum('DEPOSIT','WITHDRAWAL','TRANSFER','PAYMENT','SALE_REVENUE','AFFILIATE_COMMISSION','REFUND') NOT NULL,
   `description` varchar(255) DEFAULT NULL,
   `ref_order_id` int DEFAULT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
