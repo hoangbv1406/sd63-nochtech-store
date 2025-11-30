@@ -21,7 +21,7 @@ import java.math.BigDecimal;
 @RestController
 @RequestMapping("${api.prefix}/wallets")
 @RequiredArgsConstructor
-public class SSWalletController {
+public class WalletController {
 
     private final WalletService walletService;
 
