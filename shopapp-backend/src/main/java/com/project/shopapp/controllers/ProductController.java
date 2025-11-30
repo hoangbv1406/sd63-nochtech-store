@@ -1,17 +1,19 @@
 package com.project.shopapp.controllers;
 
-import com.project.shopapp.components.SecurityUtils;
+import com.project.shopapp.components.LocalizationUtils;
 import com.project.shopapp.dtos.ProductDTO;
 import com.project.shopapp.dtos.ProductImageDTO;
+import com.project.shopapp.dtos.ProductVariantDTO;
 import com.project.shopapp.models.Product;
 import com.project.shopapp.models.ProductImage;
+import com.project.shopapp.models.ProductVariant;
 import com.project.shopapp.models.User;
 import com.project.shopapp.responses.ResponseObject;
 import com.project.shopapp.responses.product.ProductListResponse;
 import com.project.shopapp.responses.product.ProductResponse;
 import com.project.shopapp.services.aws.s3.S3Service;
 import com.project.shopapp.services.product.ProductService;
-import com.project.shopapp.utils.FileUtils;
+import com.project.shopapp.utils.MessageKeys;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,23 +24,28 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("api/v1/products")
+@RequestMapping("${api.prefix}/products")
 @RequiredArgsConstructor
 public class ProductController {
+
     private final ProductService productService;
-    private final SecurityUtils securityUtils;
+    private final LocalizationUtils localizationUtils;
     private final S3Service s3Service;
 
     @Value("${aws.s3.bucket}")
@@ -48,178 +55,162 @@ public class ProductController {
     private String region;
 
     @GetMapping("")
-    public ResponseEntity<ResponseObject> getAllProducts(
+    public ResponseEntity<ResponseObject> getProducts(
             @RequestParam(defaultValue = "") String keyword,
             @RequestParam(defaultValue = "0", name = "category_id") Long categoryId,
+            @RequestParam(defaultValue = "0", name = "brand_id") Long brandId,
+            @RequestParam(defaultValue = "0", name = "shop_id") Long shopId,
+            @RequestParam(required = false, name = "min_price") BigDecimal minPrice,
+            @RequestParam(required = false, name = "max_price") BigDecimal maxPrice,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int limit,
-            @RequestParam(defaultValue = "id") String sort_by,
-            @RequestParam(defaultValue = "asc") String sort_dir
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir
     ) {
-        Sort sort = sort_dir.equalsIgnoreCase("asc") ? Sort.by(sort_by).ascending() : Sort.by(sort_by).descending();
+        Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         PageRequest pageRequest = PageRequest.of(page, limit, sort);
-        Page<ProductResponse> productPage = productService.getAllProducts(keyword, categoryId, pageRequest);
-        int totalPages = productPage.getTotalPages();
-        List<ProductResponse> products = productPage.getContent();
-        return ResponseEntity.ok().body(ResponseObject.builder()
-                .message("Products retrieved successfully.")
+
+        Page<ProductResponse> productPage = productService.getAllProducts(keyword, categoryId, brandId, shopId, minPrice, maxPrice, pageRequest);
+
+        return ResponseEntity.ok(ResponseObject.builder()
+                .message("Lấy danh sách sản phẩm thành công")
                 .status(HttpStatus.OK)
-                .data(ProductListResponse.builder().products(products).totalPages(totalPages).build())
-                .build()
-        );
+                .data(ProductListResponse.builder()
+                        .products(productPage.getContent())
+                        .totalPages(productPage.getTotalPages())
+                        .build())
+                .build());
     }
 
-    @GetMapping("/{productId}")
-    public ResponseEntity<ResponseObject> getProductById(@PathVariable("productId") Long productId) {
-        Product product = productService.getProductById(productId);
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseObject> getProductById(@PathVariable("id") Long productId) {
+        Product existingProduct = productService.getProductById(productId);
         return ResponseEntity.ok(ResponseObject.builder()
-                .data(product)
-                .message("Product retrieved successfully. productId = " + productId)
+                .data(ProductResponse.fromProduct(existingProduct))
+                .message("Lấy chi tiết sản phẩm thành công")
                 .status(HttpStatus.OK)
-                .build()
-        );
+                .build());
     }
 
     @PostMapping("")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_VENDOR')")
     public ResponseEntity<ResponseObject> createProduct(
             @Valid @RequestBody ProductDTO productDTO,
-            BindingResult result
+            BindingResult result,
+            @AuthenticationPrincipal User loginUser
     ) throws Exception {
         if (result.hasErrors()) {
             List<String> errorMessages = result.getFieldErrors().stream().map(FieldError::getDefaultMessage).toList();
-            return ResponseEntity.badRequest().body(
-                    ResponseObject.builder()
-                            .message(String.join("; ", errorMessages))
-                            .status(HttpStatus.BAD_REQUEST)
-                            .build()
-            );
+            return ResponseEntity.badRequest().body(ResponseObject.builder()
+                    .message(String.join("; ", errorMessages))
+                    .status(HttpStatus.BAD_REQUEST)
+                    .build());
         }
-        Product newProduct = productService.createProduct(productDTO);
-        return ResponseEntity.ok(
-                ResponseObject.builder()
-                        .message("Product created successfully.")
-                        .status(HttpStatus.CREATED)
-                        .data(newProduct)
-                        .build()
-        );
+
+        Product newProduct = productService.createProduct(productDTO, loginUser.getId());
+        return ResponseEntity.ok(ResponseObject.builder()
+                .message("Tạo sản phẩm thành công")
+                .status(HttpStatus.CREATED)
+                .data(ProductResponse.fromProduct(newProduct))
+                .build());
     }
 
-    @PutMapping("/{productId}")
-    public ResponseEntity<ResponseObject> updateProduct(
-            @PathVariable("productId") Long productId,
-            @RequestBody ProductDTO productDTO
+    @PostMapping("/{id}/variants")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_VENDOR')")
+    public ResponseEntity<ResponseObject> addVariantToProduct(
+            @PathVariable("id") Long productId,
+            @Valid @RequestBody ProductVariantDTO variantDTO,
+            @AuthenticationPrincipal User loginUser
     ) throws Exception {
-        Product updatedProduct = productService.updateProduct(productId, productDTO);
+        ProductVariant variant = productService.addVariantToProduct(productId, variantDTO);
         return ResponseEntity.ok(ResponseObject.builder()
-                .data(updatedProduct)
-                .message("Product updated successfully. productId = " + productId)
-                .status(HttpStatus.OK)
-                .build()
-        );
+                .message("Thêm biến thể sản phẩm thành công")
+                .status(HttpStatus.CREATED)
+                .data(variant)
+                .build());
     }
 
-    @DeleteMapping("/{productId}")
-    public ResponseEntity<ResponseObject> deleteProduct(@PathVariable("productId") Long productId) {
-        productService.deleteProduct(productId);
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_VENDOR')")
+    public ResponseEntity<ResponseObject> updateProduct(
+            @PathVariable long id,
+            @RequestBody ProductDTO productDTO,
+            @AuthenticationPrincipal User loginUser
+    ) throws Exception {
+        Product updatedProduct = productService.updateProduct(id, productDTO, loginUser.getId());
         return ResponseEntity.ok(ResponseObject.builder()
-                .data(null)
-                .message(String.format("Product deleted successfully. productId = " + productId))
+                .data(ProductResponse.fromProduct(updatedProduct))
+                .message("Cập nhật sản phẩm thành công")
                 .status(HttpStatus.OK)
-                .build()
-        );
+                .build());
     }
 
-    @GetMapping("/by-ids")
-    public ResponseEntity<ResponseObject> getProductsByIds(@RequestParam("productsByIds") String productsByIds) {
-        List<Long> productIds = Arrays.stream(productsByIds.split(",")).map(Long::parseLong).collect(Collectors.toList());
-        List<Product> products = productService.findProductsByIds(productIds);
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_VENDOR')")
+    public ResponseEntity<ResponseObject> deleteProduct(@PathVariable long id) {
+        productService.deleteProduct(id);
         return ResponseEntity.ok(ResponseObject.builder()
-                .data(products.stream().map(product -> ProductResponse.fromProduct(product)).toList())
-                .message("Get products successfully")
+                .message("Xóa sản phẩm thành công")
                 .status(HttpStatus.OK)
-                .build()
-        );
+                .build());
     }
 
-    @PostMapping(value = "uploads/{productId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "uploads/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_VENDOR')")
     public ResponseEntity<ResponseObject> uploadImages(
-            @PathVariable("productId") Long productId,
+            @PathVariable("id") Long productId,
             @ModelAttribute("files") List<MultipartFile> files
     ) throws Exception {
         Product existingProduct = productService.getProductById(productId);
         files = files == null ? new ArrayList<MultipartFile>() : files;
+
         if (files.size() > ProductImage.MAXIMUM_IMAGES_PER_PRODUCT) {
-            return ResponseEntity.badRequest().body(
-                    ResponseObject.builder()
-                            .message("You can upload up to " + ProductImage.MAXIMUM_IMAGES_PER_PRODUCT + " images.")
-                            .build()
-            );
+            return ResponseEntity.badRequest().body(ResponseObject.builder()
+                    .message("Bạn chỉ được upload tối đa " + ProductImage.MAXIMUM_IMAGES_PER_PRODUCT + " ảnh")
+                    .build());
         }
+
         List<ProductImage> productImages = new ArrayList<>();
         for (MultipartFile file : files) {
-            if (file.getSize() == 0) {
-                continue;
-            }
+            if (file.getSize() == 0) continue;
+
             if (file.getSize() > 10 * 1024 * 1024) {
                 return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(ResponseObject.builder()
-                        .message("File size must not exceed 10MB.")
+                        .message("Kích thước file không được vượt quá 10MB")
                         .status(HttpStatus.PAYLOAD_TOO_LARGE)
-                        .build()
-                );
+                        .build());
             }
+
             String contentType = file.getContentType();
             if (contentType == null || !contentType.startsWith("image/")) {
                 return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(ResponseObject.builder()
-                        .message("File must be an image.")
+                        .message("Chỉ chấp nhận file ảnh")
                         .status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-                        .build()
-                );
-            }
-            String uploaded = s3Service.uploadFile(file);
-            if (uploaded == null) {
-                throw new RuntimeException("S3 upload returned null");
+                        .build());
             }
 
-            String imageUrl;
-            if (uploaded.startsWith("http://") || uploaded.startsWith("https://")) {
-                imageUrl = uploaded;
-            } else {
-                imageUrl = String.format("https://%s.s3.%s.amazonaws.com/%s", bucketName, region, uploaded);
-            }
+            String uploaded = s3Service.uploadFile(file);
+            String imageUrl = uploaded.startsWith("http") ? uploaded
+                    : String.format("https://%s.s3.%s.amazonaws.com/%s", bucketName, region, uploaded);
 
             try {
-                String possible = uploaded;
-                if (possible == null || possible.isBlank()) {
-                    possible = imageUrl;
+                String originalFilename = file.getOriginalFilename() == null ? "file-" + System.currentTimeMillis() : file.getOriginalFilename();
+                String localFilename = uploaded;
+                if (localFilename.contains("/")) {
+                    localFilename = localFilename.substring(localFilename.lastIndexOf("/") + 1);
                 }
 
-                String localFilename;
-                try {
-                    java.net.URI uri = new java.net.URI(possible);
-                    String path = uri.getPath();
-                    if (path == null) path = possible;
-                    if (path.startsWith("/")) path = path.substring(1);
-                    localFilename = java.nio.file.Paths.get(path).getFileName().toString();
-
-                } catch (Exception ex) {
-                    int lastSlash = possible.lastIndexOf('/');
-                    if (lastSlash >= 0 && lastSlash + 1 < possible.length()) {
-                        localFilename = possible.substring(lastSlash + 1);
-                    } else {
-                        localFilename = file.getOriginalFilename() == null ? "file-" + System.currentTimeMillis() : file.getOriginalFilename();
-                    }
+                Path uploadsDir = Paths.get("uploads");
+                if (!Files.exists(uploadsDir)) {
+                    Files.createDirectories(uploadsDir);
                 }
-
-                java.nio.file.Path uploadsDir = java.nio.file.Paths.get("uploads");
-                java.nio.file.Files.createDirectories(uploadsDir);
-                java.nio.file.Path target = uploadsDir.resolve(localFilename);
+                Path target = uploadsDir.resolve(localFilename);
 
                 try (java.io.InputStream in = file.getInputStream()) {
-                    java.nio.file.Files.copy(in, target, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);
                 }
-
             } catch (Exception e) {
-                System.err.println("Failed to store local file for uploaded=" + uploaded + " : " + e.getMessage());
+                System.err.println("Lỗi lưu file local (có thể bỏ qua): " + e.getMessage());
             }
 
             ProductImageDTO dto = ProductImageDTO.builder().imageUrl(imageUrl).build();
@@ -228,71 +219,65 @@ public class ProductController {
         }
 
         return ResponseEntity.ok().body(ResponseObject.builder()
-                .message("Images uploaded successfully. productId = " + productId)
+                .message("Upload ảnh thành công")
                 .status(HttpStatus.CREATED)
                 .data(productImages)
-                .build()
-        );
+                .build());
     }
 
     @GetMapping("/images/{imageName}")
     public ResponseEntity<?> viewImage(@PathVariable("imageName") String imageName) {
         try {
-            java.nio.file.Path imagePath = Paths.get("uploads/" + imageName);
+            Path imagePath = Paths.get("uploads/" + imageName);
             UrlResource resource = new UrlResource(imagePath.toUri());
             if (resource.exists()) {
                 return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(resource);
             } else {
-                System.out.println("Image not found: uploads/" + imageName);
-                return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(
-                        new UrlResource(Paths.get("uploads/notfound.jpeg").toUri())
-                );
+                return ResponseEntity.notFound().build();
             }
         } catch (Exception e) {
-            System.err.println("Failed to retrieve image: " + e.getMessage());
             return ResponseEntity.notFound().build();
         }
     }
 
+
     @PostMapping("/like/{productId}")
-    public ResponseEntity<ResponseObject> likeProduct(@PathVariable("productId") Long productId) throws Exception {
-        User loginUser = securityUtils.getLoggedInUser();
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<ResponseObject> likeProduct(
+            @PathVariable("productId") Long productId,
+            @AuthenticationPrincipal User loginUser
+    ) throws Exception {
         Product likedProduct = productService.likeProduct(loginUser.getId(), productId);
         return ResponseEntity.ok(ResponseObject.builder()
-                .data(likedProduct)
-                .message("Product liked successfully. productId = " + productId)
+                .data(ProductResponse.fromProduct(likedProduct))
+                .message("Đã thích sản phẩm")
                 .status(HttpStatus.OK)
-                .build()
-        );
+                .build());
     }
 
     @PostMapping("/unlike/{productId}")
-    public ResponseEntity<ResponseObject> unlikeProduct(@PathVariable("productId") Long productId) throws Exception {
-        User loginUser = securityUtils.getLoggedInUser();
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<ResponseObject> unlikeProduct(
+            @PathVariable("productId") Long productId,
+            @AuthenticationPrincipal User loginUser
+    ) throws Exception {
         Product unlikedProduct = productService.unlikeProduct(loginUser.getId(), productId);
         return ResponseEntity.ok(ResponseObject.builder()
-                .data(unlikedProduct)
-                .message("Product unliked successfully. productId = " + productId)
+                .data(ProductResponse.fromProduct(unlikedProduct))
+                .message("Đã bỏ thích sản phẩm")
                 .status(HttpStatus.OK)
-                .build()
-        );
+                .build());
     }
 
-    @PostMapping("/favorite-products")
-    public ResponseEntity<ResponseObject> findFavoriteProductsByUserId() throws Exception {
-        User loginUser = securityUtils.getLoggedInUser();
+    @GetMapping("/favorite-products")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<ResponseObject> getFavoriteProducts(@AuthenticationPrincipal User loginUser) throws Exception {
         List<ProductResponse> favoriteProducts = productService.findFavoriteProductsByUserId(loginUser.getId());
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(favoriteProducts)
-                .message("Favorite products retrieved successfully.")
+                .message("Lấy danh sách sản phẩm yêu thích thành công")
                 .status(HttpStatus.OK)
-                .build()
-        );
-    }
-
-    @PostMapping("/generateFakeProducts")
-    public ResponseEntity<String> generateFakeProducts() {
-        return ResponseEntity.ok("Fake products generated successfully.");
+                .build());
     }
 
     @PostMapping("/generateFakeLikes")
