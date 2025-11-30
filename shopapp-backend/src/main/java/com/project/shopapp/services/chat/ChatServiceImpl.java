@@ -83,7 +83,12 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public List<ChatMessage> getMessages(Long roomId) {
+    public List<ChatMessage> getMessages(Long roomId, Long userId) throws Exception {
+        boolean isParticipant = chatParticipantRepository.existsByChatRoomIdAndUserId(roomId, userId);
+        if (!isParticipant) {
+            throw new Exception("Cảnh báo: Bạn không có quyền xem tin nhắn của phòng chat này!");
+        }
+
         Pageable pageable = PageRequest.of(0, 50);
         return chatMessageRepository.findByRoomIdOrderByCreatedAtDesc(roomId, pageable).getContent();
     }

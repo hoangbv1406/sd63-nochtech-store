@@ -9,5 +9,5 @@ import java.util.List;
 public interface ChatService {
     ChatRoom getOrCreateRoom(Long senderId, Long receiverId);
     ChatMessage sendMessage(ChatMessageDTO messageDTO) throws Exception;
-    List<ChatMessage> getMessages(Long roomId);
+    List<ChatMessage> getMessages(Long roomId, Long userId) throws Exception;
 }
