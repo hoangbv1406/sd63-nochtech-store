@@ -50,13 +50,12 @@ public class JwtTokenUtils {
         claims.put("subject", subject);
         claims.put("userId", user.getId());
         try {
-            String token = Jwts.builder()
+            return Jwts.builder()
                     .claims(claims)
                     .subject(subject)
                     .expiration(new Date(System.currentTimeMillis() + expiration * 1000L))
                     .signWith(getSignInKey(), Jwts.SIG.HS256)
                     .compact();
-            return token;
         } catch (Exception e) {
             throw new InvalidParamException("Cannot create jwt token, error: " + e.getMessage());
         }
@@ -83,19 +82,22 @@ public class JwtTokenUtils {
     public boolean validateToken(String token, User userDetails) {
         try {
             String subject = extractClaim(token, Claims::getSubject);
-            Token existingToken = tokenRepository.findByToken(token);
-            if (existingToken == null || existingToken.isRevoked() == true || !userDetails.isActive()) {
+            Token existingToken = tokenRepository.findByToken(token).orElse(null);
+
+            if (existingToken == null || existingToken.isRevoked() || !userDetails.isActive()) {
                 return false;
             }
-            return (subject.equals(userDetails.getUsername())) && !isTokenExpired(token);
+
+            return (subject.equals(getSubject(userDetails))) && !isTokenExpired(token);
+
         } catch (MalformedJwtException e) {
-            System.out.println("Invalid JWT token: {}");
+            System.err.println("Invalid JWT token: " + e.getMessage());
         } catch (ExpiredJwtException e) {
-            System.out.println("JWT token is expired: {}");
+            System.err.println("JWT token is expired: " + e.getMessage());
         } catch (UnsupportedJwtException e) {
-            System.out.println("JWT token is unsupported: {}");
+            System.err.println("JWT token is unsupported: " + e.getMessage());
         } catch (IllegalArgumentException e) {
-            System.out.println("JWT claims string is empty: {}");
+            System.err.println("JWT claims string is empty: " + e.getMessage());
         }
         return false;
     }
