@@ -1,4 +1,4 @@
-package com.project.shopapp.configurations;
+package com.project.shopapp.shared.configurations;
 
 import com.project.shopapp.models.User;
 import com.project.shopapp.repositories.UserRepository;

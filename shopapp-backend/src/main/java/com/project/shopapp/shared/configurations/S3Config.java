@@ -1,4 +1,4 @@
-package com.project.shopapp.configurations;
+package com.project.shopapp.shared.configurations;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;

@@ -1,4 +1,4 @@
-package com.project.shopapp.configurations;
+package com.project.shopapp.shared.configurations;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
