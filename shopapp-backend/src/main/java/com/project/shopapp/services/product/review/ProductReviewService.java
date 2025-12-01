@@ -1,7 +1,7 @@
 package com.project.shopapp.services.product.review;
 
 import com.project.shopapp.dtos.ProductReviewDTO;
-import com.project.shopapp.exceptions.DataNotFoundException;
+import com.project.shopapp.shared.exceptions.DataNotFoundException;
 import com.project.shopapp.responses.product.ProductReviewResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -1,7 +1,7 @@
 package com.project.shopapp.services.address;
 
 import com.project.shopapp.dtos.UserAddressDTO;
-import com.project.shopapp.exceptions.DataNotFoundException;
+import com.project.shopapp.shared.exceptions.DataNotFoundException;
 import com.project.shopapp.models.User;
 import com.project.shopapp.models.UserAddress;
 import com.project.shopapp.repositories.UserAddressRepository;

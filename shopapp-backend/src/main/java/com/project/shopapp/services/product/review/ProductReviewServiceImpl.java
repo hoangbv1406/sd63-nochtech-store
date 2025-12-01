@@ -1,7 +1,7 @@
 package com.project.shopapp.services.product.review;
 
 import com.project.shopapp.dtos.ProductReviewDTO;
-import com.project.shopapp.exceptions.DataNotFoundException;
+import com.project.shopapp.shared.exceptions.DataNotFoundException;
 import com.project.shopapp.models.Product;
 import com.project.shopapp.models.ProductReview;
 import com.project.shopapp.models.User;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

@@ -1,6 +1,6 @@
 package com.project.shopapp.components;
 
-import com.project.shopapp.exceptions.InvalidParamException;
+import com.project.shopapp.shared.exceptions.InvalidParamException;
 import com.project.shopapp.models.Token;
 import com.project.shopapp.models.User;
 import com.project.shopapp.repositories.TokenRepository;

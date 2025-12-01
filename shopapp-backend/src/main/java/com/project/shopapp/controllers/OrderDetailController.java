@@ -1,7 +1,7 @@
 package com.project.shopapp.controllers;
 
 import com.project.shopapp.dtos.OrderDetailDTO;
-import com.project.shopapp.exceptions.DataNotFoundException;
+import com.project.shopapp.shared.exceptions.DataNotFoundException;
 import com.project.shopapp.models.OrderDetail;
 import com.project.shopapp.responses.ResponseObject;
 import com.project.shopapp.responses.order.OrderDetailResponse;

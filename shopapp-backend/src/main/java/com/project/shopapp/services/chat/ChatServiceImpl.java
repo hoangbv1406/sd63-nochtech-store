@@ -1,7 +1,7 @@
 package com.project.shopapp.services.chat;
 
 import com.project.shopapp.dtos.ChatMessageDTO;
-import com.project.shopapp.exceptions.DataNotFoundException;
+import com.project.shopapp.shared.exceptions.DataNotFoundException;
 import com.project.shopapp.models.ChatMessage;
 import com.project.shopapp.models.ChatParticipant;
 import com.project.shopapp.models.ChatRoom;

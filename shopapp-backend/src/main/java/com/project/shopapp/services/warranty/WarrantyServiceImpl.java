@@ -2,7 +2,7 @@ package com.project.shopapp.services.warranty;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.shopapp.dtos.WarrantyRequestDTO;
-import com.project.shopapp.exceptions.DataNotFoundException;
+import com.project.shopapp.shared.exceptions.DataNotFoundException;
 import com.project.shopapp.models.OrderDetail;
 import com.project.shopapp.models.User;
 import com.project.shopapp.models.WarrantyRequest;

@@ -1,7 +1,7 @@
 package com.project.shopapp.services.affiliate;
 
 import com.project.shopapp.dtos.AffiliateLinkDTO;
-import com.project.shopapp.exceptions.DataNotFoundException;
+import com.project.shopapp.shared.exceptions.DataNotFoundException;
 import com.project.shopapp.models.AffiliateLink;
 import com.project.shopapp.models.Product;
 import com.project.shopapp.models.User;

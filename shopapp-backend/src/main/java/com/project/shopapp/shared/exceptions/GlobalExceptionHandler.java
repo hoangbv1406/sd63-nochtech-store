@@ -1,4 +1,4 @@
-package com.project.shopapp.exceptions;
+package com.project.shopapp.shared.exceptions;
 
 import com.project.shopapp.responses.ResponseObject;
 import lombok.extern.slf4j.Slf4j;

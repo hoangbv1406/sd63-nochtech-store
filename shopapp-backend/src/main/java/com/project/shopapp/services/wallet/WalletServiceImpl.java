@@ -2,7 +2,7 @@ package com.project.shopapp.services.wallet;
 
 import com.project.shopapp.dtos.WalletTransactionDTO;
 import com.project.shopapp.enums.WalletTransactionType;
-import com.project.shopapp.exceptions.DataNotFoundException;
+import com.project.shopapp.shared.exceptions.DataNotFoundException;
 import com.project.shopapp.models.User;
 import com.project.shopapp.models.Wallet;
 import com.project.shopapp.models.WalletTransaction;

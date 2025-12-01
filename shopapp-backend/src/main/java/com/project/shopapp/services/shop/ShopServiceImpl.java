@@ -2,7 +2,7 @@ package com.project.shopapp.services.shop;
 
 import com.project.shopapp.dtos.ShopDTO;
 import com.project.shopapp.enums.ShopStatus;
-import com.project.shopapp.exceptions.DataNotFoundException;
+import com.project.shopapp.shared.exceptions.DataNotFoundException;
 import com.project.shopapp.models.Shop;
 import com.project.shopapp.models.User;
 import com.project.shopapp.repositories.ShopRepository;

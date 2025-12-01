@@ -1,4 +1,4 @@
-package com.project.shopapp.exceptions;
+package com.project.shopapp.shared.exceptions;
 
 public class InvalidParamException extends RuntimeException {
     public InvalidParamException(String message) {
