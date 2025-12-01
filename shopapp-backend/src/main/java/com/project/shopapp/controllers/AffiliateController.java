@@ -3,7 +3,7 @@ package com.project.shopapp.controllers;
 import com.project.shopapp.dtos.AffiliateLinkDTO;
 import com.project.shopapp.models.AffiliateLink;
 import com.project.shopapp.models.User;
-import com.project.shopapp.responses.ResponseObject;
+import com.project.shopapp.shared.base.ResponseObject;
 import com.project.shopapp.services.affiliate.AffiliateService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

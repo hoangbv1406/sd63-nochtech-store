@@ -8,7 +8,7 @@ import com.project.shopapp.shared.exceptions.DataNotFoundException;
 import com.project.shopapp.shared.exceptions.InvalidPasswordException;
 import com.project.shopapp.models.Token;
 import com.project.shopapp.models.User;
-import com.project.shopapp.responses.ResponseObject;
+import com.project.shopapp.shared.base.ResponseObject;
 import com.project.shopapp.responses.user.LoginResponse;
 import com.project.shopapp.responses.user.UserResponse;
 import com.project.shopapp.services.auth.AuthService;

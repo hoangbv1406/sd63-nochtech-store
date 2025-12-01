@@ -2,7 +2,7 @@ package com.project.shopapp.controllers;
 
 import com.project.shopapp.dtos.CategoryDTO;
 import com.project.shopapp.models.Category;
-import com.project.shopapp.responses.ResponseObject;
+import com.project.shopapp.shared.base.ResponseObject;
 import com.project.shopapp.services.category.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

@@ -3,7 +3,7 @@ package com.project.shopapp.controllers;
 import com.project.shopapp.dtos.payment.PaymentDTO;
 import com.project.shopapp.dtos.payment.PaymentQueryDTO;
 import com.project.shopapp.dtos.payment.PaymentRefundDTO;
-import com.project.shopapp.responses.ResponseObject;
+import com.project.shopapp.shared.base.ResponseObject;
 import com.project.shopapp.services.vnpay.VNPayService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;

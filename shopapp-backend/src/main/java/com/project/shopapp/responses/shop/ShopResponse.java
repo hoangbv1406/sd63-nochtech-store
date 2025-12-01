@@ -2,7 +2,7 @@ package com.project.shopapp.responses.shop;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.project.shopapp.models.Shop;
-import com.project.shopapp.responses.BaseResponse;
+import com.project.shopapp.shared.base.BaseResponse;
 import lombok.*;
 
 @Getter

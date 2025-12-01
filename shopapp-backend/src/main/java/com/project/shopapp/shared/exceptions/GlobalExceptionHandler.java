@@ -1,6 +1,6 @@
 package com.project.shopapp.shared.exceptions;
 
-import com.project.shopapp.responses.ResponseObject;
+import com.project.shopapp.shared.base.ResponseObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;

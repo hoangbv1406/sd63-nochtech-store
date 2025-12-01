@@ -4,7 +4,7 @@ import com.project.shopapp.dtos.WalletTransactionDTO;
 import com.project.shopapp.models.User;
 import com.project.shopapp.models.Wallet;
 import com.project.shopapp.models.WalletTransaction;
-import com.project.shopapp.responses.ResponseObject;
+import com.project.shopapp.shared.base.ResponseObject;
 import com.project.shopapp.responses.wallet.WalletResponse;
 import com.project.shopapp.responses.wallet.WalletTransactionResponse;
 import com.project.shopapp.services.wallet.WalletService;

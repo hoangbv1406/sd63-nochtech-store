@@ -3,7 +3,7 @@ package com.project.shopapp.controllers;
 import com.project.shopapp.shared.components.SecurityUtils;
 import com.project.shopapp.dtos.UserAddressDTO;
 import com.project.shopapp.models.User;
-import com.project.shopapp.responses.ResponseObject;
+import com.project.shopapp.shared.base.ResponseObject;
 import com.project.shopapp.responses.user.UserAddressResponse;
 import com.project.shopapp.services.address.UserAddressService;
 import jakarta.validation.Valid;

@@ -3,7 +3,7 @@ package com.project.shopapp.controllers;
 import com.project.shopapp.dtos.ShopDTO;
 import com.project.shopapp.models.Shop;
 import com.project.shopapp.models.User;
-import com.project.shopapp.responses.ResponseObject;
+import com.project.shopapp.shared.base.ResponseObject;
 import com.project.shopapp.responses.shop.ShopResponse;
 import com.project.shopapp.services.shop.ShopService;
 import jakarta.validation.Valid;

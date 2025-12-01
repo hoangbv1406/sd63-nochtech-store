@@ -3,7 +3,7 @@ package com.project.shopapp.responses.product;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.project.shopapp.models.Product;
 import com.project.shopapp.models.ProductImage;
-import com.project.shopapp.responses.BaseResponse;
+import com.project.shopapp.shared.base.BaseResponse;
 import lombok.*;
 
 import java.math.BigDecimal;

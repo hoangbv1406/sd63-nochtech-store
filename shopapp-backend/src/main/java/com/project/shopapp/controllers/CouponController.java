@@ -1,6 +1,6 @@
 package com.project.shopapp.controllers;
 
-import com.project.shopapp.responses.ResponseObject;
+import com.project.shopapp.shared.base.ResponseObject;
 import com.project.shopapp.responses.coupon.CouponCalculationResponse;
 import com.project.shopapp.services.coupon.CouponService;
 import lombok.RequiredArgsConstructor;

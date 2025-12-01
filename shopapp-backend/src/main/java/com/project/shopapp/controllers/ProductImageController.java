@@ -1,7 +1,7 @@
 package com.project.shopapp.controllers;
 
 import com.project.shopapp.models.ProductImage;
-import com.project.shopapp.responses.ResponseObject;
+import com.project.shopapp.shared.base.ResponseObject;
 import com.project.shopapp.services.aws.s3.S3Service;
 import com.project.shopapp.services.product.ProductService;
 import com.project.shopapp.services.product.image.ProductImageService;

@@ -1,7 +1,7 @@
 package com.project.shopapp.controllers;
 
 import com.project.shopapp.models.Role;
-import com.project.shopapp.responses.ResponseObject;
+import com.project.shopapp.shared.base.ResponseObject;
 import com.project.shopapp.services.role.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -2,7 +2,7 @@ package com.project.shopapp.controllers;
 
 import com.project.shopapp.dtos.BrandDTO;
 import com.project.shopapp.models.Brand;
-import com.project.shopapp.responses.ResponseObject;
+import com.project.shopapp.shared.base.ResponseObject;
 import com.project.shopapp.services.brand.BrandService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

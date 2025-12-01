@@ -8,7 +8,7 @@ import com.project.shopapp.models.Product;
 import com.project.shopapp.models.ProductImage;
 import com.project.shopapp.models.ProductVariant;
 import com.project.shopapp.models.User;
-import com.project.shopapp.responses.ResponseObject;
+import com.project.shopapp.shared.base.ResponseObject;
 import com.project.shopapp.responses.product.ProductListResponse;
 import com.project.shopapp.responses.product.ProductResponse;
 import com.project.shopapp.services.aws.s3.S3Service;

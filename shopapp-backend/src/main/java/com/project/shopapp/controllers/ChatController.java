@@ -4,7 +4,7 @@ import com.project.shopapp.dtos.ChatMessageDTO;
 import com.project.shopapp.models.ChatMessage;
 import com.project.shopapp.models.ChatRoom;
 import com.project.shopapp.models.User;
-import com.project.shopapp.responses.ResponseObject;
+import com.project.shopapp.shared.base.ResponseObject;
 import com.project.shopapp.responses.chat.ChatMessageResponse;
 import com.project.shopapp.services.chat.ChatService;
 import jakarta.validation.Valid;

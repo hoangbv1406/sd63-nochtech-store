@@ -6,7 +6,7 @@ import com.project.shopapp.enums.OrderStatus;
 import com.project.shopapp.models.Order;
 import com.project.shopapp.models.OrderShop;
 import com.project.shopapp.models.User;
-import com.project.shopapp.responses.ResponseObject;
+import com.project.shopapp.shared.base.ResponseObject;
 import com.project.shopapp.responses.order.OrderListResponse;
 import com.project.shopapp.responses.order.OrderResponse;
 import com.project.shopapp.services.orders.OrderService;

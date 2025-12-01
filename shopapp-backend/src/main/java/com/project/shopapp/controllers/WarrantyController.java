@@ -2,7 +2,7 @@ package com.project.shopapp.controllers;
 
 import com.project.shopapp.dtos.WarrantyRequestDTO;
 import com.project.shopapp.models.WarrantyRequest;
-import com.project.shopapp.responses.ResponseObject;
+import com.project.shopapp.shared.base.ResponseObject;
 import com.project.shopapp.services.warranty.WarrantyService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
