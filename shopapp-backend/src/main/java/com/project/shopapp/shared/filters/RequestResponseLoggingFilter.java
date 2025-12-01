@@ -1,4 +1,4 @@
-package com.project.shopapp.filters;
+package com.project.shopapp.shared.filters;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

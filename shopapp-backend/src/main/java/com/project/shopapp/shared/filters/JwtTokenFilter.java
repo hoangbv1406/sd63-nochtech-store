@@ -1,4 +1,4 @@
-package com.project.shopapp.filters;
+package com.project.shopapp.shared.filters;
 
 import com.project.shopapp.components.JwtTokenUtils;
 import com.project.shopapp.models.Token;

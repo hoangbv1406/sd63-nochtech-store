@@ -1,6 +1,6 @@
 package com.project.shopapp.shared.configurations;
 
-import com.project.shopapp.filters.JwtTokenFilter;
+import com.project.shopapp.shared.filters.JwtTokenFilter;
 import com.project.shopapp.models.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
