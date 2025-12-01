@@ -4,7 +4,7 @@ import com.project.shopapp.components.JwtTokenUtils;
 import com.project.shopapp.models.Token;
 import com.project.shopapp.models.User;
 import com.project.shopapp.repositories.TokenRepository;
-import com.project.shopapp.security.CustomUserDetails;
+import com.project.shopapp.shared.security.CustomUserDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

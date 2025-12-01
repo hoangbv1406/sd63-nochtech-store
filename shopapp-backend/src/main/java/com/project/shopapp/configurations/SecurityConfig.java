@@ -26,7 +26,7 @@ public class SecurityConfig {
                     .or(() -> userRepository.findByEmail(identifier))
                     .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy người dùng với định danh: " + identifier));
 
-            return new com.project.shopapp.security.CustomUserDetails(user, null);
+            return new com.project.shopapp.shared.security.CustomUserDetails(user, null);
         };
     }
 

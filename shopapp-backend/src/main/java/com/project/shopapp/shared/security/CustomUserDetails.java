@@ -1,4 +1,4 @@
-package com.project.shopapp.security;
+package com.project.shopapp.shared.security;
 
 import com.project.shopapp.models.User;
 import lombok.AllArgsConstructor;
