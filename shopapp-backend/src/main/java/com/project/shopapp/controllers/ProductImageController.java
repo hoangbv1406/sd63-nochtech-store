@@ -5,7 +5,6 @@ import com.project.shopapp.responses.ResponseObject;
 import com.project.shopapp.services.aws.s3.S3Service;
 import com.project.shopapp.services.product.ProductService;
 import com.project.shopapp.services.product.image.ProductImageService;
-import com.project.shopapp.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;

@@ -1,4 +1,4 @@
-package com.project.shopapp.utils;
+package com.project.shopapp.shared.utils;
 
 import java.util.regex.Pattern;
 

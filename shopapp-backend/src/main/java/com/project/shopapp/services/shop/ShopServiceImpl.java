@@ -7,7 +7,7 @@ import com.project.shopapp.models.Shop;
 import com.project.shopapp.models.User;
 import com.project.shopapp.repositories.ShopRepository;
 import com.project.shopapp.repositories.UserRepository;
-import com.project.shopapp.utils.SlugUtils;
+import com.project.shopapp.shared.utils.SlugUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -1,4 +1,4 @@
-package com.project.shopapp.utils;
+package com.project.shopapp.shared.utils;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;

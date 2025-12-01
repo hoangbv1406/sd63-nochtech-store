@@ -8,7 +8,7 @@ import com.project.shopapp.exceptions.InvalidParamException;
 import com.project.shopapp.models.*;
 import com.project.shopapp.repositories.*;
 import com.project.shopapp.responses.product.ProductResponse;
-import com.project.shopapp.utils.SlugUtils;
+import com.project.shopapp.shared.utils.SlugUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -15,7 +15,7 @@ import com.project.shopapp.repositories.RoleRepository;
 import com.project.shopapp.repositories.SocialAccountRepository;
 import com.project.shopapp.repositories.TokenRepository;
 import com.project.shopapp.repositories.UserRepository;
-import com.project.shopapp.utils.ValidationUtils;
+import com.project.shopapp.shared.utils.ValidationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;

@@ -1,7 +1,6 @@
-package com.project.shopapp.utils;
+package com.project.shopapp.shared.utils;
 
 import org.apache.commons.io.FilenameUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileNotFoundException;

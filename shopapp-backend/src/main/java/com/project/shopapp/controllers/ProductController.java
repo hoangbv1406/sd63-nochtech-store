@@ -13,7 +13,6 @@ import com.project.shopapp.responses.product.ProductListResponse;
 import com.project.shopapp.responses.product.ProductResponse;
 import com.project.shopapp.services.aws.s3.S3Service;
 import com.project.shopapp.services.product.ProductService;
-import com.project.shopapp.utils.MessageKeys;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
