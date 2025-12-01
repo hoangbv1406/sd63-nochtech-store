@@ -1,4 +1,4 @@
-package com.project.shopapp.shared.utils;
+package com.project.shopapp.shared.constants;
 
 public final class MessageKeys {
 
