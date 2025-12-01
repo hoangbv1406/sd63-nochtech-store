@@ -1,4 +1,4 @@
-package com.project.shopapp.components;
+package com.project.shopapp.shared.components;
 
 import com.project.shopapp.enums.ProductItemStatus;
 import com.project.shopapp.repositories.ProductItemRepository;

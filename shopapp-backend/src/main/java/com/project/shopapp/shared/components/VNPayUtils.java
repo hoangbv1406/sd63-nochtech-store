@@ -1,4 +1,4 @@
-package com.project.shopapp.components;
+package com.project.shopapp.shared.components;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;

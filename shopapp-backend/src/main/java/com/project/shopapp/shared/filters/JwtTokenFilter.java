@@ -1,6 +1,6 @@
 package com.project.shopapp.shared.filters;
 
-import com.project.shopapp.components.JwtTokenUtils;
+import com.project.shopapp.shared.components.JwtTokenUtils;
 import com.project.shopapp.models.Token;
 import com.project.shopapp.models.User;
 import com.project.shopapp.repositories.TokenRepository;

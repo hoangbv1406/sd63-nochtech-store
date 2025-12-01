@@ -1,4 +1,4 @@
-package com.project.shopapp.components;
+package com.project.shopapp.shared.components;
 
 import com.project.shopapp.shared.exceptions.InvalidParamException;
 import com.project.shopapp.models.Token;

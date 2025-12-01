@@ -1,6 +1,6 @@
 package com.project.shopapp.controllers;
 
-import com.project.shopapp.components.SecurityUtils;
+import com.project.shopapp.shared.components.SecurityUtils;
 import com.project.shopapp.dtos.CartItemDTO;
 import com.project.shopapp.models.User;
 import com.project.shopapp.responses.ResponseObject;

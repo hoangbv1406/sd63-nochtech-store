@@ -1,6 +1,6 @@
 package com.project.shopapp.services.auth;
 
-import com.project.shopapp.components.JwtTokenUtils;
+import com.project.shopapp.shared.components.JwtTokenUtils;
 import com.project.shopapp.dtos.UserLoginDTO;
 import com.project.shopapp.shared.exceptions.DataNotFoundException;
 import com.project.shopapp.models.User;

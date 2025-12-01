@@ -1,4 +1,4 @@
-package com.project.shopapp.components;
+package com.project.shopapp.shared.components;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;

@@ -1,4 +1,4 @@
-package com.project.shopapp.components;
+package com.project.shopapp.shared.components;
 
 import lombok.Getter;
 import lombok.Setter;
