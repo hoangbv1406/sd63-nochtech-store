@@ -8,7 +8,18 @@ public final class ValidationUtils {
     private static final Pattern PASSWORD_PATTERN = Pattern.compile("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{8,}$");
 
     private ValidationUtils() {
-        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+        throw new UnsupportedOperationException("Utility class");
+    }
+
+    public static String normalizePhoneNumber(String phone) {
+        if (phone == null) return null;
+        String normalized = phone.replaceAll("[\\s\\-\\(\\)]", "");
+        if (normalized.startsWith("+84")) {
+            normalized = "0" + normalized.substring(3);
+        } else if (normalized.startsWith("84") && normalized.length() == 11) {
+            normalized = "0" + normalized.substring(2);
+        }
+        return normalized;
     }
 
     public static boolean isValidEmail(String email) {
@@ -16,7 +27,8 @@ public final class ValidationUtils {
     }
 
     public static boolean isValidPhoneNumber(String phoneNumber) {
-        return phoneNumber != null && PHONE_PATTERN.matcher(phoneNumber).matches();
+        String cleaned = normalizePhoneNumber(phoneNumber);
+        return cleaned != null && PHONE_PATTERN.matcher(cleaned).matches();
     }
 
     public static boolean isValidPassword(String password) {
