@@ -1,6 +1,7 @@
 package com.project.shopapp.models;
 
 import com.project.shopapp.enums.ChatRoomType;
+import com.project.shopapp.shared.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

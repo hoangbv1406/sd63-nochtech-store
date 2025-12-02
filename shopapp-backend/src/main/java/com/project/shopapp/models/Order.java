@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.project.shopapp.enums.OrderChannel;
 import com.project.shopapp.enums.OrderStatus;
 import com.project.shopapp.enums.PaymentStatus;
+import com.project.shopapp.shared.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
