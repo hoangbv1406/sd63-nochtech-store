@@ -16,6 +16,7 @@ import java.io.IOException;
 @Order(Ordered.HIGHEST_PRECEDENCE + 1)
 @Slf4j
 public class RequestResponseLoggingFilter extends OncePerRequestFilter {
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String requestUri = request.getRequestURI();
@@ -26,7 +27,6 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
 
         long startTime = System.currentTimeMillis();
         String method = request.getMethod();
-        String remoteAddr = getClientIp(request);
 
         try {
             filterChain.doFilter(request, response);
@@ -35,15 +35,18 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
             int status = response.getStatus();
 
             if (duration > 2000) {
-                log.warn("Slow Request: method={}, uri={}, status={}, ip={}, duration={}ms", method, requestUri, status, remoteAddr, duration);
-            } else {
-                log.info("Request Completed: method={}, uri={}, status={}, ip={}, duration={}ms", method, requestUri, status, remoteAddr, duration);
+                log.warn("Slow Request: method={}, uri={}, status={}, ip={}, duration={}ms",
+                        method, requestUri, status, getClientIp(request), duration);
+            } else if (status >= 400) {
+                log.error("Failed Request: method={}, uri={}, status={}, ip={}, duration={}ms",
+                        method, requestUri, status, getClientIp(request), duration);
             }
         }
     }
 
     private boolean isIgnoredUri(String uri) {
-        return uri.startsWith("/api-docs") || uri.startsWith("/swagger-ui") || uri.startsWith("/uploads") || uri.startsWith("/healthcheck") || uri.startsWith("/actuator");
+        return uri.startsWith("/api-docs") || uri.startsWith("/swagger-ui") ||
+                uri.startsWith("/uploads") || uri.startsWith("/healthcheck") || uri.startsWith("/actuator");
     }
 
     private String getClientIp(HttpServletRequest request) {
