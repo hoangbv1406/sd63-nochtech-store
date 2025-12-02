@@ -16,6 +16,7 @@ import java.util.UUID;
 public final class FileUtils {
 
     private static final List<String> ALLOWED_EXTENSIONS = Arrays.asList("jpg", "jpeg", "png", "gif", "bmp", "webp");
+    private static final long MAX_FILE_SIZE = 5 * 1024 * 1024;
 
     private FileUtils() {
         throw new UnsupportedOperationException("Utility class");
@@ -25,21 +26,27 @@ public final class FileUtils {
         if (file == null || file.isEmpty()) {
             return false;
         }
+
         String contentType = file.getContentType();
         if (contentType == null || !contentType.startsWith("image/")) {
             return false;
         }
+
         String extension = FilenameUtils.getExtension(file.getOriginalFilename());
         return extension != null && ALLOWED_EXTENSIONS.contains(extension.toLowerCase());
     }
 
     public static String storeFile(MultipartFile file, String uploadDir) throws IOException {
         if (!isImageFile(file) || file.getOriginalFilename() == null) {
-            throw new IOException("Invalid image format or file is empty");
+            throw new IllegalArgumentException("Định dạng file không hợp lệ. Chỉ chấp nhận file ảnh.");
+        }
+
+        if (file.getSize() > MAX_FILE_SIZE) {
+            throw new IllegalArgumentException("Dung lượng ảnh không được vượt quá 5MB.");
         }
 
         String extension = FilenameUtils.getExtension(file.getOriginalFilename());
-        String uniqueFilename = UUID.randomUUID().toString() + "." + extension;
+        String uniqueFilename = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8) + "." + extension;
 
         Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
         if (!Files.exists(uploadPath)) {
@@ -54,6 +61,7 @@ public final class FileUtils {
         try (var inputStream = file.getInputStream()) {
             Files.copy(inputStream, destination, StandardCopyOption.REPLACE_EXISTING);
         }
+
         return uniqueFilename;
     }
 
@@ -66,7 +74,7 @@ public final class FileUtils {
         }
 
         if (!Files.deleteIfExists(filePath)) {
-            throw new FileNotFoundException("File not found: " + filename);
+            throw new FileNotFoundException("File không tồn tại: " + filename);
         }
     }
 }
