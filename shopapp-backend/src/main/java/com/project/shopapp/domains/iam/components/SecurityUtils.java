@@ -1,4 +1,4 @@
-package com.project.shopapp.shared.components;
+package com.project.shopapp.domains.iam.components;
 
 import com.project.shopapp.models.User;
 import org.springframework.security.core.Authentication;
