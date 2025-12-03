@@ -1,5 +1,6 @@
 package com.project.shopapp.shared.filters;
 
+import com.project.shopapp.shared.utils.WebUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,30 +34,18 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
         } finally {
             long duration = System.currentTimeMillis() - startTime;
             int status = response.getStatus();
+            String clientIp = WebUtils.getClientIp(request);
 
             if (duration > 2000) {
-                log.warn("Slow Request: method={}, uri={}, status={}, ip={}, duration={}ms",
-                        method, requestUri, status, getClientIp(request), duration);
+                log.warn("Slow Request: method={}, uri={}, status={}, ip={}, duration={}ms", method, requestUri, status, clientIp, duration);
             } else if (status >= 400) {
-                log.error("Failed Request: method={}, uri={}, status={}, ip={}, duration={}ms",
-                        method, requestUri, status, getClientIp(request), duration);
+                log.error("Failed Request: method={}, uri={}, status={}, ip={}, duration={}ms", method, requestUri, status, clientIp, duration);
             }
         }
     }
 
     private boolean isIgnoredUri(String uri) {
-        return uri.startsWith("/api-docs") || uri.startsWith("/swagger-ui") ||
-                uri.startsWith("/uploads") || uri.startsWith("/healthcheck") || uri.startsWith("/actuator");
+        return uri.startsWith("/api-docs") || uri.startsWith("/swagger-ui") || uri.startsWith("/uploads") || uri.startsWith("/healthcheck") || uri.startsWith("/actuator");
     }
 
-    private String getClientIp(HttpServletRequest request) {
-        String ip = request.getHeader("X-Forwarded-For");
-        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getRemoteAddr();
-        }
-        if (ip != null && ip.contains(",")) {
-            ip = ip.split(",")[0].trim();
-        }
-        return ip;
-    }
 }
