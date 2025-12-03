@@ -1,4 +1,4 @@
-package com.project.shopapp.shared.components;
+package com.project.shopapp.domains.payment.components;
 
 import lombok.Getter;
 import lombok.Setter;

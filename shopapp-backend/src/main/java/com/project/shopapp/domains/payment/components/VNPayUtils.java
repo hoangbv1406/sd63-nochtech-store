@@ -1,6 +1,5 @@
-package com.project.shopapp.shared.components;
+package com.project.shopapp.domains.payment.components;
 
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.Mac;
@@ -69,11 +68,6 @@ public class VNPayUtils {
             sb.append(chars.charAt(rnd.nextInt(chars.length())));
         }
         return sb.toString();
-    }
-
-    public String getIpAddress(HttpServletRequest request) {
-        String ipAddress = request.getHeader("X-FORWARDED-FOR");
-        return (ipAddress != null && !ipAddress.isEmpty()) ? ipAddress : request.getRemoteAddr();
     }
 
 }

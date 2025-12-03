@@ -2,8 +2,8 @@ package com.project.shopapp.services.vnpay;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.shaded.gson.Gson;
-import com.project.shopapp.shared.components.VNPayConfig;
-import com.project.shopapp.shared.components.VNPayUtils;
+import com.project.shopapp.domains.payment.components.VNPayConfig;
+import com.project.shopapp.domains.payment.components.VNPayUtils;
 import com.project.shopapp.dtos.payment.PaymentDTO;
 import com.project.shopapp.dtos.payment.PaymentQueryDTO;
 import com.project.shopapp.dtos.payment.PaymentRefundDTO;
