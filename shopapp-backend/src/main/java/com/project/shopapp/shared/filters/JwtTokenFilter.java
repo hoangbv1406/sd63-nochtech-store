@@ -1,6 +1,6 @@
 package com.project.shopapp.shared.filters;
 
-import com.project.shopapp.shared.components.JwtTokenUtils;
+import com.project.shopapp.domains.iam.components.JwtTokenUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

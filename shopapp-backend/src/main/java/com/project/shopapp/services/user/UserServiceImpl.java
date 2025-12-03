@@ -1,6 +1,6 @@
 package com.project.shopapp.services.user;
 
-import com.project.shopapp.shared.components.JwtTokenUtils;
+import com.project.shopapp.domains.iam.components.JwtTokenUtils;
 import com.project.shopapp.dtos.UserDTO;
 import com.project.shopapp.dtos.UserLoginDTO;
 import com.project.shopapp.dtos.UserUpdateDTO;

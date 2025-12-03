@@ -1,13 +1,11 @@
-package com.project.shopapp.shared.components;
+package com.project.shopapp.domains.iam.components;
 
-import com.project.shopapp.shared.exceptions.InvalidParamException;
-import com.project.shopapp.models.Token;
 import com.project.shopapp.models.User;
-import com.project.shopapp.repositories.TokenRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -19,19 +17,24 @@ import java.util.function.Function;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtTokenUtils {
-    private final TokenRepository tokenRepository;
 
     @Value("${jwt.expiration}")
-    private int expiration;
+    private long expiration;
 
     @Value("${jwt.expiration-refresh-token}")
-    private int expirationRefreshToken;
+    private long expirationRefreshToken;
 
     @Value("${jwt.secretKey}")
     private String secretKey;
 
-    private static String getSubject(User user) {
+    private SecretKey getSignInKey() {
+        byte[] bytes = Decoders.BASE64.decode(secretKey);
+        return Keys.hmacShaKeyFor(bytes);
+    }
+
+    private String getSubject(User user) {
         String subject = user.getPhoneNumber();
         if (subject == null || subject.isBlank()) {
             subject = user.getEmail();
@@ -39,30 +42,36 @@ public class JwtTokenUtils {
         return subject;
     }
 
-    private SecretKey getSignInKey() {
-        byte[] bytes = Decoders.BASE64.decode(secretKey);
-        return Keys.hmacShaKeyFor(bytes);
-    }
-
-    public String generateToken(User user) throws Exception {
+    public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
         String subject = getSubject(user);
         claims.put("subject", subject);
         claims.put("userId", user.getId());
+
+        if (user.getRole() != null) {
+            claims.put("role", user.getRole().getName());
+        }
+
         try {
             return Jwts.builder()
                     .claims(claims)
                     .subject(subject)
+                    .issuedAt(new Date(System.currentTimeMillis()))
                     .expiration(new Date(System.currentTimeMillis() + expiration * 1000L))
                     .signWith(getSignInKey(), Jwts.SIG.HS256)
                     .compact();
         } catch (Exception e) {
-            throw new InvalidParamException("Cannot create jwt token, error: " + e.getMessage());
+            log.error("Cannot create jwt token, error: {}", e.getMessage());
+            throw new RuntimeException("Lỗi hệ thống khi tạo token");
         }
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parser().verifyWith(getSignInKey()).build().parseSignedClaims(token).getPayload();
+        return Jwts.parser()
+                .verifyWith(getSignInKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
@@ -79,25 +88,18 @@ public class JwtTokenUtils {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public boolean validateToken(String token, User userDetails) {
+    public boolean isTokenValid(String token, User userDetails) {
         try {
-            String subject = extractClaim(token, Claims::getSubject);
-            Token existingToken = tokenRepository.findByToken(token).orElse(null);
-
-            if (existingToken == null || existingToken.isRevoked() || !userDetails.isActive()) {
-                return false;
-            }
-
+            String subject = getSubject(token);
             return (subject.equals(getSubject(userDetails))) && !isTokenExpired(token);
-
         } catch (MalformedJwtException e) {
-            System.err.println("Invalid JWT token: " + e.getMessage());
+            log.error("Invalid JWT token: {}", e.getMessage());
         } catch (ExpiredJwtException e) {
-            System.err.println("JWT token is expired: " + e.getMessage());
+            log.error("JWT token is expired: {}", e.getMessage());
         } catch (UnsupportedJwtException e) {
-            System.err.println("JWT token is unsupported: " + e.getMessage());
+            log.error("JWT token is unsupported: {}", e.getMessage());
         } catch (IllegalArgumentException e) {
-            System.err.println("JWT claims string is empty: " + e.getMessage());
+            log.error("JWT claims string is empty: {}", e.getMessage());
         }
         return false;
     }
