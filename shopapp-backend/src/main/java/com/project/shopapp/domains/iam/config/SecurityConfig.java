@@ -1,5 +1,6 @@
 package com.project.shopapp.domains.iam.config;
 
+import com.project.shopapp.domains.iam.security.CustomUserDetails;
 import com.project.shopapp.models.User;
 import com.project.shopapp.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class SecurityConfig {
                     .or(() -> userRepository.findByEmail(identifier))
                     .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy người dùng với định danh: " + identifier));
 
-            return new com.project.shopapp.shared.security.CustomUserDetails(user, null);
+            return new CustomUserDetails(user, null);
         };
     }
 

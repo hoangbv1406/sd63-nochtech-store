@@ -1,4 +1,4 @@
-package com.project.shopapp.shared.security;
+package com.project.shopapp.domains.iam.security;
 
 import com.project.shopapp.models.User;
 import lombok.AllArgsConstructor;
@@ -8,6 +8,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -45,7 +46,10 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        if (user.getLockedUntil() == null) {
+            return true;
+        }
+        return user.getLockedUntil().isBefore(LocalDateTime.now());
     }
 
     @Override
