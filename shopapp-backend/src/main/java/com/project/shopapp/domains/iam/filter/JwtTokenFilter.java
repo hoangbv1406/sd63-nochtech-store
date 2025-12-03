@@ -1,12 +1,16 @@
-package com.project.shopapp.shared.filters;
+package com.project.shopapp.domains.iam.filter;
 
 import com.project.shopapp.domains.iam.components.JwtTokenUtils;
+import com.project.shopapp.models.Role;
+import com.project.shopapp.models.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,11 +20,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtTokenFilter extends OncePerRequestFilter {
     private final JwtTokenUtils jwtTokenUtil;
     private final RedisTemplate<String, Object> redisTemplate;
@@ -42,20 +47,30 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         try {
             final String token = authHeader.substring(7);
 
-            if (jwtTokenUtil.isTokenValid(token)) {
-                String identifier = jwtTokenUtil.getSubject(token);
-                List<String> roles = jwtTokenUtil.getRolesFromToken(token);
+            if (Boolean.TRUE.equals(redisTemplate.hasKey("BLACKLIST_" + token))) {
+                log.warn("Attempt to use a revoked token.");
+                filterChain.doFilter(request, response);
+                return;
+            }
 
-                if (redisTemplate.hasKey("BLACKLIST_" + token)) {
-                    throw new Exception("Revoked");
-                }
+            if (!jwtTokenUtil.isTokenExpired(token)) {
+                String subject = jwtTokenUtil.getSubject(token);
+                Long userId = jwtTokenUtil.extractClaim(token, claims -> claims.get("userId", Long.class));
+                String roleName = jwtTokenUtil.extractClaim(token, claims -> claims.get("role", String.class));
 
-                List<GrantedAuthority> authorities = roles.stream()
-                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
-                        .collect(Collectors.toList());
+                User dummyUser = User.builder()
+                        .id(userId)
+                        .phoneNumber(subject)
+                        .active(true)
+                        .role(Role.builder().name(roleName).build())
+                        .build();
+
+                List<GrantedAuthority> authorities = Collections.singletonList(
+                        new SimpleGrantedAuthority("ROLE_" + roleName.toUpperCase())
+                );
 
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        identifier,
+                        dummyUser,
                         null,
                         authorities
                 );
@@ -64,7 +79,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         } catch (Exception e) {
-            logger.error("Cannot set user authentication: {}", e);
+            log.error("Cannot set user authentication: {}", e.getMessage());
         }
 
         filterChain.doFilter(request, response);
