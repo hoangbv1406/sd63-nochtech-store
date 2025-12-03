@@ -1,12 +1,13 @@
-package com.project.shopapp.shared.configurations;
+package com.project.shopapp.domains.iam.config;
 
-import com.project.shopapp.shared.filters.JwtTokenFilter;
+import com.project.shopapp.domains.iam.filter.JwtTokenFilter;
 import com.project.shopapp.models.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -31,16 +32,14 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests -> {
                     requests
                             // 1. PUBLIC ENDPOINTS
                             .requestMatchers(
-                                    "/api-docs/**",
-                                    "/swagger-resources/**",
-                                    "/swagger-ui/**",
-                                    "/v3/api-docs/**",
+                                    "/api-docs/**", "/swagger-resources/**", "/swagger-ui/**", "/v3/api-docs/**",
                                     "/uploads/**",
                                     String.format("%s/users/register", apiPrefix),
                                     String.format("%s/users/login", apiPrefix),
