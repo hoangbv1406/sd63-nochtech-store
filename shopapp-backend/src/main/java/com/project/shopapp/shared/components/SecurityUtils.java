@@ -10,14 +10,22 @@ public class SecurityUtils {
 
     public User getLoggedInUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof User) {
-            User selectedUser = (User) authentication.getPrincipal();
-            if (!selectedUser.isActive()) {
-                return null;
-            }
-            return selectedUser;
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return null;
+        }
+
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof User) {
+            User user = (User) principal;
+            return user.isActive() ? user : null;
         }
         return null;
+    }
+
+    public Long getLoggedInUserId() {
+        User user = getLoggedInUser();
+        return user != null ? user.getId() : null;
     }
 
 }
