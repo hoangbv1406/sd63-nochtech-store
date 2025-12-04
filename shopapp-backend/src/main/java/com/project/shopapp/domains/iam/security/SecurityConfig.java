@@ -1,4 +1,4 @@
-package com.project.shopapp.domains.iam.config;
+package com.project.shopapp.domains.iam.security;
 
 import com.project.shopapp.domains.iam.security.CustomUserDetails;
 import com.project.shopapp.models.User;

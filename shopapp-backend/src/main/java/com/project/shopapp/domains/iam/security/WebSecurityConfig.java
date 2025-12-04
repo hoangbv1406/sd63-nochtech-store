@@ -1,6 +1,6 @@
-package com.project.shopapp.domains.iam.config;
+package com.project.shopapp.domains.iam.security;
 
-import com.project.shopapp.domains.iam.filter.JwtTokenFilter;
+import com.project.shopapp.domains.iam.security.JwtTokenFilter;
 import com.project.shopapp.domains.iam.security.CustomAccessDeniedHandler;
 import com.project.shopapp.domains.iam.security.CustomAuthenticationEntryPoint;
 import com.project.shopapp.models.Role;

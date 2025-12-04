@@ -1,6 +1,5 @@
-package com.project.shopapp.domains.iam.filter;
+package com.project.shopapp.domains.iam.security;
 
-import com.project.shopapp.domains.iam.components.JwtTokenUtils;
 import com.project.shopapp.models.Role;
 import com.project.shopapp.models.User;
 import jakarta.servlet.FilterChain;

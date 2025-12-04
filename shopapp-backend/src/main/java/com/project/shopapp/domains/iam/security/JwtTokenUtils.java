@@ -1,4 +1,4 @@
-package com.project.shopapp.domains.iam.components;
+package com.project.shopapp.domains.iam.security;
 
 import com.project.shopapp.models.User;
 import io.jsonwebtoken.*;
