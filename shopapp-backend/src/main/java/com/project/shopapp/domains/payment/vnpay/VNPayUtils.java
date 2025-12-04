@@ -1,4 +1,4 @@
-package com.project.shopapp.domains.payment.components;
+package com.project.shopapp.domains.payment.vnpay;
 
 import org.springframework.stereotype.Component;
 
