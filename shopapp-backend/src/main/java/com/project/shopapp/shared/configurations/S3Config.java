@@ -1,8 +1,10 @@
 package com.project.shopapp.shared.configurations;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
@@ -21,38 +23,27 @@ public class S3Config {
     @Value("${aws.s3.secret:}")
     private String secretKey;
 
+    private AwsCredentialsProvider getCredentialsProvider() {
+        if (accessKey != null && !accessKey.isBlank() && secretKey != null && !secretKey.isBlank()) {
+            return StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey));
+        }
+        return DefaultCredentialsProvider.create();
+    }
+
     @Bean
     public S3Client s3Client() {
-        Region awsRegion = Region.of(region);
-        if (accessKey != null && !accessKey.isBlank() && secretKey != null && !secretKey.isBlank()) {
-            AwsBasicCredentials creds = AwsBasicCredentials.create(accessKey, secretKey);
-            return S3Client.builder()
-                    .region(awsRegion)
-                    .credentialsProvider(StaticCredentialsProvider.create(creds))
-                    .build();
-        } else {
-            return S3Client.builder()
-                    .region(awsRegion)
-                    .credentialsProvider(DefaultCredentialsProvider.create())
-                    .build();
-        }
+        return S3Client.builder()
+                .region(Region.of(region))
+                .credentialsProvider(getCredentialsProvider())
+                .build();
     }
 
     @Bean
     public S3Presigner s3Presigner() {
-        Region awsRegion = Region.of(region);
-        if (accessKey != null && !accessKey.isBlank() && secretKey != null && !secretKey.isBlank()) {
-            AwsBasicCredentials creds = AwsBasicCredentials.create(accessKey, secretKey);
-            return S3Presigner.builder()
-                    .region(awsRegion)
-                    .credentialsProvider(StaticCredentialsProvider.create(creds))
-                    .build();
-        } else {
-            return S3Presigner.builder()
-                    .region(awsRegion)
-                    .credentialsProvider(DefaultCredentialsProvider.create())
-                    .build();
-        }
+        return S3Presigner.builder()
+                .region(Region.of(region))
+                .credentialsProvider(getCredentialsProvider())
+                .build();
     }
 
 }
