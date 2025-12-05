@@ -21,6 +21,9 @@ CREATE TABLE `affiliate_links` (
   `total_earnings` decimal(15,2) DEFAULT '0.00' COMMENT 'Tổng tiền hoa hồng kiếm được',
   `is_deleted` bigint DEFAULT '0',
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `created_by` int DEFAULT NULL,
+  `updated_by` int DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_affiliate_code_del` (`code`,`is_deleted`),
   KEY `fk_aff_user` (`user_id`),
@@ -65,6 +68,7 @@ CREATE TABLE `banners` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `created_by` int DEFAULT NULL,
   `updated_by` int DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -81,6 +85,7 @@ CREATE TABLE `brands` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `created_by` int DEFAULT NULL,
   `updated_by` int DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_brands_slug_deleted` (`slug`,`is_deleted`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -95,6 +100,7 @@ CREATE TABLE `cart_items` (
   `is_selected` tinyint(1) DEFAULT '1' COMMENT 'Khách hàng có tick chọn để thanh toán không',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `affiliate_link_id` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_cart_product_variant` (`cart_id`,`product_id`,`variant_id`),
   KEY `fk_cart_items_cart` (`cart_id`),
@@ -116,6 +122,7 @@ CREATE TABLE `carts` (
   `is_deleted` bigint DEFAULT '0',
   `created_by` int DEFAULT NULL,
   `updated_by` int DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_carts_user_id_deleted` (`user_id`,`is_deleted`),
   KEY `idx_session_id` (`session_id`),
@@ -138,6 +145,8 @@ CREATE TABLE `categories` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `created_by` int DEFAULT NULL,
   `updated_by` int DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
+  `display_mode` varchar(50) DEFAULT NULL COMMENT 'Chế độ hiển thị (VD: GRID, LIST)',
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_category_parent_name` (`parent_id`,`name`),
   UNIQUE KEY `ux_category_slug_deleted` (`slug`,`is_deleted`),
@@ -177,6 +186,10 @@ CREATE TABLE `chat_participants` (
   `is_muted` tinyint(1) DEFAULT '0' COMMENT 'Tắt thông báo phòng chat',
   `is_deleted` bigint DEFAULT '0' COMMENT 'Phục vụ tính năng Ẩn/Xóa đoạn chat',
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `deleted_at` datetime DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `created_by` int DEFAULT NULL,
+  `updated_by` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_room_user_del` (`room_id`,`user_id`,`is_deleted`),
   KEY `fk_chat_user` (`user_id`),
@@ -195,6 +208,7 @@ CREATE TABLE `chat_rooms` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `created_by` int DEFAULT NULL,
   `updated_by` int DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_chat_rooms_shop` (`shop_id`),
   CONSTRAINT `fk_chat_rooms_shop` FOREIGN KEY (`shop_id`) REFERENCES `shops` (`id`) ON DELETE RESTRICT
@@ -227,6 +241,7 @@ CREATE TABLE `coupon_usages` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `created_by` int DEFAULT NULL,
   `updated_by` int DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_user_coupon` (`user_id`,`coupon_id`),
   KEY `fk_usage_coupon` (`coupon_id`),
@@ -295,6 +310,9 @@ CREATE TABLE `favorites` (
   `is_deleted` bigint DEFAULT '0',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `created_by` int DEFAULT NULL,
+  `updated_by` int DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_favorite_user_product` (`user_id`,`product_id`,`is_deleted`),
   KEY `fav_user_fk` (`user_id`),
@@ -317,6 +335,7 @@ CREATE TABLE `flash_sale_items` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `created_by` int DEFAULT NULL,
   `updated_by` int DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_fs_item_prod_var` (`flash_sale_id`,`product_id`,`variant_id`,`is_deleted`),
   KEY `fk_fs_items_fs` (`flash_sale_id`),
@@ -340,6 +359,7 @@ CREATE TABLE `flash_sales` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `created_by` int DEFAULT NULL,
   `updated_by` int DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_flash_sales_shop` (`shop_id`),
   CONSTRAINT `fk_flash_sales_shop` FOREIGN KEY (`shop_id`) REFERENCES `shops` (`id`) ON DELETE CASCADE
@@ -404,6 +424,9 @@ CREATE TABLE `notifications` (
   `deep_link` varchar(255) DEFAULT NULL COMMENT 'Link điều hướng khi click (App/Web)',
   `is_deleted` bigint DEFAULT '0',
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `created_by` int DEFAULT NULL,
+  `updated_by` int DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_noti_user` (`user_id`),
   CONSTRAINT `fk_noti_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE RESTRICT
@@ -417,6 +440,7 @@ CREATE TABLE `option_values` (
   `display_order` int DEFAULT '0',
   `is_active` tinyint(1) DEFAULT '1',
   `is_deleted` bigint DEFAULT '0',
+  `deleted_at` datetime DEFAULT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `created_by` int DEFAULT NULL,
@@ -438,6 +462,7 @@ CREATE TABLE `options` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `created_by` int DEFAULT NULL,
   `updated_by` int DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_options_code_deleted` (`code`,`is_deleted`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -470,6 +495,7 @@ CREATE TABLE `order_details` (
   `variant_id` int DEFAULT NULL COMMENT 'ID biến thể để tiện thống kê',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `affiliate_link_id` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `order_details_order_fk` (`order_id`),
   KEY `order_details_product_fk` (`product_id`),
@@ -534,6 +560,8 @@ CREATE TABLE `orders` (
   `version` int DEFAULT '0' COMMENT 'Optimistic Locking chống lỗi Webhook thanh toán',
   `is_deleted` bigint DEFAULT '0',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `deleted_at` datetime DEFAULT NULL,
+  `delivered_at` datetime DEFAULT NULL COMMENT 'Thời điểm giao hàng thành công',
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_orders_code_deleted` (`order_code`,`is_deleted`),
   KEY `idx_order_date` (`order_date`),
@@ -556,7 +584,7 @@ CREATE TABLE `orders_shop` (
   `sub_total` decimal(15,2) DEFAULT '0.00' COMMENT 'Tổng tiền hàng',
   `admin_commission` decimal(15,2) DEFAULT '0.00' COMMENT 'Phí sàn thu',
   `shop_income` decimal(15,2) DEFAULT '0.00' COMMENT 'Thực nhận = Sub - Comm',
-  `status` enum('pending','processing','shipped','delivered','delivery_failed','cancelled','returned') DEFAULT 'pending',
+  `status` enum('PENDING','PROCESSING','SHIPPED','DELIVERED','DELIVERY_FAILED','CANCELLED','RETURNED') DEFAULT 'PENDING',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `tracking_number` varchar(100) DEFAULT NULL COMMENT 'Mã vận đơn riêng của kiện hàng này',
   `shipping_date` datetime DEFAULT NULL,
@@ -568,6 +596,7 @@ CREATE TABLE `orders_shop` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `created_by` int DEFAULT NULL,
   `updated_by` int DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_order_shop_code_del` (`order_shop_code`,`is_deleted`),
   KEY `fk_sub_order_parent` (`parent_order_id`),
@@ -622,9 +651,11 @@ CREATE TABLE `product_images` (
   `display_order` int DEFAULT '0' COMMENT 'Thứ tự hiển thị trong slider',
   `image_type` enum('GALLERY','SIZE_GUIDE','CERTIFICATE') DEFAULT 'GALLERY' COMMENT 'Phân loại ảnh',
   `is_deleted` bigint DEFAULT '0',
+  `deleted_at` datetime DEFAULT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `created_by` int DEFAULT NULL,
+  `updated_by` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_product_images_product_id` (`product_id`),
   CONSTRAINT `fk_product_images_product_id` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE RESTRICT
@@ -644,6 +675,7 @@ CREATE TABLE `product_items` (
   `sold_date` datetime DEFAULT NULL,
   `locked_until` datetime DEFAULT NULL COMMENT 'Thời gian hết hạn giữ hàng (Reservation)',
   `is_deleted` bigint DEFAULT '0',
+  `deleted_at` datetime DEFAULT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `created_by` int DEFAULT NULL,
@@ -665,6 +697,19 @@ CREATE TABLE `product_items` (
   CONSTRAINT `items_variants_fk` FOREIGN KEY (`variant_id`) REFERENCES `product_variants` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+CREATE TABLE `product_review_replies` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `review_id` int NOT NULL COMMENT 'Trả lời cho đánh giá nào',
+  `shop_id` int NOT NULL,
+  `vendor_user_id` int NOT NULL COMMENT 'Nhân viên nào của shop gõ câu trả lời',
+  `content` text NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `ux_reply_review` (`review_id`) COMMENT 'Mỗi review khách viết, shop chỉ được trả lời 1 lần',
+  CONSTRAINT `fk_reply_review` FOREIGN KEY (`review_id`) REFERENCES `product_reviews` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 CREATE TABLE `product_reviews` (
   `id` int NOT NULL AUTO_INCREMENT,
   `product_id` int DEFAULT NULL,
@@ -681,6 +726,7 @@ CREATE TABLE `product_reviews` (
   `is_deleted` bigint DEFAULT '0',
   `created_by` int DEFAULT NULL,
   `updated_by` int DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_review_order_detail_del` (`order_detail_id`,`is_deleted`),
   KEY `reviews_product_fk` (`product_id`),
@@ -817,12 +863,23 @@ CREATE TABLE `shop_employees` (
   CONSTRAINT `fk_shop_emp_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+CREATE TABLE `shop_review_replies` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `review_id` bigint NOT NULL COMMENT 'Trả lời cho đánh giá Shop nào',
+  `vendor_user_id` int NOT NULL COMMENT 'Tài khoản nhân viên/chủ shop gõ câu trả lời',
+  `content` text NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `ux_shop_reply_review` (`review_id`) COMMENT 'Mỗi review khách viết, shop chỉ trả lời 1 lần',
+  CONSTRAINT `fk_shop_reply_review` FOREIGN KEY (`review_id`) REFERENCES `shop_reviews` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 CREATE TABLE `shop_reviews` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `shop_id` int NOT NULL,
   `user_id` int NOT NULL,
   `order_shop_id` int NOT NULL,
-  `parent_id` bigint DEFAULT NULL COMMENT 'ID của review gốc',
   `rating` tinyint DEFAULT '5',
   `content` text,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
@@ -831,12 +888,12 @@ CREATE TABLE `shop_reviews` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   `is_deleted` bigint DEFAULT '0',
+  `created_by` int DEFAULT NULL,
+  `updated_by` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_shop_review_order` (`user_id`,`order_shop_id`,`is_deleted`),
   KEY `fk_shop_reviews_shop` (`shop_id`),
   KEY `fk_shop_reviews_user` (`user_id`),
-  KEY `fk_shop_reviews_parent` (`parent_id`),
-  CONSTRAINT `fk_shop_reviews_parent` FOREIGN KEY (`parent_id`) REFERENCES `shop_reviews` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_shop_reviews_shop` FOREIGN KEY (`shop_id`) REFERENCES `shops` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -898,6 +955,7 @@ CREATE TABLE `social_posts` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `created_by` int DEFAULT NULL,
   `updated_by` int DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_posts_user` (`user_id`),
   KEY `fk_posts_pro` (`linked_product_id`),
@@ -911,7 +969,7 @@ CREATE TABLE `suppliers` (
   `name` varchar(100) NOT NULL,
   `contact_email` varchar(100) DEFAULT NULL,
   `contact_phone` varchar(20) DEFAULT NULL,
-  `status` enum('active','inactive') DEFAULT 'active',
+  `status` enum('ACTIVE','INACTIVE') DEFAULT 'ACTIVE',
   `deleted_at` datetime DEFAULT NULL,
   `tax_code` varchar(50) DEFAULT NULL COMMENT 'Mã số thuế để xuất hóa đơn VAT',
   `address` varchar(255) DEFAULT NULL COMMENT 'Địa chỉ kinh doanh',
@@ -1022,6 +1080,9 @@ CREATE TABLE `user_follows` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `is_deleted` bigint DEFAULT '0',
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `created_by` int DEFAULT NULL,
+  `updated_by` int DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_follow_user_del` (`follower_id`,`following_user_id`,`is_deleted`),
   UNIQUE KEY `ux_follow_shop_del` (`follower_id`,`following_shop_id`,`is_deleted`),
@@ -1035,7 +1096,7 @@ CREATE TABLE `user_follows` (
 
 CREATE TABLE `user_interactions` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `user_id` int NOT NULL,
+  `user_id` int DEFAULT NULL,
   `product_id` int DEFAULT NULL,
   `post_id` bigint DEFAULT NULL,
   `action_type` enum('VIEW','LIKE','UNLIKE','SHARE','CLICK','ADD_CART') NOT NULL COMMENT 'Bổ sung UNLIKE',
@@ -1080,6 +1141,9 @@ CREATE TABLE `user_showcase_items` (
   `affiliate_link_id` int DEFAULT NULL COMMENT 'Link tiếp thị tương ứng với món hàng này',
   `is_deleted` bigint DEFAULT '0',
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `created_by` int DEFAULT NULL,
+  `updated_by` int DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_showcase_del` (`user_id`,`product_id`,`is_deleted`),
   KEY `fk_showcase_pro` (`product_id`),
@@ -1204,6 +1268,7 @@ CREATE TABLE `warranty_requests` (
   `is_deleted` bigint DEFAULT '0',
   `created_by` int DEFAULT NULL,
   `updated_by` int DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_warranty_request_code` (`request_code`,`is_deleted`),
   KEY `fk_warranty_user` (`user_id`),
